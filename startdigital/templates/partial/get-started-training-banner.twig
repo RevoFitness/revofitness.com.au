@@ -1,0 +1,16 @@
+<section class="bg-pureWhite !py-0">
+	{% include 'icons/curved-top.twig' %}
+	<div class="bg-brandRed inner-py">
+		<div class="container">
+			<div class="call-to-action-content relative w-full max-md:container inner-py md:px-40 block-content items-center text-center mx-auto rounded-3xl md:rounded-full bg-brandEucalyptus -mt-[300px] 2xl:-mt-[600px]">
+				{% include 'icons/sun.twig' with {
+					class: 'relative max-xl:w-36 max-md:-mb-28 max-md:-top-28 md:absolute left-0 lg:left-20 top-7 xl:top-0 md:-translate-y-1/2'
+				} %}
+				{% include 'icons/flame.twig' with {
+					class: 'absolute max-md:hidden right-0 max-lg:w-32 right-20 bottom-0 translate-y-1/3 rotate-[30deg]'
+				} %}
+				{{ fields.call_to_action.content }}
+			</div>
+		</div>
+	</div>
+</section>

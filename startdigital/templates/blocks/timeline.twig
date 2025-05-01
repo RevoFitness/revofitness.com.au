@@ -1,0 +1,28 @@
+<section class="bg-pureWhite flex flex-col gap-20 -mb-28">
+	<div class="container bg-brandRed rounded-[50px] p-12 lg:p-24 is-h3 text-white text-center block-content !gap-16">
+		{{ block.quote }}
+	</div>
+
+	<div data-timeline class="flex flex-col relative max-w-5xl justify-center container max-lg:pb-24">
+		{% for item in block.timeline %}
+			<div class="flex gap-6 lg:gap-12 justify-between relative">
+				<div class="lg:contents flex flex-col gap-4 w-full">
+					<span data-timeline-year class="is-h2 lg:flex-1 lg:text-right text-[#C1BFBF]">{{ item.year }}</span>
+					<div class="lg:hidden">{{ item.description }}</div>
+				</div>
+
+				<div class="justify-center w-1/2 md:w-48 max-w-[150px] h-56 items-stretch flex relative">
+					{% if not loop.last %}
+						<div class="absolute w-[3px] bg-[#C1BFBF] -translate-x-1/2 left-1/2 h-full"></div>
+						<div data-progress class="absolute w-[3px] bg-brandRed -translate-x-1/2 left-1/2 origin-top z-10 h-full"></div>
+					{% endif %}
+					<div data-icon class="border-2 border-[#C1BFBF] w-16 h-16 rounded-full bg-[#C1BFBF] absolute top-0 left-0 z-20 right-0 mx-auto flex items-center justify-center p-2">
+						{% include "icons/timeline/" ~ item.icon ~ ".twig" with { class: 'shrink-0 object-contain w-fit h-fit' } %}
+					</div>
+				</div>
+
+				<div class="max-lg:hidden flex-1">{{ item.description }}</div>
+			</div>
+		{% endfor %}
+	</div>
+</section>

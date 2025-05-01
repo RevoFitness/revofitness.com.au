@@ -1,0 +1,32 @@
+{% if posts.pagination.pages is not empty %}
+    <nav class="pagination-block flex items-center justify-center w-full">
+        <ul class="pagination flex items-center gap-3">
+            {# Previous #}
+            {% if posts.pagination.prev %}
+                <li class="prev btn">
+                    <a href="{{ posts.pagination.prev.link }}">{% include "icons/arrow-right-white-bg.twig" with { class: "w-8 rotate-180" } %}</a>
+                </li>
+            {% endif %}
+
+            {# Pages #}
+            {% for page in posts.pagination.pages %}
+                {% if page.link %}
+                    <li>
+                        <a href="{{ page.link }}" class="{{ page.class }}">{{ page.title }}</a>
+                    </li>
+                {% else %}
+                    <li class="current bg-brandRed rounded-full w-7 h-7 text-white flex items-center justify-center">
+                        <span class="{{ page.class }}">{{ page.title }}</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {# Next #}
+            {% if posts.pagination.next %}
+                <li class="next btn">
+                    <a href="{{ posts.pagination.next.link }}">{% include "icons/arrow-right-white-bg.twig" with { class: "w-8" } %}</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

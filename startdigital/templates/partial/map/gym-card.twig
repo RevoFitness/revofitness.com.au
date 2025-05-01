@@ -1,0 +1,62 @@
+<div id="{{ item.title|replace({' ': ''})|lower }}" data-gym="{{ item.title }}" data-state={{ item.state[0].name }} class="max-lg:snap-center max-lg:w-full max-lg:flex-shrink-0 max-md:px-6 {{ item.state[0].name != activeState and activeState != 'All' ? '!hidden' : '' }}">
+	<div class="relative h-full rounded-2xl bg-white overflow-hidden">
+		<div class="flex flex-col text-brandBlack h-full">
+			{% if fn('isInPresale', item) %}
+				<div class="sm:hidden bg-brandPink flex items-center justify-center w-full px-4 py-1.5 gap-2">
+					{% include "icons/stamp.twig" with { class: 'w-7 h-5' } %}
+					<span class="supertitle uppercase font-extrabold text-center !text-sm !text-brandBlack">{{ item.meta('is_special_offer') ? 'Special<br/>Offer' : 'Presale on now' }}</span>
+				</div>
+			{% endif %}
+			<div class="flex gap-10">
+				<div class="w-full flex flex-col gap-2 font-semibold text-sm px-5 pt-5 {{ fn('isInPresale', item) ? 'max-sm:pt-3' }}">
+					<div class="flex gap-4 mb-1 max-sm:justify-between">
+						<span class="is-h5 font-bold text-left">{{ item.title }}</span>
+						{% if item.studio_available == true %}
+							{% include "icons/studio-pill.twig" %}
+						{% endif %}
+					</div>
+					{% if item.address or item.custom_address %}
+						<div class="flex gap-3 text-left xl:gap-6">
+							<div class="flex items-center justify-center w-6 h-6 flex-shrink-0 rounded-full border border-brandBlack">
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" fill="none" viewbox="0 0 14 12">
+									<path fill="#333132" stroke="#333132" stroke-width=".2" d="M11.182 11.812H8.558a.684.684 0 0 1-.682-.682V7.142a.115.115 0 0 0-.115-.115h-1.59a.115.115 0 0 0-.115.115v3.988a.683.683 0 0 1-.682.682H2.75a.684.684 0 0 1-.682-.682V5.829h-.577a.514.514 0 0 1-.493-.352.514.514 0 0 1 .17-.582L6.499.69a.756.756 0 0 1 .941 0l5.329 4.205c.176.141.245.37.17.582a.518.518 0 0 1-.492.352h-.578v5.3a.683.683 0 0 1-.682.683h-.004Zm-5.01-5.354h1.59c.374 0 .681.307.681.682v3.988c0 .063.051.115.115.115h2.624a.115.115 0 0 0 .115-.115V5.782c0-.288.234-.522.522-.522h.497L7.088 1.13a.192.192 0 0 0-.24 0L1.622 5.26h.496c.288 0 .522.234.522.522v5.346c0 .063.052.115.115.115h2.624a.115.115 0 0 0 .115-.115V7.14c0-.377.305-.682.682-.682h-.004Z"/>
+								</svg>
+							</div>
+							{% if item.directions %}
+								<a href="{{ item.directions }}" target="_blank" class="!text-sm underline">{{ item.override_address ? item.custom_address : item.address }}</a>
+							{% else %}
+								<span class="!text-sm">{{ item.override_address ? item.custom_address : item.address }}</span>
+							{% endif %}
+						</div>
+					{% endif %}
+					{% if item.size %}
+						<div class="flex items-center gap-3 xl:gap-6">
+							<div class="flex items-center justify-center w-6 h-6 flex-shrink-0 rounded-full border border-brandBlack">
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" fill="none" viewbox="0 0 14 13">
+									<path fill="#333132" stroke="#333132" stroke-width=".2" d="M5.27 11.04H2.784a.685.685 0 0 1-.686-.686V7.866a.309.309 0 1 1 .618 0v2.488c0 .037.03.067.068.067H5.27a.309.309 0 1 1 0 .618ZM9.794 11.04H6.78a.309.309 0 1 1 0-.618h3.015a.309.309 0 1 1 0 .617Z"/>
+									<path fill="#333132" stroke="#333132" stroke-width=".2" d="M8.663 12.169a.309.309 0 0 1-.218-.527l.913-.912-.913-.91a.308.308 0 1 1 .436-.437l1.132 1.13a.31.31 0 0 1 0 .436L8.88 12.078c-.06.06-.139.09-.218.09ZM2.406 6.667a.309.309 0 0 1-.309-.309V3.342a.309.309 0 1 1 .618 0v3.016a.31.31 0 0 1-.309.31Z"/>
+									<path fill="#333132" stroke="#333132" stroke-width=".2" d="M3.535 4.78a.308.308 0 0 1-.218-.09l-.91-.913-.912.913a.308.308 0 1 1-.436-.437l1.129-1.131a.31.31 0 0 1 .437 0l1.129 1.131a.309.309 0 0 1-.219.527ZM12.283 11.04h-.98a.309.309 0 1 1 0-.618h.98c.037 0 .067-.03.067-.068v-9.5a.067.067 0 0 0-.067-.067h-9.5a.067.067 0 0 0-.068.067v.98a.309.309 0 1 1-.618 0v-.98c0-.379.307-.685.686-.685h9.5c.378 0 .685.306.685.685v9.5a.685.685 0 0 1-.685.686ZM3.703 9.332V7.408c0-.037.03-.067.067-.067h.555c.033 0 .063.016.063.072l.016.207a.649.649 0 0 1 .576-.328c.251 0 .454.12.572.344a.696.696 0 0 1 .63-.344c.448 0 .727.316.727.853v1.19c0 .036-.03.067-.068.067H6.27a.067.067 0 0 1-.067-.068v-1.02c0-.248-.084-.374-.275-.374-.19 0-.274.126-.274.374v1.02c0 .037-.03.068-.067.068h-.562c-.047 0-.077-.03-.077-.068v-1.02c0-.248-.08-.374-.27-.374-.176 0-.274.126-.274.374v1.02c0 .037-.03.068-.067.068h-.572a.067.067 0 0 1-.067-.068l.005-.002Z"/>
+									<path fill="#333132" stroke="#333132" stroke-width=".2" d="M7.248 7.961v-.265c0-.016.005-.03.016-.046l.504-.495c.06-.058.186-.17.186-.314 0-.118-.086-.197-.218-.197-.121 0-.195.072-.26.153-.021.026-.038.019-.058-.002l-.189-.188a.043.043 0 0 1-.007-.054.652.652 0 0 1 .551-.286c.344 0 .583.226.583.537 0 .26-.17.411-.225.467l-.393.381h.581c.02 0 .04.016.04.04v.27a.04.04 0 0 1-.04.039H7.285a.04.04 0 0 1-.04-.04h.003Z"/>
+								</svg>
+							</div>
+							<span class="!text-sm">{{ item.size }}
+								sq/m</span>
+						</div>
+					{% endif %}
+				</div>
+				{% if fn('isInPresale', item) %}
+					<div class="max-sm:hidden bg-brandPink rounded-bl-3xl flex flex-col items-center justify-center p-3.5 xl:px-5 gap-1.5 h-fit ml-auto">
+						{% include "icons/stamp.twig" %}
+						<span class="supertitle uppercase font-extrabold text-center !text-sm !text-brandBlack">{{ item.meta('is_special_offer') ? 'Special<br/>Offer' : 'Presale' }}</span>
+					</div>
+				{% endif %}
+			</div>
+			<div class="grid mt-auto gap-4 max-sm:pt-3 p-5">
+				<div class="grid sm:grid-cols-2 gap-2 sm:gap-4">
+					<span data-map-toggle-button class="is-button after:!hidden text-sm px-4 py-2 w-full justify-center">View On Map</span>
+					<a href="{{ item.link }}" class="is-button-outline after:!hidden text-sm px-4 py-2 w-full justify-center">Gym Info</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

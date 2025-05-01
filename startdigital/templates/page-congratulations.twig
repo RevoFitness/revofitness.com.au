@@ -1,0 +1,84 @@
+{% extends 'page.twig' %}
+
+{% block content %}
+	<section>
+		<div class="container grid md:grid-cols-2 gap-16 md:gap-8 items-center">
+			<div
+				class="flex flex-col gap-4 md:gap-8 w-full">
+
+				{# Opening dates for presale signups #}
+				{% if data.isPresale and not fn('isGymOpen', data.gymId) %}
+					<div class="bg-brandRed text-white revo-shadow px-4 py-2 rounded-lg">
+						<strong>Please note:</strong>
+						Your Revo Fitness membership will not start until opening day on
+						{{ data.openDate }}. Please drop into
+						{{ data.gymName }}
+						on opening day to collect your free swipe tag. You are unable to access our other Revo locations until this date. If you would like earlier access, please contact us to change your membership over to a current gym at
+						<a class="hover:underline" href="mailto:support@revofitness.com.au">support@revofitness.com.au</a>.
+					</div>
+				{% endif %}
+
+				{% if data.isPresale and not fn('isGymOpen', data.gymId) %}
+					<div data-animate-left class="block-content">
+						{{ fields.presale_text_with_image.content }}
+					</div>
+				{% else %}
+					<div data-animate-left class="block-content">
+						{{ fields.text_with_image.content }}
+					</div>
+				{% endif %}
+
+			</div>
+			<div class="w-full md:w-4/5 mx-auto relative">
+				{% include 'partial/image.twig' with {
+					image: get_image(fields.text_with_image.image).src,
+					alt: fields.text_with_image.image.alt,
+					class: 'clip-blob aspect-1/1 md:aspect-5/7 lg:aspect-[5/6] w-full object-cover pointer-events-none'
+				} %}
+				{% include 'icons/clip-blob.twig' %}
+				{# {% include 'icons/heart.twig' with {
+													class: 'absolute -top-[5vw] sm:top-[2vw] left-4 2xl:-left-10 w-[25vw] md:w-[10vw]',
+													attributes: 'data-animate-spin'
+												} %}
+												{% include 'icons/point-yellow.twig' with {
+													class: 'absolute -bottom-10 sm:bottom-0 right-0 2xl:-right-10 w-[25vw] md:w-[10vw]',
+													attributes: 'data-animate-spin'
+												} %} #}
+			</div>
+		</div>
+	</section>
+	{% include "partial/get-started-training-banner.twig" %}
+	<div class="bg-brandRed">
+		<section class="rounded-top bg-lightPink">
+			<div class="container grid md:grid-cols-2 items-center gap-16 md:gap-8">
+				<div class="max-md:order-2 w-full md:w-4/5 mx-auto relative">
+					{% include 'partial/image.twig' with {
+						image: get_image(fields.bottom_content.image).src,
+						alt: fields.bottom_content.image.alt,
+						class: 'clip-blob aspect-1/1 md:aspect-5/7 lg:aspect-[5/6] w-full object-cover pointer-events-none'
+					} %}
+					{% include 'icons/clip-blob.twig' %}
+					{% include 'icons/globe.twig' with {
+						class: 'absolute -top-[5vw] sm:top-[2vw] left-4 2xl:-left-10 w-[25vw] md:w-[10vw]',
+						attributes: 'data-animate-spin'
+					} %}
+					{% include 'icons/dice.twig' with {
+						class: 'absolute -bottom-10 sm:bottom-0 right-0 2xl:-right-10 w-[25vw] md:w-[10vw]',
+						attributes: 'data-animate-spin'
+					} %}
+				</div>
+				<div class="max-md:order-1 flex flex-col gap-4 md:gap-6 w-full">
+					<div class="block-content">
+						{{ fields.bottom_content.content }}
+						<div class="flex flex-wrap items-center max-sm:justify-center gap-4">
+							<div class="button-outline !shadow-none hover:!translate-y-0 !bg-transparent !cursor-auto after:!hidden pr-5 py-3 !uppercase max-md:justify-center">
+								Code: HELLOREVO
+							</div>
+							<a href="https://shop.revofitness.com.au" target="_blank" class="button">Shop now</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+{% endblock %}

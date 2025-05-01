@@ -1,0 +1,15 @@
+<div class="scrolling-section -mb-[1px] pt-10 {{ class }} bg-pureWhite">
+	<svg xmlns="http://www.w3.org/2000/svg" width="100%" class="svgwave relative z-10" viewbox="0 0 1457.022 200.383">
+		<path id="curved-text" d="M-14.106,27.234C36.67,7.222,315.627-63.013,672.127-63.013s646.119,51.673,757.9,92.6" transform="translate(22.617 120.513)" fill="none" stroke="#0a00ff" stroke-width="1" opacity="0"/>
+		<text class="curved-text-content" font-size="48">
+			<textPath id="text-path" class="fill-brandRed font-extrabold max-lg:text-7xl" href="#curved-text">
+				<animate attributename="startOffset" from="0%" to="-750%" begin="0s" dur="120s" repeatcount="indefinite"></animate>
+				{% for i in 0..10 %}
+					{{ block.scrolling_text ?: 'To the person with their favourite squat rack, we get you' }}
+					&bull;
+				{% endfor %}
+			</textPath>
+		</text>
+		<path d="M-14499.988,8009.7h-1457.022c46.444-14,97.619-26.721,152.1-37.8,55.009-11.183,113.863-20.79,174.929-28.553,62.2-7.908,127.313-13.982,193.541-18.054,67.964-4.179,137.926-6.3,207.94-6.3s139.978,2.119,207.94,6.3c66.227,4.071,131.344,10.146,193.541,18.054,61.065,7.763,119.92,17.37,174.929,28.553,54.487,11.077,105.659,23.793,152.094,37.795h.007Z" transform="translate(15957.011 -7809.32)" fill="{{ background ?: '#FBEEE7' }}"/>
+	</svg>
+</div>

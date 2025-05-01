@@ -1,0 +1,17 @@
+<section class="numbered_grid bg-pureWhite">
+	<div class="inner-py bg-brandRed rounded-top rounded-bottom">
+		<div class="container block-content text-white">
+			{{ block.top_content }}
+			<div data-animate-stagger class="grid sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-y-6 mt-5">
+				{% for index, item in block.grid %}
+					<div class="flex flex-col rounded-[30px] bg-white p-6 md:p-8 gap-6 justify-between">
+						<span class="is-h1 text-brandRed">{{ index + 1 }}</span>
+						<div class="block-content text-brandBlack font-extrabold lg:text-xl">
+							{{ item.tile_content }}
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</section>

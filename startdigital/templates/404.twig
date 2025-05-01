@@ -1,0 +1,34 @@
+{% extends 'page.twig' %}
+
+{% block hero %}
+	<div class="internal-banner relative flex max-md:flex-col max-md:gap-10 bg-greyBackground bg-opacity-60">
+		<div class="banner-inner w-full relative md:py-16 2xl:py-32 max-md:pb-6 max-lg:!pt-40 lg:mt-40 flex max-lg:flex-col gap-10 lg:items-center lg:min-h-[250px]">
+			<div class="banner-image-wrapper container top-0 left-0 absolute w-full h-full overflow-hidden rounded-br-[100px] lg:rounded-r-full">
+				{% if options.page_not_found.banner_background %}
+					{% include 'partial/image.twig' with {
+						image: get_image(options.page_not_found.banner_background).src,
+						alt: options.page_not_found.banner_background.alt,
+						class: 'absolute top-0 left-0 w-full h-full object-center object-cover pointer-events-none'
+					} %}
+				{% endif %}
+			</div>
+			<div class="container relative z-[15] text-white">
+				<h1 class="text-[2.75rem] md:text-[3.75rem] 2xl:text-7xl">
+					Oops. We can't spot you right now.
+				</h1>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+	<div class="container py-16 flex flex-col gap-6">
+		<div class="block-content">
+			<p>
+				Don't sweat the small stuff, head back home or navigate to another page.
+			</p>
+			<a href="/" class="button">Return Home</a>
+		</div>
+	</div>
+	{% include 'blocks/download_app.twig' %}
+{% endblock %}

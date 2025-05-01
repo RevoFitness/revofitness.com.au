@@ -1,0 +1,35 @@
+<div data-daily-workout class="container grid gap-6 mb-6 xl:grid-cols-3 lg:mb-12">
+	<div class="flex flex-col gap-2 p-4 text-white rounded-3xl bg-brandRed lg:col-span-2 lg:px-6 lg:py-8">
+		<h3>Today's Workout (#{{ videoNumber }})</h3>
+		<div data-active-video-wrapper class="overflow-hidden my-auto lg:mt-6 rounded-2xl">
+			<iframe class="aspect-video" allowfullscreen type="text/html" width="100%" src="https://www.youtube.com/embed/{{ dailyID }}" frameborder="0"></iframe>
+		</div>
+		<div class="flex flex-col max-w-sm gap-2 p-6">
+			<p class="text-2xl font-bold">Workout when and where you like 24/7</p>
+			<p>Workouts updated daily at 12.00am</p>
+		</div>
+	</div>
+
+	<div>
+		<div data-playlist class="flex flex-col self-start px-3 py-4 text-white rounded-3xl bg-greyBackground">
+			<div data-playlist-item class="grid items-center gap-4 p-4 text-black cursor-pointer rounded-2xl">
+				<div class="overflow-hidden rounded-xl">
+					<iframe class="aspect-video" allowfullscreen type="text/html" width="100%" src="https://www.youtube.com/embed/{{ warmupID }}?modestbranding=1" frameborder="0"></iframe>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-xl font-medium">Warm Up</p>
+					<p class="text-sm">Start with the warm up and then HIIT your workout.</p>
+				</div>
+			</div>
+			<div data-playlist-item class="grid items-center gap-4 p-4 text-black cursor-pointer rounded-2xl">
+				<div class="overflow-hidden rounded-xl">
+					<iframe class="aspect-video" allowfullscreen type="text/html" width="100%" src="https://www.youtube.com/embed/{{ cooldownID }}" frameborder="0"></iframe>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-xl font-medium">Cool Down</p>
+					<p class="text-sm">Take a breather and let’s rest for 80 seconds after you’ve completed the 10 exercises.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

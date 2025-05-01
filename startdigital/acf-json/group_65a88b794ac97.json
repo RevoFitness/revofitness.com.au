@@ -1,0 +1,43 @@
+{
+    "key": "group_65a88b794ac97",
+    "title": "Sync With PerfectGym",
+    "fields": [
+        {
+            "key": "field_65a88b79e426b",
+            "label": "Sync",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "<a href=\"https:\/\/revofitness.com.au\/wp-json\/revo\/v1\/gym-manager\/create\">Click this to sync with PerfectGym<\/a>\r\n\r\nPlease be patient and only click once. This may take up to 1 minute to complete. You will be redirected to a blank page on complete.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "acf-options-pg-sync"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1705544806
+}

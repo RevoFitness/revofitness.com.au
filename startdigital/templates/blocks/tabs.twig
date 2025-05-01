@@ -1,0 +1,77 @@
+<section class="tabs !pt-0">
+	{% if block.background_color == 'red' %}
+		{% include "icons-animated/curved-top.twig" %}
+		<div class="bg-brandRed pb-8 md:pb-16 pt-8 md:pt-16 rounded-bottom">
+		{% endif %}
+		<div class="container relative z-10 max-lg:hidden">
+			<div {{ block.background_color == 'red' ? 'data-white-content' }} class="{{ block.background_color == 'red' ? 'bg-brandRed !shadow-none !border-white text-white' : 'bg-[#FBEEE7] border-brandBlack' }} relative revo-shadow border-2 rounded-[50px] p-16">
+
+				{% if block.coming_soon %}
+					<div class="absolute top-12 left-0 is-h3 !text-white bg-brandRed py-12 text-center lg:!w-80 xl:!w-96 rounded-r-full">Coming soon</div>
+				{% endif %}
+
+				<div class="max-w-[950px] mx-auto w-full">
+					<div class="block-content text-center items-center">
+						{{ block.content }}
+					</div>
+					<div class="flex flex-col gap-8 mt-16 w-full">
+						<div data-tabs class="tabs-container w-full">
+							<div class="tab-icons flex items-center w-full">
+								{% for index, tab in block.tabs %}
+									<div data-tab="tab-{{ index }}" class="tab-icon pb-6 cursor-pointer flex justify-center">
+										<div class="tab-icon-wrapper aspect-1/1 w-full flex items-center justify-center">
+											<img src="{{ get_image(tab.icon).src }}" class="pointer-events-none object-contain aspect-1/1 w-full p-1.5 object-center duration-300">
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+						<div class="tab-content block-content items-center">
+							{% for index, tab in block.tabs %}
+								<div class="tab hidden flex-col items-center gap-6 text-center" id="tab-{{ index }}">
+									<div class="block-content w-full max-w-[700px]">
+										{{ tab.content }}
+									</div>
+								</div>
+							{% endfor %}
+							{% if block.button %}
+								<a href="{{ block.button.url }}" class="button" target="{{ block.button.target }}">
+									{{ block.button.title }}
+								</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div {{ block.background_color == 'red' ? 'data-white-content' }} class="container max-sm:px-8 lg:hidden {{ block.background_color == 'red' ? 'text-white' }}">
+
+			<div class="block-content max-lg:items-center mb-6">
+				{{ block.content }}
+			</div>
+			<div class="tabs-slider">
+				<div class="swiper-wrapper">
+					{% for tab in block.tabs %}
+						<div class="swiper-slide border-[2px] !h-auto rounded-[50px] {{ block.background_color == 'red' ? 'border-white' : 'border-brandBlack' }}">
+							{% if block.coming_soon %}
+								<div class="supertitle !text-white bg-brandRed text-center w-[calc(100%+2px)] py-4 -translate-y-[2px] rounded-t-[50px]">Coming soon</div>
+							{% endif %}
+
+							<div class="block-content items-center rounded-xl px-8 py-12 text-center">
+								<div class="tab-icon-wrapper p-6 border-brandRed border rounded-full h-32 w-32 aspect-1/1 flex items-center justify-center">
+									<img src="{{ get_image(tab.icon).src }}" class="pointer-events-none aspect-1/1 w-full object-contain object-center duration-300">
+								</div>
+								<div class="flex flex-col gap-4">
+									{{ tab.content }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+				<div class="swiper-scrollbar tabs-scrollbar !relative !-bottom-2 mt-6"></div>
+			</div>
+		</div>
+		{% if block.background_color == 'red' %}
+		</div>
+	{% endif %}
+</section>

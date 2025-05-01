@@ -1,0 +1,26 @@
+<a href="{{ item.link }}" class="tease tease-post flex flex-col gap-2">
+	{% if item.thumbnail %}
+		<div class="post-thumbnail aspect-16/9 overflow-hidden rounded-3xl">
+			{% include 'partial/image.twig' with {
+				image: get_image(item.thumbnail).src,
+				alt: item.thumbnail.alt,
+				class: 'h-full w-full object-center object-cover rounded-3xl'
+			} %}
+		</div>
+	{% else %}
+		<div class="post-thumbnail aspect-16/9 overflow-hidden rounded-3xl bg-lightPink">
+			{% include 'partial/image.twig' with {
+				image: "/wp-content/uploads/2024/07/revofitness-social-banner-2024.jpg",
+				class: 'h-full w-full object-center object-cover rounded-3xl'
+			} %}
+		</div>
+	{% endif %}
+	<div class="post-content flex flex-col gap-2">
+		<h4 class="text-base 2xl:text-lg font-semibold line-clamp-3">
+			{{ item.title }}
+		</h4>
+		<p class="max-md:text-sm">
+			{{ item.post_date|date('M d Y') }}
+		</p>
+	</div>
+</a>

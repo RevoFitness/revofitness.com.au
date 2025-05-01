@@ -1,0 +1,19 @@
+{% extends 'page.twig' %}
+
+{% block content %}
+	<section class="news_posts">
+		<div class="container flex flex-col gap-8">
+			{% if posts|length %}
+				<div data-animate-stagger class="news-page-tiles grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-6 sm:gap-y-12">
+					{% for item in posts %}
+						{% include 'tease-post.twig' %}
+					{% endfor %}
+				</div>
+			{% else %}
+				<p class="text-center">No posts found.</p>
+			{% endif %}
+
+			{% include "partial/pagination.twig" %}
+		</div>
+	</section>
+{% endblock %}

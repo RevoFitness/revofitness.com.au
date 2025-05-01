@@ -1,0 +1,18 @@
+<a href="{{ item.link }}" class="tease-workout tease relative overflow-hidden aspect-16/9 sm:aspect-4/3 rounded-3xl md:rounded-[40px] flex items-end">
+	{% if item.thumbnail %}
+		<div class="post-thumbnail overflow-hidden">
+			{% include 'partial/image.twig' with {
+				image: get_image(item.thumbnail).src,
+				alt: item.thumbnail.alt,
+				class: 'absolute top-0 left-0 w-full h-full object-center object-cover'
+			} %}
+		</div>
+	{% endif %}
+	<div class="gradient duration-[0.35s] bg-gradient-to-t from-[rgba(0,0,0,0.5)] to-transparent absolute bottom-0 left-0 w-full h-full"></div>
+	<div class="relative flex items-end justify-between p-6 w-full">
+		<h4 class="text-white font-bold w-3/5">
+			{{ item.title }}
+		</h4>
+		{% include "icons/arrow-white-outline.twig" %}
+	</div>
+</a>

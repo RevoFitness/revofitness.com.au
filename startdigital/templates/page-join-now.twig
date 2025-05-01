@@ -1,0 +1,86 @@
+{% extends "base.twig" %}
+{% set errors = session.get('errors') %}
+{% set old = session.get('old') %}
+
+{% block content %}
+	{% if presaleGyms %}
+		<div class="bg-pureWhite">
+			<div data-presale-slider class="container pt-12 pb-6 md:pt-24 md:pb-12">
+				<div class="flex justify-between items-end mb-6 md:mb-8">
+					<h2>Presales</h2>
+					<div class="max-md:hidden flex items-center gap-10">
+						<div class="swiper-button-prev !relative"></div>
+						<div class="swiper-button-next !relative"></div>
+					</div>
+				</div>
+				<div class="swiper-wrapper">
+					{% for item in presaleGyms %}
+						{% set club = revo.api.getClubWhereName(item.title) %}
+
+						<a href="{{ item.link }}" class="swiper-slide">
+							<div class="is-button group !w-full after:hidden bg-brandRed pl-8 pr-4 py-4 rounded-full text-xl lg:text-2xl font-bold !flex flex-wrap justify-between items-center">
+								<div class="flex flex-col gap-1 md:gap-2 text-white">
+									{{ item.title }}
+								</div>
+
+								{% include "icons/arrow-right-white-bg.twig" with { class: "duration-300 ease-in-out w-16 md:w-20 flex-shrink-0 group-hover:-rotate-45" } %}
+							</div>
+						</a>
+					{% endfor %}
+				</div>
+				<div class="swiper-scrollbar !relative mt-6 md:mt-12"></div>
+			</div>
+		</div>
+	{% endif %}
+
+	<div class="bg-pureWhite">
+		<div class="bg-lightPink rounded-top pb-60 -mb-60">
+			{% set gym_select %}
+			<div class="!border-t-0">
+				<h3 class="text-brandBlack mb-4 lg:mb-8">Choose your Gym</h3>
+				<div class="grid sm:grid-cols-2 gap-4 mb-6">
+
+					{% set stateName = {
+					'All': 'All',
+					'New South Wales': 'NSW',
+					'Victoria': 'VIC',
+					'Queensland': 'QLD',
+					'South Australia': 'SA',
+					'Western Australia': 'WA',
+					'Tasmania': 'TAS',
+					'Northern Territory': 'NT',
+				} %}
+					{% set userState = stateName[revo.mapHandler.getUserLocation.state] %}
+
+					<div class="input-wrapper">
+						<label for="stateSelect">State</label>
+						<select class="cursor-pointer" name="stateSelect" id="stateSelect">
+							<option disabled>Select a state</option>
+							<option value='All' {{ selectedGym ? 'selected'}}>All</option>
+							{% for key, item in revo.gymManager.getGymsByState %}
+								<option value="{{ key }}" {{ old.state == key ? 'selected' : key == userState ? 'selected' }}>{{ key }}</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<div class="input-wrapper">
+						<label for="gymSelect">Gym</label>
+						<select class="cursor-pointer" name="gymSelect" id="gymSelect">
+							<option disabled value="select-a-gym" {{ gymSelect == null ? 'selected' }}>Select a gym</option>
+							{% for key, state in revo.gymManager.getGymsByState %}
+								<option disabled class="{{ key == 'All' or key != userState ? 'hidden' : '' }}">{{ key }}</option>
+								{% for gym in state %}
+									{% include "partial/sign-up-form/gym-option.twig" %}
+								{% endfor %}
+							{% endfor %}
+						</select>
+						<input type="hidden" name="state" id="state"/>
+					</div>
+				</div>
+			</div>
+			{% endset %}
+
+			{% include "partial/sign-up-form.twig" %}
+		</div>
+	</div>
+{% endblock %}

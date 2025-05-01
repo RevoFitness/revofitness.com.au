@@ -1,0 +1,26 @@
+<section class="single_gym_trainers bg-pureWhite flex flex-col gap-6">
+	<div class="container">
+		<div class="flex justify-between items-end mb-4">
+			<div class="block-content">
+				<span class="supertitle">Ready to workout?</span>
+				<h2>Find a trainer</h2>
+			</div>
+			<div class="max-lg:hidden flex items-center gap-10">
+				<div class="swiper-button-prev !relative"></div>
+				<div class="swiper-button-next !relative"></div>
+			</div>
+		</div>
+		<div class="trainers-slider">
+			<div data-animate-left class="swiper-wrapper">
+				{% for item in revo.trainerManager.getTrainersWhereGym(post) %}
+					{% if item %}
+						{% include "tease-trainer.twig" %}
+					{% endif %}
+				{% else %}
+					<p class="is-h3 text-brandBlack !text-lg">No trainers for this gym.</p>
+				{% endfor %}
+			</div>
+			<div class="swiper-scrollbar !relative mt-6 md:mt-12"></div>
+		</div>
+	</div>
+</section>

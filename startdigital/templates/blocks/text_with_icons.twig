@@ -1,0 +1,19 @@
+<div class="bg-pureWhite">
+	<section class="text_with_icons bg-brandRed rounded-top rounded-bottom">
+		<div class="container !text-white flex flex-col gap-12 md:gap-20">
+			{% for item in block.text_with_icons_rows %}
+				<div class="flex max-md:flex-col gap-8 md:gap-16 items-start">
+					{% if item.icon %}
+						<div class="aspect-1/1 flex-shrink-0">
+							<img src="{{ get_image(item.icon).src }}" alt="{{ item.icon.alt }}" class="aspect-1/1 h-[75px] md:h-[100px] m-auto object-contain object-center pointer-events-none"/>
+						</div>
+					{% endif %}
+
+					<div class="block-content">
+						{{ item.content }}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</section>
+</div>

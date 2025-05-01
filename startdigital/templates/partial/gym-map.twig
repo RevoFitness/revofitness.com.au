@@ -1,0 +1,64 @@
+<div id="gym-map" class="relative max-w-full lg:container section {{ post.ID == 2 ? '!pt-0' }}">
+	<div class="max-lg:pb-8 max-lg:pt-6 flex max-md:gap-6 max-lg:flex-col rounded-[35px] border-2 border-black lg:max-h-[850px] mx-auto lg:overflow-hidden w-full h-full lg:aspect-video bg-brandRed">
+		<div data-controls class="flex flex-col w-full h-full overflow-scroll transition-all duration-300 md:pb-6 md:max-lg:container">
+			<div class="sticky bg-brandRed top-0 z-10 flex flex-col md:gap-3 max-md:px-6 lg:px-6 md:py-6">
+				<div data-state-buttons class="flex gap-4 max-lg:flex-wrap xl:items-center">
+					<span class="text-white order-first !text-sm font-bold max-sm:pl-3.5">Select Your State:</span>
+					{% set stateName = {
+						All: 'All',
+						'New South Wales': 'NSW',
+						Victoria: 'VIC',
+						Queensland: 'QLD',
+						'South Australia': 'SA',
+						'Western Australia': 'WA',
+						Tasmania: 'TAS',
+						'Northern Territory': 'NT'
+					} %}
+					{% set userState = stateName[revo.mapHandler.getUserLocation.state] %}
+					<button data-state="All" class="{{ userState == 'All' ? 'isActive' : '' }} order-first border-b-2 border-transparent text-sm font-bold text-white opacity-70">
+						All
+					</button>
+					{% for key, item in revo.gymManager.getGymsByState|sort %}
+						<button data-state="{{ key }}" class="{{ key == userState ? 'isActive order-1' : 'order-2' }} border-b-2 border-transparent text-sm font-bold text-white opacity-70">
+							{{ key }}
+						</button>
+					{% endfor %}
+				</div>
+				<div class="flex items-center gap-4 text-xs uppercase max-lg:hidden">
+					<span class="flex-shrink-0 text-white">Or</span>
+					<hr class="flex-grow border-t-brandBlack"/>
+				</div>
+				{# Maps Places API autocomplete #}
+				<div class="relative">
+					<input id="addressAutocomplete" type="text" placeholder="Enter your post code" class="text-xs bg-white flex-shrink-0 max-md:my-4 !px-3.5 placeholder:text-black/60 !rounded-full"/>
+					<button id="resetAddressAutocomplete" type="button" class="absolute top-1/2 right-6 -translate-y-1/2">
+						x
+					</button>
+				</div>
+			</div>
+
+			<div data-gym-cards class="relative flex gap-4 lg:flex-col lg:px-6 max-lg:snap-x max-lg:snap-mandatory max-lg:overflow-x-scroll max-lg:scroll-smooth max-lg:no-scrollbar">
+				{% include 'partial/map/gym-cards.twig' with {
+					gyms: revo.gymManager.getGymsPostType,
+					activeState: userState
+				} %}
+			</div>
+			<div class="container lg:hidden mt-4 text-center text-white font-bold flex items-center justify-center gap-3">
+				{% include "icons/arrow-right.twig" with { class: 'w-4 rotate-180' } %}
+				<span>Swipe to navigate</span>
+				{% include "icons/arrow-right.twig" with { class: 'w-4' } %}
+			</div>
+		</div>
+		<div class="max-lg:container w-full">
+			<div id="gymMap" class="w-full h-full max-lg:rounded-3xl max-lg:aspect-square"></div>
+		</div>
+
+		{# Hidden content but listed so that we can get the data with JS #}
+		{# These are the infoWindows #}
+		<div class="hidden">
+			{% for item in revo.gymManager.getGymsPostType %}
+				{% include 'partial/map/info-window.twig' %}
+			{% endfor %}
+		</div>
+	</div>
+</div>

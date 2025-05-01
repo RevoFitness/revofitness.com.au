@@ -1,0 +1,90 @@
+<div class="bg-lightPink footer-bg">
+	<footer class="bg-brandRed text-white max-sm pt-12 md:pt-16 rounded-t-[40px] md:rounded-t-[125px] relative z-10 max-sm:pb-6">
+		<div class="container pb-8">
+			<div class="flex items-start gap-10 sm:gap-20 justify-between max-sm:flex-col w-full">
+				<div class="flex flex-col gap-4 md:gap-8 w-full">
+					<span class="is-h2">Get to know us</span>
+					<div class="flex items-center gap-4">
+						{% if options.social_media.tiktok %}
+							<a href="{{ options.social_media.tiktok }}" target="_blank">
+								{% include 'icons/tiktok-round.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+							</a>
+						{% endif %}
+						{% if options.social_media.instagram %}
+							<a href="{{ options.social_media.instagram }}" target="_blank">
+								{% include 'icons/instagram-round.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+							</a>
+						{% endif %}
+						{% if options.social_media.facebook %}
+							<a href="{{ options.social_media.facebook }}" target="_blank">
+								{% include 'icons/facebook-round.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+							</a>
+						{% endif %}
+						{% if options.social_media.twitter %}
+							<a href="{{ options.social_media.twitter }}" target="_blank">
+								{% include 'icons/twitter-round.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+							</a>
+						{% endif %}
+						{% if options.social_media.linkedin %}
+							<a href="{{ options.social_media.linkedin }}" target="_blank">
+								{% include 'icons/linkedin-round.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+							</a>
+						{% endif %}
+						{% if options.social_media.youtube %}
+							<a href="{{ options.social_media.youtube }}" target="_blank">
+								{% include 'icons/youtube-round.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+							</a>
+						{% endif %}
+					</div>
+					<span class="text-sm">
+						Revo Fitness acknowledges the Aboriginal and Torres Strait Islander Traditional Custodians of the land on which we work and live across Australia. We pay our respect to Elders past and present.
+					</span>
+				</div>
+				<div class="flex items-start sm:justify-end gap-14 md:gap-20 w-full">
+					<div class="flex flex-col gap-3">
+						<span class="font-bold">Discover</span>
+						<div class="flex flex-col gap-1">
+							{% for item in footer1.get_items %}
+								<a href="{{ item.url }}" target="{{ item.target }}" class="text-sm {{ item.classes|join(' ') }}">{{ item.title }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="flex flex-col gap-3">
+						<span class="font-bold">Company</span>
+						<div class="flex flex-col gap-1">
+							{% for item in footer2.get_items %}
+								<a href="{{ item.url }}" target="{{ item.target }}" class="text-sm {{ item.classes|join(' ') }}">{{ item.title }}</a>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container text-xs">
+			<div class="py-4 border-t border-t-white flex gap-4 sm:items-center justify-start">
+				<span class="sm:border-r-white sm:border-r-[1px] sm:pr-4 border-opacity-30">
+					&copy;
+					{{ 'now'|date('Y') }}
+					Revo Fitness
+				</span>
+				<div class="flex items-center gap-6">
+					{% for item in footerBottom.get_items %}
+						<a target="{{ item.target }}" href="{{ item.url }}">{{ item.title }}</a>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</footer>
+</div>

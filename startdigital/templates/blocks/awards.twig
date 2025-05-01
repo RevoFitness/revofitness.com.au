@@ -1,0 +1,65 @@
+<section class="relative bg-pureWhite">
+	<div class="bg-brandRed rounded-top rounded-bottom section">
+		<div class="container flex flex-col items-center justify-center">
+			<div class="block-content text-center text-white w-full">
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-28 mx-auto" viewbox="0 0 78.129 86.337">
+					<g data-name="Group 2043">
+						<path fill="#fff"
+							d="M50.775 37.075h-8.416l-5.145-7.683h-2.733v7.683h-7.129v-4.972l6.759-9.222h4.8c1.986 0 3.125-.9 3.125-2.472v-.069c0-1.479-.828-2.286-2.531-2.468l-1.595-.17 4.515-6.161.62.18a8.181 8.181 0 0 1 6.187 8.345v.069a8.288 8.288 0 0 1-4.675 7.844Z"
+							data-name="Path 6911" />
+						<path fill="none"
+							stroke="#fff"
+							stroke-miterlimit="10"
+							stroke-width="4"
+							d="M15.398 4.853s25.976-7.124 46.87 1.187c0 0 5.459 46.5-22.776 46.107C9.118 51.721 15.398 4.853 15.398 4.853Z"
+							data-name="Path 6912" />
+						<path fill="none"
+							stroke="#fff"
+							stroke-miterlimit="10"
+							stroke-width="4"
+							d="M62.902 8.865s16.063-4.4 12.74 11.485-18.833 22.012-18.833 22.012"
+							data-name="Path 6913" />
+						<path fill="none"
+							stroke="#fff"
+							stroke-miterlimit="10"
+							stroke-width="4"
+							d="M15.038 8.3S-.797 3.898 2.479 19.785s18.565 22.012 18.565 22.012"
+							data-name="Path 6914" />
+						<path fill="none"
+							stroke="#fff"
+							stroke-miterlimit="10"
+							stroke-width="4"
+							d="M17.439 67.397h44.106a2.417 2.417 0 0 1 2.417 2.417V81.92a2.418 2.418 0 0 1-2.418 2.418H17.439a2.418 2.418 0 0 1-2.418-2.418V69.815a2.418 2.418 0 0 1 2.418-2.418Z"
+							data-name="Rectangle 2151" />
+						<path fill="none"
+							stroke="#fff"
+							stroke-miterlimit="10"
+							stroke-width="4"
+							d="M31.209 50.643s.067 7.019-6.084 16.78"
+							data-name="Path 6915" />
+						<path fill="none"
+							stroke="#fff"
+							stroke-miterlimit="10"
+							stroke-width="4"
+							d="M47.902 50.643s-.067 7.019 6.084 16.78"
+							data-name="Path 6916" />
+					</g>
+				</svg>
+				<span class="is-h2">Trophy Cabinet</span>
+
+				<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 w-full">
+					{% for item in block.award %}
+						<div class="p-4 lg:p-6 bg-white rounded-3xl w-full text-brandRed flex flex-col gap-2 md:gap-4">
+							<span class="text-sm md:text-xl bg-brandRed w-fit rounded-full text-white font-bold px-4 py-2">
+								{{ item.year }}
+							</span>
+							<h4 class="text-lg text-left md:text-2xl text-brandRed font-bold">
+								{{ item.content }}
+							</h4>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

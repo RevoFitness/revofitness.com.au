@@ -1,0 +1,17 @@
+<a href="{{ item.link }}" class="swiper-slide">
+	<div class="group duration-300 bg-lightPink hover:bg-brandCream cursor-pointer overflow-hidden relative aspect-1/1 rounded-3xl px-6 pt-6">
+		<p class="capitalize is-h3 font-bold text-brandBlack h-full w-2/3">
+			{{ item.title }}
+		</p>
+		{% if item.tile_image %}
+			{% include 'partial/image.twig' with {
+				image: get_image(item.tile_image).src,
+				alt: item.tile_image.alt,
+				class: 'absolute bottom-0 right-0 w-full h-full z-10 object-bottom object-cover pointer-events-none'
+			} %}
+		{% endif %}
+		<span class="max-lg:hidden w-full absolute ease-in-out bottom-0 translate-y-full left-1/2 -translate-x-1/2 text-center z-10 !shadow-none py-2 font-semibold bg-brandBlack text-white duration-300 group-hover:translate-y-0">
+			Meet me
+		</span>
+	</div>
+</a>

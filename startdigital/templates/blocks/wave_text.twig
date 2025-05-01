@@ -1,0 +1,30 @@
+<div class="wave-text relative max-lg:hidden z-10 bg-pureWhite">
+	<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 1572.59 417.11" width="110%" height="100%" class="svgwave rotate-180 -translate-x-[5%]">
+		<path id="wavepath" fill="none" stroke="#F392BD" stroke-width="200" d="M1623.12 236.99c-285.51 132.01-554.05 91.18-914.87-66.07-360.82-157.24-752.5 0-752.5 0"/>
+		<text text-anchor="middle" class="-translate-y-5">
+			<textPath href="#wavepath" startoffset="0">
+				<animate attributename="startOffset" from="50%" to="-500%" begin="0s" dur="60s" repeatcount="indefinite"></animate>
+				{% for i in 0..20 %}
+					<tspan class="fill-brandRed !text-7xl 2xl:!text-5xl font-bold">
+						{{ block.wave_text ?? "We're the gym your gym told you not to worry about" }}
+						&bull;
+					</tspan>
+				{% endfor %}
+			</textPath>
+		</text>
+	</svg>
+	<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 1572.59 417.11" width="110%" height="100%" class="svgwave -translate-x-[5%] absolute top-0 md:-top-10 lg:top-0 !-rotate-[195deg] left-0 -z-[5\]">
+		<path id="wavepath" fill="none" stroke="#DD2B32" stroke-width="200" d="M1623.12 236.99c-285.51 132.01-554.05 91.18-914.87-66.07-360.82-157.24-752.5 0-752.5 0"/>
+		<text text-anchor="middle" class="-translate-y-5">
+			<textPath href="#wavepath" startoffset="0">
+				<animate attributename="startOffset" from="50%" to="-500%" begin="0s" dur="60s" repeatcount="indefinite"></animate>
+				{% for i in 0..20 %}
+					<tspan class="fill-white !text-7xl 2xl:!text-5xl font-bold">
+						{{ block.wave_text ?? "We're the gym your gym told you not to worry about" }}
+						&bull;
+					</tspan>
+				{% endfor %}
+			</textPath>
+		</text>
+	</svg>
+</div>

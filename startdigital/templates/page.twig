@@ -1,0 +1,17 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+	{% if page_builder %}
+		{% for block in page_builder %}
+			<div data-block="{{ block.acf_fc_layout }}">
+				{{ include('blocks/' ~ block.acf_fc_layout ~ '.twig', ignore_missing = true) }}
+			</div>
+		{% endfor %}
+	{% else %}
+		<div class="container py-16 md:py-32">
+			<h3 class="opacity-20">
+				Stay tuned for more content...
+			</h3>
+		</div>
+	{% endif %}
+{% endblock %}

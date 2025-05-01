@@ -1,0 +1,14 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+	<section class="relative mt-8 lg:mt-36">
+		<div class="container">
+			<div class="flex items-center justify-center block-content text-center max-w-3xl mx-auto">
+				{{ post.meta('heading') ?? '' }}
+				<img src="{{ 'data:image/png;base64,' ~ qr_code }}" alt="API Image" class="flex my-10 sm:my-16 w-[150px] sm:w-[250px] h-auto mx-auto"/>
+				{{ post.meta('content') ?? '' }}
+			</div>
+		</div>
+	</section>
+	{% include "blocks/download_app.twig" %}
+{% endblock %}

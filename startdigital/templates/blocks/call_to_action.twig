@@ -1,0 +1,20 @@
+<section class="call_to_action">
+	<div class="container relative">
+		{% include 'partial/image.twig' with {
+			image: get_image(block.image).src,
+			alt: block.image.alt,
+			class: 'max-md:aspect-1/1 md:h-[500px] w-full object-cover pointer-events-none rounded-[50px]'
+		} %}
+		<a href="{{ block.button.url }}" target="{{ block.button.target }}" class="call-to-action-button">
+			<div class="flex items-center gap-10">
+				<div class="block-content !gap-2 md:py-6">
+					{{ block.content }}
+				</div>
+				<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 172 172" class="duration-200 w-16 h-16 md:w-32 md:h-32">
+					<circle id="Ellipse_301" data-name="Ellipse 301" cx="86" cy="86" r="86" fill="#fff"/>
+					<path id="Path_6370" data-name="Path 6370" d="M0,35.482H76.131m0,0L41.872,0M76.131,35.482,41.872,70.963" transform="translate(45.15 50.344)" fill="none" stroke="#cb333b" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"/>
+				</svg>
+			</div>
+		</a>
+	</div>
+</section>

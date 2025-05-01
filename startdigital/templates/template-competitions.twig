@@ -1,0 +1,40 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+{% endblock %}
+
+{% block content %}
+	<section class="bg-lightPink py-24 xl:py-48">
+		<div class="container max-w-4xl space-y-12">
+			<img src="{{ get_image(post.meta('top_content').image).src }}" alt="{{ post.meta('top_content').image.alt }}" />
+			{{ post.meta('top_content').primary_content }}
+			<div data-win-a-jimny-form class="bg-brandCream px-4 py-6 md:px-6 md:py-12 rounded-2xl revo-shadow space-y-6">
+				{{ post.meta('top_content').in_form_content }}
+				{{ fn('do_shortcode', '[gravityform id="4" title="false" description="false"]') }}
+			</div>
+
+			<div data-accordion-container class="divide-y divide-black/30 space-y-4">
+				<div class="mb-8">
+					{{ post.meta('faq_content') }}
+				</div>
+
+				{% for item in post.meta('faqs') %}
+					<div class="w-full accordion pt-2">
+						<span class="accordion-header">{{ item.question }}</span>
+						<div class="accordion-content">
+							{{ item.answer }}
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+
+			{% if post.meta('terms') %}
+				<a class="flex mt-8 text-sm hover:underline"
+					href="{{ post.meta('terms').url }}"
+					target="{{ post.meta('terms').target }}">
+					{{ post.meta('terms').title }}
+				</a>
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}

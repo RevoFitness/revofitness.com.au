@@ -1,0 +1,97 @@
+{% if menu %}
+	{# Desktop #}
+	<ul class="revo-shadow relative items-center hidden lg:flex bg-brandRed rounded-full">
+		{% for item in items %}
+			<li class="{{ item.classes|join(' ') }} relative flex items-center gap-1 group">
+				<a target="{{ item.target }}" href="{{ item.link }}" class="text-white hover:bg-brandRedDark text-base duration-100 ease-in-out font-extrabold py-4 px-6 flex items-center gap-2">
+					{{ item.title }}
+					{% if item.children %}
+						{% include "icons/chevron.twig" with { class: "!text-white" } %}
+					{% endif %}
+				</a>
+				{% if item.children %}
+					{% include "partial/sub-menu.twig" with {
+						items: item.children
+					} %}
+				{% endif %}
+
+			</li>
+		{% endfor %}
+	</ul>
+	{# Mobile #}
+	<button data-toggle-menu class="lg:hidden bg-white px-5 py-3 !rounded-bl-none rounded-br-[40px]">{% include "icons/hamburger.twig" %}</button>
+	<ul data-menu class="overflow-scroll gap-5 bg-white flex flex-col p-8 z-30 fixed top-0 right-0 w-full h-screen transform transition duration-300 ease lg:hidden">
+		<div class="flex items-center justify-between">
+			{% include "icons/revo-icon.twig" with { class: "w-10" } %}
+			<button data-toggle-menu class="lg:hidden ml-auto bg-brandRed rounded-full pl-4 pr-3 py-1.5 flex items-center gap-2">
+				<span class="text-white max-md:text-sm">Close</span>
+				{% include "icons/cross.twig" with { stroke: '#FFFFFF', class: "!w-4 !h-4" } %}
+			</button>
+		</div>
+		<div class="mt-5 flex-grow flex flex-col">
+			{% for item in mobileMenu.get_items %}
+				<div data-mobile-menu-item>
+					<div class="flex items-center justify-between">
+						<a href="{{ item.url }}" class="text-xl md:text-2xl py-3 pr-5 font-extrabold">{{ item }}</a>
+						{% if item.children %}
+							<button data-toggle-mobile-sub-menu class="lg:hidden ml-auto bg-brandBlack rounded-full pl-4 pr-3 py-1.5 flex items-center gap-2">
+								<span class="text-white max-md:text-sm">View</span>
+								{% include "icons/chevron.twig" with { class: "!w-4 !h-4 text-white duration-200" } %}
+							</button>
+						{% endif %}
+					</div>
+					<!-- Expandable link section, show/hide based on state. -->
+					{% if item.children %}
+						<ul data-mobile-sub-menu class="hidden">
+							{% for item in item.children %}
+								<li>
+									<a href="{{ item.url }}" class="group w-full flex items-center gap-3 justify-between my-0.5 font-semibold text-brandBlack rounded-full">
+										<span>{{ item }}</span>
+										{% include "icons/arrow-right-black-bg.twig" with { class: 'w-7' } %}
+									</a>
+								</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</div>
+			{% endfor %}
+			<div class="flex items-center gap-6 mt-6">
+				{% if options.social_media.instagram %}
+					<a href="{{ options.social_media.instagram }}" target="_blank">
+						{% include 'icons/instagram-brand-fill.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+					</a>
+				{% endif %}
+				{% if options.social_media.facebook %}
+					<a href="{{ options.social_media.facebook }}" target="_blank">
+						{% include 'icons/facebook-brand-fill.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+					</a>
+				{% endif %}
+				{% if options.social_media.tiktok %}
+					<a href="{{ options.social_media.tiktok }}" target="_blank">
+						{% include 'icons/tiktok-brand-fill.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+					</a>
+				{% endif %}
+				{% if options.social_media.linkedin %}
+					<a href="{{ options.social_media.linkedin }}" target="_blank">
+						{% include 'icons/linkedin-brand-fill.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+					</a>
+				{% endif %}
+				{% if options.social_media.youtube %}
+					<a href="{{ options.social_media.youtube }}" target="_blank">
+						{% include 'icons/youtube-brand-fill.twig' with {
+								class: 'w-8 md:w-12'
+							} %}
+					</a>
+				{% endif %}
+			</div>
+		</div>
+	</ul>
+{% endif %}

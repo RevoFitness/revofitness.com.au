@@ -1,0 +1,67 @@
+{% set errors = session.get('errors') %}
+{% set old = session.get('old') %}
+
+{% if errors %}
+	<div class="pt-16">
+		{% include 'partial/errors.twig' %}
+	</div>
+{% endif %}
+
+{% set currentPage = fn('getCurrentPage') %}
+<form {{ isSpecialCircumstances ? 'data-special-circumstances' }} id="sign-up-form" name="sign-up-form" class="container relative flex flex-col gap-6 divide-y py-16" method="POST" action="{{ currentPage }}">
+	{% include 'partial/loader.twig' %}
+
+	{% if gym_select is defined %}
+		{{ gym_select }}
+	{% endif %}
+
+	<div class="hidden">
+		<input type="hidden" data-price-per-month class="customRadio !appearance-none opacity-0 bg-transparent m-0 absolute inset-0 z-10 cursor-pointer" name="membershipType" value="specialCircumstances"/>
+	</div>
+
+	{% include 'partial/sign-up-form/special-circumstances/customer-details.twig' %}
+	{% include 'partial/sign-up-form/special-circumstances/membership-summary.twig' %}
+	{% include 'partial/sign-up-form/terms-conditions.twig' %}
+
+	{# Signature #}
+	<div class="sm:w-1/2">
+		<h3 class="text-brandRed my-6">
+			Sign here:
+		</h3>
+		<canvas id="signature" class="w-full mb-2 aspect-[16/7] bg-white relative z-10 rounded-lg"></canvas>
+		<input type="text" class="invisible" id="signed" name="signed" required/>
+		<input type="text" class="invisible" id="signedPart2" name="signedPart2" required/>
+		<button data-action="clear" type="button" class="bg-brandRed px-2 py-1 text-white w-fit ml-auto flex self-end">
+			Clear
+		</button>
+	</div>
+
+	{# Hidden inputs #}
+	<input type="hidden" name="paymentMethodToken" id="paymentMethodToken"/>
+	<input type="hidden" name="accountHolderName" id="accountHolderName"/>
+	<input type="hidden" name="lastFour" id="lastFour"/>
+	<input type="hidden" name="firstSix" id="firstSix"/>
+	<input type="hidden" name="cardExpiry" id="cardExpiry"/>
+	<input type="hidden" name="cardType" id="cardType"/>
+	<input type="hidden" name="captchaToken" id="captchaToken"/>
+
+	<button type="submit" id="PostPaymentMethod" class="button mt-8 disabled:!opacity-[0.5]">
+		Get Started
+	</button>
+	<div class="text-xs pt-5">
+		This site is protected by reCAPTCHA and the Google
+		<a href="https://policies.google.com/privacy" target="_blank" class="underline">Privacy Policy</a>
+		and
+		<a href="https://policies.google.com/terms" target="_blank" class="underline">Terms of Service</a>
+		apply.
+	</div>
+</form>
+{% block scripts %}
+	<script src="https://www.google.com/recaptcha/api.js?render=6LfMs-YpAAAAAP1AxZgWTNgn8bydLu0h_T-TeETv"></script>
+
+	<script>
+		grecaptcha.ready(function () {
+grecaptcha.execute('6LfMs-YpAAAAAP1AxZgWTNgn8bydLu0h_T-TeETv', {action: 'submit'}).then((token) => document.querySelector('#captchaToken').value = token);
+});
+	</script>
+{% endblock %}

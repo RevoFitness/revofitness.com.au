@@ -1,0 +1,17 @@
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import './typography.css';
+@import './button.css';
+
+body {
+	@apply font-sans;
+}
+
+h1, .is-h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	@apply !leading-none;
+}
