@@ -20,6 +20,35 @@
 	@apply invisible;
 }
 
+[data-scroll-container] {
+  overflow: hidden;
+}
+
+
+/* global.css */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(51 49 50 / var(--tw-border-opacity, 1));
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(243 146 189 / var(--tw-bg-opacity, 1));
+  border-radius: 9999px;
+}
+
+.accordion-content p span em,
+.accordion-content p em {
+	background-color: transparent !important;
+}
+
+body.admin-bar {
+    margin-top: 0 !important;
+}
+#wpadminbar {
+    display: none !important;
+}
+
 .page-win-a-jimny-2025 .banner-inner::before {
 	@apply !bg-lightPink;
 }

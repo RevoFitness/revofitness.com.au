@@ -23,6 +23,7 @@
 		"esbuild": "^0.19.11",
 		"gsap": "^3.11.3",
 		"js-datepicker": "^5.18.2",
+		"locomotive-scroll": "^4.1.4",
 		"postcss": "^8.4.5",
 		"postcss-cli": "^10.0.0",
 		"postcss-import": "^15.0.0",

@@ -12,6 +12,7 @@ import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import Hiitfit from './hiitfit'
 
+
 document.addEventListener('DOMContentLoaded', () => {
 	gsap.registerPlugin(ScrollTrigger)
 
@@ -112,6 +113,22 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (document.querySelector('.accordion')) {
 		initAccordions()
 	}
+
+	// ANIMATE INTERNAL BANNER
+	if (document.querySelector('[data-animate-banner]')) {
+		gsap.from('[data-animate-banner]', {
+			y: 100,
+			opacity: 0,
+			duration: 1,
+			ease: 'power3.out',
+			scrollTrigger: {
+				trigger: '[data-animate-banner]',
+				start: 'top 80%',
+				toggleActions: 'play none none none'
+			}
+		})
+	}
+
 
 	// TOGGLE FILTER BUTTON
 	if (document.querySelector('.filter-button') && window.innerWidth < 768) {
