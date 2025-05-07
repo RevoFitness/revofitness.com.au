@@ -19,8 +19,7 @@
 		"timber/timber": "^2.0",
 		"guzzlehttp/guzzle": "^7.8.1",
 		"mailchimp/marketing": "^3.0.80",
-		"thestart/startle": "^1.0",
-		"league/oauth2-client": "^2.8"
+		"thestart/startle": "^1.0"
 	},
 	"config": {
 		"allow-plugins": {

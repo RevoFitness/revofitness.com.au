@@ -1,0 +1,124 @@
+<div id="customer-details" class="flex flex-col gap-4 md:gap-6 pt-8">
+	<h3 class="text-brandBlack">Your details</h3>
+	<div class="grid sm:grid-cols-2 gap-4">
+		<div class="input-wrapper">
+			<label>First Name</label>
+			<input class="{{ errors.firstName ? '!border-brandRed' }}" type="text" required placeholder="Abbey" name="firstName" id="firstName" maxlength="50" value="{{ old.firstName|replace({'\\': ''}) ?: '' }}"/>
+			{% if errors.firstName %}
+				<p class="text-sm text-brandRed">{{ errors.firstName }}</p>
+			{% endif %}
+		</div>
+		<div class="input-wrapper">
+			<label>Last Name</label>
+			<input class="{{ errors.lastName ? '!border-brandRed' }}" type="text" required placeholder="Smith" name="lastName" id="lastName" maxlength="50" value="{{ old.lastName|replace({'\\': ''}) ?: '' }}"/>
+			{% if errors.lastName %}
+				<p class="text-sm text-brandRed">{{ errors.lastName }}</p>
+			{% endif %}
+		</div>
+	</div>
+
+	<div class="grid md:grid-cols-3 gap-4">
+		<div class="input-wrapper md:col-span-2">
+			<label>Email</label>
+			<input class="{{ errors.email ? '!border-brandRed' }}" type="text" placeholder="example@email.com" required name="email" id="email" value="{{ old.email ?? '' }}"/>
+			{% if errors.email or errors.userExists %}
+				<p class="text-sm text-brandRed">{{ errors.email ?? errors.userExists }}</p>
+			{% endif %}
+		</div>
+		<div class="input-wrapper">
+			<label>Phone Number</label>
+			<input class="{{ errors.phoneNumber ? '!border-brandRed' }}" type="text" required placeholder="0412 456 789" name="phoneNumber" id="phoneNumber" value="{{ old.phoneNumber ?? '' }}"/>
+			{% if errors.phoneNumber %}
+				<p class="text-sm text-brandRed">{{ errors.phoneNumber }}</p>
+			{% endif %}
+		</div>
+	</div>
+
+	<div class="grid sm:grid-cols-2 gap-4">
+		<div class="input-wrapper">
+			<div>
+				<label>Date of Birth</label>
+				<span class="text-sm">Under
+					<span data-age>18</span>? Click
+					<a href="/support?search=underage" class="text-brandRed font-bold" target="_blank">Here</a>
+				</span>
+			</div>
+			<input type="text" name="dateOfBirth" required id="dateOfBirth" placeholder="DD/MM/YYYY" readonly="readonly" value="{{ old.dateOfBirth }}"/>
+		</div>
+		<div class="input-wrapper">
+			<label>Gender</label>
+			<select name="gender" id="gender" required>
+				<option disabled {{ old.gender ?? 'selected' }}>Choose Gender</option>
+				<option {{ old.gender == 'Male' ? 'selected' }} value="Male">Male</option>
+				<option {{ old.gender == 'Female' ? 'selected' }} value="Female">Female</option>
+				<option {{ old.gender == 'Other' ? 'selected' }} value="Other">Other</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="input-wrapper">
+		<label>Address</label>
+		<input class="{{ errors.address ? '!border-brandRed' }}" type="text" maxlength="100" placeholder="123 Revo Fitness Lane" name="address" id="address" required value="{{ old.address|replace({'\\': ''}) ?: '' }}"/>
+		{% if errors.address %}
+			<p class="text-sm text-brandRed">{{ errors.address }}</p>
+		{% endif %}
+	</div>
+
+	<div class="grid md:grid-cols-3 gap-4">
+		<div class="input-wrapper">
+			<label>Suburb</label>
+			<input class="{{ errors.suburb ? '!border-brandRed' }}" type="text" name="suburb" id="suburb" required placeholder="Perth" value="{{ old.suburb|replace({'\\': ''}) ?: '' }}"/>
+			{% if errors.suburb %}
+				<p class="text-sm text-brandRed">{{ errors.suburb }}</p>
+			{% endif %}
+		</div>
+		<div class="input-wrapper">
+			<label>State</label>
+			<select name="billing-state" id="billing-state">
+				<option disabled>Select a state</option>
+				{% for item in ['WA', 'SA', 'ACT', 'VIC', 'NT', 'NSW', 'TAS', 'QLD'] %}
+					<option value="{{ item }}" {{ loop.first ? 'selected' }}>{{ item }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="input-wrapper">
+			<label>Post Code</label>
+			<input class="{{ errors.postCode ? '!border-brandRed' }}" type="text" placeholder="6000" name="postCode" id="postCode" required value="{{ old.postCode ?? '' }}"/>
+			{% if errors.postCode %}
+				<p class="text-sm text-brandRed">{{ errors.postCode }}</p>
+			{% endif %}
+		</div>
+	</div>
+	<div class="grid md:grid-cols-2 gap-4">
+		<div class="input-wrapper">
+			<label>Membership Start Date</label>
+			{% if isPresale %}
+				<select data-start-date name="startDate" id="startDate">
+					{% for item in revo.utils.getPossiblePresaleStartDates(post.id) %}
+						<option value="{{ item }}">{{ item }}</option>
+					{% endfor %}
+				</select>
+			{% else %}
+				<select data-start-date name="startDate" id="startDate">
+					{% for item in revo.utils.getPossibleStartDates %}
+						<option value="{{ item }}">{{ item }}</option>
+					{% endfor %}
+				</select>
+			{% endif %}
+		</div>
+
+		<div class="input-wrapper">
+			<div>
+				<label>Promo Code
+				</label>
+				<span class="text-sm">Case Sensitive</span>
+			</div>
+
+			<div class="flex items-center relative pb-6">
+				<input data-level-two-campaign="{{ levelTwoCampaign.is_active ? "true" : "false" }}" data-level-two-campaign-start="{{ levelTwoCampaign ? levelTwoCampaign.start_date : '' }}" data-level-two-campaign-end="{{ levelTwoCampaign ? levelTwoCampaign.end_date : '' }}" type="text" name="discountCode" id="discountCode" value="{{ old.discountCode ?? '' }}"/>
+			</div>
+
+			<input type="hidden" name="discountCodeType" value=""/>
+		</div>
+	</div>
+</div>

@@ -3,5 +3,7 @@ uploads
 twentytwentytwo
 twentytwentythree
 twentytwentyfour
+*.Zone.Identifier
+
 tmp
 .vscode

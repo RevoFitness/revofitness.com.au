@@ -1,0 +1,49 @@
+.accordion-header:not(.presale-accordion-header) {
+	@apply cursor-pointer pr-2 bg-transparent font-bold text-lg py-3 flex gap-4 items-center justify-between duration-300 hover:text-brandRed;
+}
+
+.accordion-header:not(.presale-accordion-header) svg {
+	@apply duration-300 w-6;
+}
+
+.accordion-header:not(.presale-accordion-header).active {
+	@apply text-brandRed;
+}
+
+.accordion-header:not(.presale-accordion-header).active svg {
+	@apply rotate-45;
+}
+
+.accordion-content {
+	transition: max-height 0.4s ease;
+	@apply overflow-hidden max-h-0 bg-lightPink rounded-2xl;
+}
+
+.accordion-content > .accordion-inner {
+	@apply p-6;
+}
+
+.presale-accordion-header {
+
+	svg {
+		@apply duration-150;
+	}
+
+	&.active {
+		svg {
+			@apply rotate-90;
+		}
+	}
+}
+
+.presale-accordion {
+	#sign-up-form {
+		@apply pt-0 pb-6;
+	}
+}
+
+.page-template-template-competitons {
+	.accordion-content {
+		@apply !rounded-none;
+	}
+}

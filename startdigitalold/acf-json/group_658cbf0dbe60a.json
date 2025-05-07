@@ -1,0 +1,45 @@
+{
+    "key": "group_658cbf0dbe60a",
+    "title": "Blocked Emails",
+    "fields": [
+        {
+            "key": "field_658cbf0dbdf3f",
+            "label": "Blocked Emails",
+            "name": "blocked_emails",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "List of emails that are blocked. One email per line",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "rows": 100,
+            "placeholder": "",
+            "new_lines": "br"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "acf-options-blocked-emails"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1703724951
+}

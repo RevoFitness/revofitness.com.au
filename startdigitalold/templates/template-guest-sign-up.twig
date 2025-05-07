@@ -1,0 +1,90 @@
+{% extends "base.twig" %}
+
+{% block content %}
+	{% set errors = session.get('errors') %}
+	{% set old = session.get('old') %}
+
+
+	<div class="mt-32 bg-lightPink rounded-top">
+		{% if errors %}
+			<div class="pt-16">{% include "partial/errors.twig" %}</div>
+		{% endif %}
+
+		{% include "partial/loader.twig" %}
+
+		<form data-guest-sign-up id="sign-up-form" name="sign-up-form" class="container flex flex-col gap-6 py-32 divide-y" method="POST">
+			<div class="!border-t-0">
+				<h3 class="text-brandBlack mb-4 lg:mb-8">Choose your Gym</h3>
+				<div class="grid sm:grid-cols-2 gap-4 mb-6">
+
+					{% set stateName = {
+					'All': 'All',
+					'New South Wales': 'NSW',
+					'Victoria': 'VIC',
+					'Queensland': 'QLD',
+					'South Australia': 'SA',
+					'Western Australia': 'WA',
+					'Tasmania': 'TAS',
+					'Northern Territory': 'NT',
+				} %}
+					{% set userState = stateName[revo.mapHandler.getUserLocation.state] %}
+
+					<div class="input-wrapper">
+						<label for="stateSelect">State</label>
+						<select class="cursor-pointer" name="stateSelect" id="stateSelect">
+							<option disabled>Select a state</option>
+							<option value='All'>All</option>
+							{% for key, item in revo.gymManager.getGymsByState %}
+								<option value="{{ key }}" {{ old.state == key ? 'selected' : key == userState ? 'selected' }}>{{ key }}</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<div class="input-wrapper">
+						<label for="gymSelect">Gym</label>
+						<select class="cursor-pointer" name="gymSelect" id="gymSelect">
+							<option disabled value="select-a-gym" {{ gymSelect == null ? 'selected' }}>Select a gym</option>
+							{% for key, state in revo.gymManager.getGymsByState %}
+								<option disabled class="{{ key == 'All' or key != userState ? 'hidden' : '' }}">{{ key }}</option>
+								{% for gym in state %}
+									{% include "partial/sign-up-form/gym-option.twig" %}
+								{% endfor %}
+							{% endfor %}
+						</select>
+						<input type="hidden" name="state" id="state"/>
+					</div>
+				</div>
+			</div>
+
+			{% if not bringAFriend %}
+				<div class="choose-membership flex flex-col gap-6">
+					<div class="flex items-center justify-between flex-wrap gap-3 mt-6 !border-t-0">
+						<h3 class="text-brandBlack">
+							Choose your membership
+						</h3>
+					</div>
+					{% include 'partial/sign-up-form/guest/membership-select.twig' %}
+				</div>
+			{% endif %}
+
+			{% include "partial/sign-up-form/guest/customer-details.twig" %}
+			{# {% include "partial/sign-up-form/emergency-contact-details.twig" %} #}
+			{% include "partial/sign-up-form/guest/terms-conditions.twig" %}
+
+			{# Flag as a guest pass #}
+			<input type="hidden" name="isGuest" value="true"/>
+			<input type="hidden" name="captchaToken" id="captchaToken"/>
+
+			<button id="PostPaymentMethod" class="button mt-8 disabled:!opacity-[0.5]">Get Started</button>
+		</form>
+	</div>
+
+	{% block scripts %}
+		<script src="https://www.google.com/recaptcha/api.js?render=6LeSDQ4nAAAAAAAH-BCeRiBmvb_hyRRWkvcjx2K6"></script>
+		<script>
+			grecaptcha.ready(function () {
+grecaptcha.execute('6LeSDQ4nAAAAAAAH-BCeRiBmvb_hyRRWkvcjx2K6', {action: 'submit'}).then((token) => document.querySelector('#captchaToken').value = token);
+});
+		</script>
+	{% endblock %}
+{% endblock %}

@@ -150,9 +150,47 @@ class StartDigital extends \Timber\Site
             'supports' => array('title', 'thumbnail', 'page-builder'),
             'menu_icon' => 'dashicons-admin-home',
         ));
+         register_post_type('email_notifications', array(
+            'labels' => array(
+                'name' => 'Email Notifications',
+                'singular_name' => 'Email Notification',
+                'add_new' => 'Add New',
+                'add_new_item' => 'Add New Notification',
+                'edit_item' => 'Edit Notification',
+                'new_item' => 'New Notification',
+                'view_item' => 'View Notification',
+                'search_items' => 'Search Notifications',
+                'not_found' => 'No Email Notifications found',
+                'not_found_in_trash' => 'No Email Notifications found in Trash',
+            ),
+            'public' => true,
+            'has_archive' => false,
+            'supports' => array('title', 'editor'),
+            'menu_icon' => 'dashicons-email-alt',
+        ));
     }
     /** This is where you can register custom taxonomies. */
-    public function register_taxonomies() {}
+    public function register_taxonomies() {
+
+        // Register the Gym taxonomy
+        register_taxonomy('gym', 'email_notifications', array(
+            'labels' => array(
+                'name' => 'Gyms',
+                'singular_name' => 'Gym',
+                'search_items' => 'Search Gyms',
+                'all_items' => 'All Gyms',
+                'edit_item' => 'Edit Gym',
+                'update_item' => 'Update Gym',
+                'add_new_item' => 'Add New Gym',
+                'new_item_name' => 'New Gym Name',
+            ),
+            'hierarchical' => true, // Set to true for a category-like structure
+            'show_admin_column' => true, // Show in the admin post list
+            'show_ui' => true, // Show in the WordPress admin
+            'show_in_rest' => true, // Enable for the block editor
+        ));
+    
+    }
 
     /** This is where you can register custom CSS & JS files. */
     public function register_assets()
@@ -163,6 +201,8 @@ class StartDigital extends \Timber\Site
         $script_version = filemtime(get_stylesheet_directory() . '/static/site.js');
         wp_enqueue_script('startdigital', get_stylesheet_directory_uri() . '/static/site.js', array(), $script_version);
     }
+
+
 
     /** This is where you add some context
      *
@@ -222,6 +262,7 @@ class StartDigital extends \Timber\Site
 
         return $context;
     }
+
 
     public function theme_supports()
     {
@@ -637,3 +678,117 @@ function regenerateVendingDiscount($postId)
     }
 }
 add_action('acf/save_post', 'regenerateVendingDiscount', 20);
+
+/* 2025 may --> */
+function add_email_preview_page() {
+    add_menu_page(
+        'Email Preview', // Page title
+        'Email Preview', // Menu title
+        'manage_options', // Capability
+        'email-preview', // Menu slug
+        'render_email_preview_page', // Callback function
+        'dashicons-email-alt', // Icon
+        28 // Position
+    );
+}
+add_action('admin_menu', 'add_email_preview_page');
+
+function render_email_preview_page() {
+    // Get all email notifications
+    $email_notifications = get_posts(array(
+        'post_type' => 'email_notifications',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+    ));
+
+    // Handle form submission
+    $selected_post_id = isset($_GET['email_id']) ? intval($_GET['email_id']) : 0;
+
+    ?>
+    <div class="wrap">
+        <h1>Email Preview</h1>
+        <form method="get" action="">
+            <input type="hidden" name="page" value="email-preview">
+            <label for="email_id">Select Email Notification:</label>
+            <select name="email_id" id="email_id">
+                <option value="">-- Select --</option>
+                <?php foreach ($email_notifications as $email): ?>
+                    <option value="<?php echo $email->ID; ?>" <?php selected($selected_post_id, $email->ID); ?>>
+                        <?php echo esc_html($email->post_title); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <button type="submit" class="button button-primary">Preview</button>
+        </form>
+
+        <?php if ($selected_post_id): ?>
+            <h2>Preview:</h2>
+            <div style="border: 1px solid #ccc; padding: 20px; background: #fff;">
+                <?php
+                // Include the email template and pass data to it
+                $template_path = get_template_directory() . '/Revo/PerfectGym/templates/email.php';
+                if (file_exists($template_path)) {
+                    // Prepare data for the template
+                    $post = get_post($selected_post_id);
+                    $membership_type = get_field('membership_type', $selected_post_id);
+                    $gym_association = get_field('gym_association', $selected_post_id);
+
+                    // Get gym names if gym_association is an array of IDs
+                    if (is_array($gym_association)) {
+                        $gym_names = array_map(function ($gym_id) {
+                            return get_term($gym_id)->name;
+                        }, $gym_association);
+                        $gym_association = implode(', ', $gym_names);
+                    }
+                    // Pass data to the template
+                    $data = array(
+                        'title' => $post->post_title,
+                        'content' => apply_filters('the_content', $post->post_content),
+                        'membership_type' => $membership_type,
+                        'gym_association' => $gym_association,
+                        'gymName' => $gym_association,
+                        'welcomeMessage' => get_field('welcome_message', $selected_post_id),
+                        'firstName' => 'John', // Example data for testing
+                        'lastName' => 'Doe', // Example data for testing
+                        'email' => 'john.doe@example.com', // Example data for testing
+                        'dateOfBirth' => '1989-01-01', // Example data for testing
+                        'paymentFrequency' => get_field('payment_frequency', $selected_post_id), // Example data for testing
+                        'cost' => get_field('cost', $selected_post_id), // Example data for testing
+                        'startDate' => '2025-05-01', // Example data for testing
+                        'isGuest' => false, // Example data for testing
+                        'directDebit' => get_field('directDebit', $selected_post_id) ? get_field('direct_debit', $selected_post_id) : "directDebit", // Example data for testing
+                        'promotion' => 1, // Example data for testing
+                        'promotionDescription' => get_field('promotion_description', $selected_post_id), // Example data for testing
+                        'displayJimnyImage' => false, // Example data for testing
+                    );
+
+                     // Replace placeholders in the welcomeMessage
+                    $placeholders = array(
+                        '{{firstName}}' => $data['firstName'],
+                        '{{lastName}}' => $data['lastName'],
+                        '{{membershipType}}' => $data['membership_type'],
+                        '{{gymName}}' => $data['gymName'],
+                        '{{email}}' => $data['email'],
+                        '{{dateOfBirth}}' => (new DateTime($data['dateOfBirth']))->format('d/m/Y'),
+                        '{{paymentFrequency}}' => $data['paymentFrequency'],
+                        '{{cost}}' => $data['cost'],
+                        '{{startDate}}' => (new DateTime($data['startDate']))->format('d/m/Y'),
+                        '{{promotionDescription}}' => $data['promotionDescription'],
+                    );
+
+                    $data['welcomeMessage'] = str_replace(array_keys($placeholders), array_values($placeholders), $data['welcomeMessage']);
+
+                    // Extract data as variables for use in the template
+                    extract($data);
+
+                    // Include the template
+                    include $template_path;
+                } else {
+                    echo '<p style="color: red;">Email template not found at: ' . esc_html($template_path) . '</p>';
+                }
+                ?>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php
+}

@@ -1,0 +1,27 @@
+{% set stateRaw = revo.mapHandler.getUserLocation.state %}
+{% set state = revo.mapHandler.convertStateName(stateRaw) %}
+
+<section class="all_trainers bg-pureWhite">
+	<div class="container flex flex-col gap-10">
+		<div id="gymFilters" class="filter-modal z-[10000] duration-300 flex items-center gap-2 md:w-[600px] bg-brandRed p-2 rounded-2xl fixed bottom-8 md:bottom-4 -left-[72px] md:left-1/2">
+			<span class="max-md:[writing-mode:vertical-rl] max-md:[text-orientation:mixed] filter-button order-last flex max-md:justify-center items-center gap-2 text-sm font-medium text-white px-1 md:px-4 max-md:cursor-pointer">{% include "icons/filter.twig" with { class: "w-4 fill-white" } %}
+				Filter</span>
+			<div class="flex max-md:flex-col w-full gap-2">
+				<select id="stateSelect" class="font-medium flex text-white text-base w-full max-md:text-center bg-brandRedDark border-transparent">
+					<option disabled>Choose your state</option>
+					<option value="all">Any</option>
+					{% for key, item in revo.gymManager.getGymsByState %}
+						<option {{ state == key ? 'selected' }} value="{{ key }}">{{ key }}</option>
+					{% endfor %}
+				</select>
+				<select id="gymSelect" class="font-medium text-white text-base w-full max-md:text-center bg-brandRedDark border-transparent">
+					<option disabled selected>Choose your gym</option>
+				</select>
+			</div>
+		</div>
+		{# GET GYMS BY STATE #}
+		<div data-sliders-container class="flex flex-col gap-10 md:gap-14 2xl:gap-20">
+			{% include "partial/trainers-loop.twig" with { gyms: revo.gymManager.getGymsWhereState(state) } %}
+		</div>
+	</div>
+</section>

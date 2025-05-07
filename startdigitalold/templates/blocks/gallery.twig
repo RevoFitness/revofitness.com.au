@@ -1,0 +1,12 @@
+<section class="bg-pureWhite">
+	<div class="container gallerySwiper md:pt-12 lg:pt-16 relative">
+		<div class="swiper-wrapper cursor-grab">
+			{% for item in block.images %}
+				{% include 'partial/image.twig' with { image: get_image(item).src, alt: item.image.alt, class: 'w-full object-cover swiper-slide rounded-3xl md:rounded-[50px] aspect-4/3 md:aspect-16/9' } %}
+			{% endfor %}
+		</div>
+
+		<div class="swiper-button-prev"></div>
+		<div class="swiper-button-next"></div>
+	</div>
+</section>

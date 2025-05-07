@@ -1,0 +1,23 @@
+{% for gym in gyms %}
+	<div data-gym="{{ gym.title }}" class="trainers-slider">
+		<div class="flex justify-between items-end mb-4">
+			<h2 class="max-md:!text-4xl text-brandRed">{{ gym.title }}</h2>
+			<div class="max-lg:hidden flex items-center gap-10">
+				<div class="swiper-button-prev !relative"></div>
+				<div class="swiper-button-next !relative"></div>
+			</div>
+		</div>
+		<div class="swiper-wrapper">
+			{% if revo.trainerManager.getTrainersWhereGym(gym) %}
+				{% for item in revo.trainerManager.getTrainersWhereGym(gym) %}
+					{% if item %}
+						{% include "tease-trainer.twig" %}
+					{% endif %}
+				{% endfor %}
+			{% else %}
+				<p class="is-h3 text-brandBlack !text-lg">No trainers for this gym.</p>
+			{% endif %}
+		</div>
+		<div class="swiper-scrollbar !relative mt-6 md:mt-12"></div>
+	</div>
+{% endfor %}

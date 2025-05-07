@@ -1,0 +1,45 @@
+<div id="emergency-details" style="display: none" class="flex flex-col gap-4 md:gap-6 pt-8">
+	<h3 class="text-brandBlack">Parent/Guardian Details</h3>
+
+	{# Emergency details #}
+	<div class="grid md:grid-cols-3 gap-4">
+		<div class="input-wrapper">
+			<label>Parent/Guardian First Name</label>
+			<input class="{{ errors.emergencyFirstName ? '!border-brandRed' }}" type="text" name="emergencyFirstName" id="emergencyFirstName" placeholder="John" value="{{ old.emergencyFirstName|replace({'\\': ''}) ?: '' }}"/>
+			{% if errors.emergencyFirstName %}
+				<p class="text-sm text-brandRed">{{ errors.emergencyFirstName }}</p>
+			{% endif %}
+		</div>
+		<div class="input-wrapper">
+			<label>Parent/Guardian Last Name</label>
+			<input class="{{ errors.emergencyLastName ? '!border-brandRed' }}" type="text" name="emergencyLastName" id="emergencyLastName" placeholder="Smith" value="{{ old.emergencyLastName|replace({'\\': ''}) ?: '' }}"/>
+			{% if errors.emergencyLastName %}
+				<p class="text-sm text-brandRed">{{ errors.emergencyLastName }}</p>
+			{% endif %}
+		</div>
+		<div class="input-wrapper">
+			<label>Phone Number</label>
+			<input class="{{ errors.emergencyEmail ? '!border-brandRed' }}" type="email" placeholder="example@email.com" name="emergencyEmail" id="emergencyEmail" value="{{ old.emergencyEmail ?: '' }}"/>
+			{% if errors.emergencyEmail %}
+				<p class="text-sm text-brandRed">{{ errors.emergencyEmail }}</p>
+			{% endif %}
+		</div>
+	</div>
+
+	<div class="grid md:grid-cols-6 gap-4">
+		<div class="input-wrapper md:col-span-4">
+			<label>Address</label>
+			<input class="{{ errors.emergencyAddress ? '!border-brandRed' }}" type="text" name="emergencyAddress" id="emergencyAddress" placeholder="123 Main St, Perth" value="{{ old.emergencyAddress ?: '' }}"/>
+			{% if errors.emergencyAddress %}
+				<p class="text-sm text-brandRed">{{ errors.emergencyAddress }}</p>
+			{% endif %}
+		</div>
+		<div class="input-wrapper md:col-span-2">
+			<label>Relationship To Minor</label>
+			<input class="{{ errors.emergencyRelationship ? '!border-brandRed' }}" type="text" name="emergencyRelationship" id="emergencyRelationship" placeholder="Parent" value="{{ old.emergencyRelationship?: '' }}"/>
+			{% if errors.emergencyRelationship %}
+				<p class="text-sm text-brandRed">{{ errors.emergencyRelationship }}</p>
+			{% endif %}
+		</div>
+	</div>
+</div>

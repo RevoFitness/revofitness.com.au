@@ -1,0 +1,7 @@
+<section class="container bg-white py-16 my-16 rounded-[60px] flex flex-col gap-12 items-center justify-center">
+	<div class="w-72">{% include "icons/hiitfit-on-demand.twig" %}</div>
+	<div class="max-w-3xl w-full mx-auto flex flex-col gap-6 items-center justify-center">
+		{{ fn('hiitfit_login_form') }}
+		<a href="{{ fn('wp_lostpassword_url', '/hiitfit-on-demand/daily-exercise') }}">Forgot your password?</a>
+	</div>
+</section>

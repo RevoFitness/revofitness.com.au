@@ -1,0 +1,41 @@
+<div id="terms-and-conditions" class="flex flex-col gap-4 md:gap-6 pt-8">
+	<span class="is-h5">Terms &amp; Conditions:</span>
+	<label class="flex items-start gap-3 cursor-pointer w-fit" for="joinConfirmation">
+		<input type="checkbox" id="termsConditions" name="termsConditions" class="checkbox" required {{ old.termsConditions ? 'checked' }}/>
+		<div class="flex flex-col gap-1">
+			<strong class="mt-[2px]">
+				By clicking this button, you agree that:
+			</strong>
+			<ul class="list-disc !ml-4">
+				<li>
+					Your guest pass is valid for one time access and use of the facilities on
+					{{ "now"|date('d/m/Y') }}.
+				</li>
+				<li>
+					You have read and understand Revo Fitness'
+					<a class="text-brandRed hover:underline" href="/terms" target="_blank">Guest Pass Terms &amp Conditions</a>
+					, including its indemnity and release of liability, and voluntarily agree with the terms.
+				</li>
+				<li>
+					You have watched and understand the
+					<button type="button" class="text-brandRed hover:underline" data-open-modal>
+						Orientation &amp; Induction Program.
+					</button>
+				</li>
+				<li>You understand that there are significant and inherent risks involved in engaging in fitness activities, including risk of injury, permanent disability and death, and your use of the Revo Fitness facilities is entirely at your own risk.</li>
+			</ul>
+		</div>
+	</label>
+</div>
+
+<div data-orientation-video-container class="fixed bg-black top-0 left-0 w-full h-full z-[99999] hidden fade-in">
+
+	<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:-translate-y-[40%] 2xl:-translate-y-1/2 aspect-video w-full md:w-1/2">
+		<video src="https://revofitness.com.au/wp-content/uploads/2023/10/orientation.mp4" controls data-orientation-video></video>
+		<div data-close-video class="absolute -top-16 right-0 p-4 flex items-center gap-2 cursor-pointer">
+			{% include "icons/cross.twig" with { stroke: "#ffffff" } %}
+			<span class="text-white">Close</span>
+		</div>
+	</div>
+
+</div>

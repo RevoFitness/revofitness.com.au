@@ -1,0 +1,39 @@
+{
+	"name": "upstatement/timber-starter-theme",
+	"description": "Starter theme to build a Timber theme",
+	"type": "wordpress-theme",
+	"minimum-stability": "stable",
+	"authors": [
+		{
+			"email": "jared@upstatement.com",
+			"name": "jarednova"
+		}
+	],
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://wpackagist.org"
+		}
+	],
+	"require": {
+		"timber/timber": "^2.0",
+		"guzzlehttp/guzzle": "^7.8.1",
+		"mailchimp/marketing": "^3.0.80",
+		"thestart/startle": "^1.0",
+		"league/oauth2-client": "^2.8",
+		"vlucas/phpdotenv": "^5.6"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
+	},
+	"autoload": {
+		"psr-4": {
+			"Revo\\": "Revo/"
+		}
+	},
+	"require-dev": {
+		"symfony/var-dumper": "^6.4.4"
+	}
+}

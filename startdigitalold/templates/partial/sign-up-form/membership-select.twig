@@ -1,0 +1,78 @@
+<div class="grid md:grid-cols-2 gap-6 md:mt-28">
+	{% for item in options.levels %}
+		<label data-price-toggle class="flex flex-col relative">
+			<input type="radio" data-price-per-month class="customRadio !appearance-none opacity-0 bg-transparent m-0 absolute inset-0 z-10 cursor-pointer" name="membershipType" value="{{ loop.first ? 'level-2' : 'level-1' }}"/>
+			<div class="flex flex-col rounded-[60px] overflow-hidden">
+				<div class="{{ not loop.first ? 'bg-brandPink text-brandBlack' : 'bg-brandRed text-white' }} is-h3 p-6 text-center flex flex-col items-center justify-center">
+					<div data-check class="border-brandBlack w-12 h-12 rounded-full border-2 mb-4">
+						<div class="w-full h-full bg-white rounded-full border-2 border-brandRed flex items-center justify-center">
+							{% include 'icons/tick.twig' %}
+						</div>
+					</div>
+					{{ item.title }}
+				</div>
+				<div class="bg-pureWhite py-4 px-6 flex flex-col h-full">
+					<div class="flex items-center gap-2 pt-2 pb-6">
+						<div class="w-3/4 mx-auto flex justify-center gap-2">
+							{% if isFiveWeekMembership %}
+								<div class="text-brandBlack text-6xl lg:text-8xl font-extrabold">
+									{{ loop.first ? '$85' : '$60' }}
+								</div>
+							{% else %}
+								<div class="text-brandBlack text-6xl lg:text-8xl font-extrabold">
+									{{ item.price_title }}
+								</div>
+							{% endif %}
+							<div class="flex flex-col mt-4">
+								<span class="text-sm sm:text-lg lg:text-2xl leading-[1] font-bold text-black">
+									{{ isFiveWeekMembership ? 'one-off payment' : 'per week' }}
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% if loop.first %}
+				<div id="mostPopular" class="absolute top-10 md:top-0 -left-5 md:-left-10 -translate-y-1/2 z-10 pointer-events-none -rotate-[25deg]">
+					{% include 'icons/most-popular.twig' with {
+						class: 'animate-shake max-md:w-32'
+					} %}
+				</div>
+			{% endif %}
+		</label>
+	{% endfor %}
+
+	<label id="levelThreeMembership" data-price-toggle class="hidden flex flex-col rounded-[60px] relative overflow-hidden col-span-full">
+		<input type="radio" data-price-per-month class="customRadio appearance-none bg-transparent m-0 absolute inset-0 z-10 rounded-[60px] cursor-pointer" name="membershipType" value="level-3"/>
+		<div class="flex flex-col rounded-[40px] overflow-hidden">
+			<div class="is-h3 bg-brandEucalyptus text-black p-6 text-center flex flex-col items-center justify-center">
+				<div data-check class="border-brandBlack w-12 h-12 rounded-full border-2 mb-4">
+					<div class="w-full h-full bg-white rounded-full border-2 border-brandRed flex items-center justify-center">
+						{% include 'icons/tick.twig' %}
+					</div>
+				</div>
+				Level Three<br/>
+				<span class="text-lg lg:text-xl font-normal">Includes classes!</span>
+			</div>
+			<div class="bg-pureWhite py-4 px-6 flex flex-col h-full">
+				<div class="flex items-center gap-2 pt-2 pb-6">
+					<div class="w-3/4 mx-auto flex justify-center gap-2">
+						<div class="text-brandBlack text-6xl lg:text-8xl font-extrabold">
+							${{ isFiveWeekMembership ? 100 : 16.69 }}
+						</div>
+						<div class="flex flex-col mt-4">
+							<span class="text-sm sm:text-lg lg:text-2xl leading-[1] font-bold text-black">
+								{{ isFiveWeekMembership ? 'one-off payment' : 'per week' }}
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</label>
+
+	{% if hiitfit is defined %}
+		{% set ID = fn('getHiitfitID') %}
+		<input type="radio" data-price-per-month="{{ fn('get_field', 'level_one_payment', ID) }}" class="customRadio appearance-none bg-transparent m-0 absolute inset-0 z-10 rounded-[60px] cursor-pointer" name="membershipType" value="HIITFIT" checked/>
+	{% endif %}
+</div>

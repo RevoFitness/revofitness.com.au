@@ -1,0 +1,34 @@
+{% set allowUnder18 = fn('getCurrentPage')|split(site.link)[1] == '/in-club-registration' ? 'data-allow-youths="true"' : '' %}
+{% set acceptsCardPayments = fn('acceptsCardPayments', gym) ? 'data-accepts-card-payment="true"' : '' %}
+{% set gymOpenDate = fn('isInPresale', gym) ? 'data-gym-open-date="' ~ fn('getPresaleGymOpenDate', gym) ~ '"' : '' %}
+{% set preselect = selectedGym and gym.title|lower|replace({ ' ': '-' }) == selectedGym|lower ? 'selected' : '' %}
+{% set isActiveLevelTwoCampaign = fn('isActiveLevelTwoCampaign', gym) ? 'data-is-active-level-two-campaign' : '' %}
+
+{% if old.state %}
+	<option {{ preselect }} {{ allowUnder18 }} {{ gymOpenDate }} {{ acceptsCardPayments }} {{ isActiveLevelTwoCampaign }}
+		class="{{ old.state != gym.state[0].name ? 'hidden' : '' }} {{ fn('isInPresale', gym) ? 'is-presale' }}"
+		data-has-level-three="{{ gym.meta('has_level_three') ? 'true' : 'false' }}" 
+		data-post-id="{{ gym.id }}" 
+		data-presale-code="{{ gym.meta('presale_discount_code') ?: '' }}" 
+		data-url="/gyms/{{ gym.slug }}" {{ old.gymSelect == gym.title and old.state == gym.state[0].name ? 'selected' }} 
+		data-is-open="{{ fn('isGymOpen', gym.id) ? 'true' : 'false' }}" 
+		data-payment-frequency="{{ gym.payment_frequency }}" 
+		data-level-one="{{ gym.level_one_payment }}" 
+		data-level-two="{{ gym.level_two_payment }}" 
+		data-state="{{ gym.state[0].name }}" value="{{ gym.title }}">{{ gym.title|trim }}
+	</option>
+{% else %}
+	<option {{ preselect }} {{ allowUnder18 }} {{ gymOpenDate }} {{ acceptsCardPayments }} {{ isActiveLevelTwoCampaign }}
+		class="{{ gym.state[0].name != userState and userState != 'All' ? 'hidden' }} {{ fn('isInPresale', gym) ? 'is-presale' }}" 
+		data-has-level-three="{{ gym.meta('has_level_three') ? 'true' : 'false' }}" 
+		data-post-id="{{ gym.id }}" 
+		data-presale-code="{{ gym.meta('presale_discount_code') ?: '' }}" 
+		data-url="/gyms/{{ gym.slug }}" {{ old.gymSelect == gym.title ? 'selected' }} 
+		data-is-open="{{ fn('isGymOpen', gym.id) ? 'true' : 'false' }}" 
+		data-payment-frequency="{{ gym.payment_frequency }}" 
+		data-level-one="{{ gym.level_one_payment }}" 
+		data-level-two="{{ gym.level_two_payment }}" 
+		data-state="{{ gym.state[0].name }}" value="{{ gym.title }}">
+		{{ gym.title|trim }}
+	</option>
+{% endif %}

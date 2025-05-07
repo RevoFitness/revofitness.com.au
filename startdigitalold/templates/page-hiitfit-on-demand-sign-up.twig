@@ -1,0 +1,47 @@
+{% extends "base.twig" %}
+
+{% block content %}
+	{% set errors = session.get('errors') %}
+	{% set old = session.get('old') %}
+
+	<div class="bg-greyBackground my-32 rounded-top">
+		{% if errors %}
+			<div class="max-w-6xl mx-auto w-fit bg-brandRed/20 border border-brandRed text-brandRed p-6 rounded-md">
+				<strong>Form not submitted. Please fix the below errors.</strong>
+			</div>
+		{% endif %}
+
+		<form id="sign-up-form" name="sign-up-form" class="container py-32 flex flex-col gap-6 divide-y" method="POST">
+
+			{% include "partial/loader.twig" %}
+
+			<div class="hidden">
+				{% include "partial/sign-up-form/membership-select.twig" with { hiitfit: true } %}
+			</div>
+
+			{% include "partial/sign-up-form/customer-details.twig" %}
+			{% include "partial/sign-up-form/membership-summary.twig" %}
+			{% include "partial/sign-up-form/billing-details.twig" %}
+			{% include "partial/sign-up-form/terms-conditions.twig" %}
+
+			{# Hidden inputs #}
+			<input type="hidden" name="paymentMethodToken" id="paymentMethodToken"/>
+			<input type="hidden" name="lastFour" id="lastFour"/>
+			<input type="hidden" name="firstSix" id="firstSix"/>
+			<input type="hidden" name="cardType" id="cardType"/>
+			<input type="hidden" name="captchaToken" id="captchaToken"/>
+
+			<button type="button" id="PostPaymentMethod" class="button mt-8 disabled:!opacity-[0.5]">Get Started</button>
+		</form>
+	</div>
+
+	{% block scripts %}
+		<script src="https://www.google.com/recaptcha/api.js?render=6LeSDQ4nAAAAAAAH-BCeRiBmvb_hyRRWkvcjx2K6"></script>
+		<script async type="text/javascript" src="{{ theme.link ~ "/Revo/js/ezypay.js" }}"></script>
+		<script>
+			grecaptcha.ready(function () {
+grecaptcha.execute('6LeSDQ4nAAAAAAAH-BCeRiBmvb_hyRRWkvcjx2K6', {action: 'submit'}).then((token) => document.querySelector('#captchaToken').value = token);
+});
+		</script>
+	{% endblock %}
+{% endblock %}

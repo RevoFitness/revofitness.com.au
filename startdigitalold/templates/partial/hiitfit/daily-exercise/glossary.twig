@@ -1,0 +1,30 @@
+{# {% if glossary|length %} #}
+<section class="container">
+	<div class="bg-greyBackground rounded-3xl p-6 lg:p-12">
+		<div class="swiper glossarySwiper">
+			<div class="flex items-center justify-between gap-4 mb-6">
+				<h4 class="is-h3 text-black">How to do today's exercises</h4>
+				<div class="flex items-center gap-4">
+					{% if glossary|length > 6 %}
+						<button data-prev class="rotate-180">
+							{% include "icons/arrow-right-black-bg.twig" %}
+						</button>
+						<button data-next>
+							{% include "icons/arrow-right-black-bg.twig" %}
+						</button>
+					{% endif %}
+				</div>
+			</div>
+			<div class="swiper-wrapper pb-10 !items-start !flex-row gap-y-6">
+				{% for item in glossary %}
+					<div class="flex flex-col swiper-slide !mt-0">
+						<iframe class="aspect-video rounded-xl" allowfullscreen type="text/html" width="100%" src="https://www.youtube.com/embed/{{ item.id }}" frameborder="0"></iframe>
+						<p class="mt-2 font-semibold">{{ item.name }}</p>
+					</div>
+				{% endfor %}
+			</div>
+			<div class="swiper-scrollbar"></div>
+		</div>
+	</div>
+</section>
+{# {% endif %} #}

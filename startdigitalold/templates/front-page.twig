@@ -1,0 +1,99 @@
+{% extends 'base.twig' %}
+
+{% block hero %}
+	<div class="home-banner relative flex max-md:flex-col bg-pureWhite bg-opacity-60">
+		<div class="container mt-20 mb-12 md:mb-20 md:mt-36 lg:my-36 2xl:my-60 flex max-lg:flex-col gap-10 lg:items-center lg:min-h-[500px]">
+			<div class="relative z-10 flex flex-col gap-6 lg:gap-10 w-full lg:w-1/2 md:my-auto">
+				<div data-animate-left class="relative home-banner-heading max-md:mt-6 w-fit">
+					{{ fields.home_banner.heading }}
+				</div>
+				<div class="flex max-sm:flex-col sm:items-center gap-4">
+					{% if fields.home_banner.button_1 %}
+						<a href="{{ fields.home_banner.button_1.url }}" class="button-large">
+							{{ fields.home_banner.button_1.title }}
+						</a>
+					{% endif %}
+					{% if fields.home_banner.button_2 %}
+						<a href="{{ fields.home_banner.button_2.url }}" class="button-outline-large">
+							{{ fields.home_banner.button_2.title }}
+						</a>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<div class="max-sm:relative w-full md:w-[45%] lg:w-1/2 md:absolute right-0 md:max-lg:top-[calc(50%+32px)] lg:top-1/2 md:-translate-y-1/2">
+			{% if fields.home_banner.video_link %}
+				<video class="z-[9] overflow-hidden aspect-4/3 md:aspect-16/9 md:h-[300px] lg:h-[460px] 2xl:h-[635px] rounded-t-[50px] md:rounded-l-full w-full object-cover object-center pointer-events-none"
+					preload="auto"
+					loop
+					autoplay
+					muted
+					playsinline
+					poster="{{ fields.home_banner.video_poster.url }}">
+					<source class="absolute top-0 left-0 w-full h-full"
+						src="{{ fields.home_banner.video_link }}"
+						type="video/mp4" />Your browser does not support the video tag.
+				</video>
+			{% elseif fields.home_banner.slider %}
+				<div class="home-banner-slider overflow-hidden z-[9] aspect-4/3 md:aspect-16/9 md:h-[300px] lg:h-[460px] 2xl:h-[635px] rounded-t-[50px] md:rounded-l-full w-full">
+					<div class="swiper-wrapper">
+						{% for item in fields.home_banner.slider %}
+							<div class="swiper-slide">
+								{% include 'partial/image.twig' with {
+									image: get_image(item).src,
+									alt: item.alt,
+									class: 'object-cover object-center w-full h-full pointer-events-none'
+								} %}
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			{% endif %}
+			{% include 'icons/per-week.twig' with {
+				class: 'absolute -top-12 right-0 sm:left-1/2 sm:top-14 md:-top-10 lg:-top-6 md:-left-6 z-10 max-lg:!w-[135px] 2xl:-left-5',
+				attributes: 'data-animate-spin'
+			} %}
+			{% include 'icons/flame.twig' with {
+				class: 'absolute max-sm:hidden sm:top-1/4 md:top-1/2 lg:top-2/3 2xl:top-3/4 right-10 z-10 max-md:w-40 max-lg:w-32',
+				attributes: 'data-animate-spin'
+			} %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+	<section class="memberships remove-py bg-lightPink md:bg-pureWhite bg-opacity-0 md:bg-opacity-60">
+		<div class="lg:pb-24 bg-lightPink relative z-10 rounded-top">
+			<div class="flex flex-col">
+				{% include 'partial/scrolling-icons.twig' %}
+				<div class="container block-content md:gap-6 w-full">
+					<div class="block-content max-lg:py-8 items-center text-center">
+						<span class="supertitle !text-brandBlack">Choose your spice level</span>
+						<h2>
+							Memberships
+						</h2>
+					</div>
+					{% include 'partial/membership-cards.twig' %}
+					{% include 'partial/membership-cards-slider.twig' %}
+				</div>
+				{% include 'partial/already-a-member.twig' %}
+			</div>
+		</div>
+	</section>
+	{% include 'blocks/wave_text.twig' %}
+	<section class="max-lg:bg-lightPink">
+		<div class="lg:container flex flex-col gap-4 md:gap-8 items-center max-lg:pt-4">
+			<h2>
+				Find your gym
+			</h2>
+			{% include 'partial/gym-map.twig' %}
+		</div>
+		{% include 'partial/live-counter-banner.twig' with {
+			class: 'max-lg:bg-lightPink'
+		} %}
+	</section>
+	{% include 'blocks/download_app.twig' with {
+		class: 'bg-lightPink pt-0'
+	} %}
+{% endblock %}

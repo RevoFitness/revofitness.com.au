@@ -1,0 +1,26 @@
+{% set gymIsOpen = fn('isGymOpen', gym.id) %}
+{% set activeGym = defaultGym ?: 'Balcatta' %}
+
+{% if gymIsOpen %}
+	<div data-counter-card="{{ fn('preg_replace', '/[^a-zA-Z ]/', '', gym.title) }}" class="{{ fn('preg_replace', '/[^a-zA-Z ]/', '', gym.title) != activeGym ? 'hidden' }} flex flex-col col-span-2 gap-6 h-fit w-full">
+		{% if gym.address or gym.size %}
+			<div class="flex flex-col gap-2">
+				{% if gym.address %}
+					<div data-address class="flex items-center gap-4">
+					<div class="size-8 flex flex-shrink-0 items-center justify-center rounded-full bg-white border border-brandBlack">{% include 'icons/house-light-outline.twig' with { fill: '#333132' } %}</div>
+						<span class="is-h6">{{ gym.override_address ? gym.custom_address : gym.address }}</span>
+					</div>
+				{% endif %}
+				{% if gym.size %}
+					<div class="flex items-center gap-4">
+						<div class="size-8 flex flex-shrink-0 items-center justify-center rounded-full bg-white border border-brandBlack">{% include 'icons/dimensions-light-outline.twig' with { fill: '#333132' } %}</div>
+						<span class="is-h6">{{ gym.size }}
+							sq/m
+						</span>
+					</div>
+				{% endif %}
+			</div>
+		{% endif %}
+		<a href="{{ fn('get_permalink', gym) }}" class="button mt-auto !w-full">View gym</a>
+	</div>
+{% endif %}

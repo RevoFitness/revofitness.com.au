@@ -1,0 +1,23 @@
+<section class="text_with_map">
+	<div class="container grid lg:grid-cols-2 gap-8 lg:gap-16">
+		<div class="flex flex-col gap-4 md:gap-8 w-full">
+			{% if block.content %}
+				<div data-animate-left class="block-content">
+					{{ block.content }}
+				</div>
+			{% endif %}
+			{% if block.button %}
+				<a href="{{ block.button.url }}" class="button">{{ block.button.title }}</a>
+			{% endif %}
+		</div>
+		<div class="w-full mb-auto">
+			{% if block.video_type == 'upload' %}
+				<video src="{{ block.upload }}" class="aspect-video w-full overflow-hidden rounded-3xl"></video>
+			{% elseif block.video_type == 'iframe' %}
+				<div class="aspect-video w-full rounded-3xl overflow-hidden">
+					{{ block.iframe }}
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</section>

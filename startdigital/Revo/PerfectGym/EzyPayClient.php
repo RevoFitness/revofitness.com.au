@@ -67,13 +67,14 @@ class EzyPayClient extends PerfectGymClient
 
         // Log all data except account number
         write_log(['accountHolderName' => $formData['bankAccountHolder'], 'bankNumber' => $formData['BSB'], 'branchNumber' => $branchNumber, 'suffixNumber' => $suffixNumber]);
-
+	write_log("Creating bank token with countryCode: " . $data['countryCode']);
+	write_log("API Request Data for Bank Token: " . print_r($data, true));
         try {
             $response = json_decode($self->postApiRequest($apiUrl, $data, $headers, 16));
-
+	    write_log("No response bank:", $response);
             if (!$response) {
                 write_log('No response from EzyPay creating bank token.');
-                $self->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again.";
+                $self->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again. paymentMethod - createBankToken";
                 $self->throw();
             }
 
@@ -103,12 +104,13 @@ class EzyPayClient extends PerfectGymClient
                 'address2' => null,
                 'postalCode' => null,
                 'state' => null,
-                'countryCode' => null,
+                'countryCode' => 'AU',
                 'city' => null
             ),
             'referenceCode' => "-$userId"
         );
-
+	write_log("Registering customer with countryCode: " . $data['address']['countryCode']);
+	write_log("API Request Data for Customer: " . print_r($data, true));
         $attempt = 0;
         while ($attempt < 16) {
             try {
@@ -205,35 +207,58 @@ class EzyPayClient extends PerfectGymClient
         );
 
         $response = $this->postApiRequest($apiUrl, $data, $headers);
+
         if (!$response) {
-            $this->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again.";
+		
+            write_log(["No response:", $response]);
+            $this->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again. setPrimaryMethod";
             $this->throw();
         }
 
         write_log(["Primary Payment Method Set", $response]);
-
+	write_log("Setting primary payment method for customer with countryCode: AU");
+	write_log("API Request Data for Primary Payment Method: " . print_r($data, true));
+	write_log("Payment method token: " . $formData['cardToken']);
         return json_decode($response);
     }
 
     public function getPrimaryPaymentMethod($formData, $customerId)
-    {
-        $apiUrl =  $_ENV['ENV'] == 'production' ? "https://api-global.ezypay.com/v2/billing/customers/$customerId/paymentmethods" : "https://api-sandbox.ezypay.com/v2/billing/customers/$customerId/paymentmethods";
-        $headers = array(
-            'Authorization' => 'Bearer ' . $this->authToken($formData['gymName']),
-            'Cache-Control' => 'no-cache',
-            'Content-Type' => 'application/json',
-            'merchant' => $this->getMerchantId($formData['gymName']),
-        );
+{
+    $apiUrl = $_ENV['ENV'] == 'production' 
+        ? "https://api-global.ezypay.com/v2/billing/customers/$customerId/paymentmethods" 
+        : "https://api-sandbox.ezypay.com/v2/billing/customers/$customerId/paymentmethods";
+    
+    $headers = array(
+        'Authorization' => 'Bearer ' . $this->authToken($formData['gymName']),
+        'Cache-Control' => 'no-cache',
+        'Content-Type' => 'application/json',
+        'merchant' => $this->getMerchantId($formData['gymName']),
+    );
 
+    try {
         $response = $this->getApiRequest($apiUrl, $headers, 16);
-        if (!$response) {
-            write_log('No response from EzyPay getting Primay Payment Method');
+        $decoded = json_decode($response);
+        
+        if (!$response || !$decoded || !isset($decoded->data)) {
+            write_log('Invalid response from EzyPay getting Primary Payment Method', $response);
+            return null;
         }
-
-        write_log("Primary Payment Method retrieved: " . json_decode($response)->data[0]->paymentMethodToken);
-
-        return json_decode($response)->data[0]->paymentMethodToken;
+        
+        if (empty($decoded->data)) {
+            write_log('No payment methods found for customer', $customerId);
+            return null;
+        }
+        
+        $token = $decoded->data[0]->paymentMethodToken ?? null;
+        write_log("Primary Payment Method retrieved:", $token);
+        
+        return $token;
+    } catch (RequestException $e) {
+        write_log('Error getting primary payment method:', $e->getMessage());
+        $this->errors['paymentMethod'] = "Error retrieving payment method";
+        return null;
     }
+   }
 
     protected function clean($string)
     {

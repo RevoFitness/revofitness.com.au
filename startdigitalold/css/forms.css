@@ -1,0 +1,154 @@
+/* Win a Jimny Form */
+[data-win-a-jimny-form] {
+	.gform_validation_errors {
+		@apply hidden;
+	}
+
+	.gf_placeholder {
+		@apply opacity-70;
+	}
+
+	.validation_message {
+		@apply text-sm bg-transparent p-0 text-brandRed mt-1 border-0 !important;
+	}
+
+	.gfield_description:not(.validation_message) {
+		@apply !text-sm !pt-1;
+	}
+
+	.gfield_error label {
+		@apply !text-black;
+	}
+
+	.gfield_checkbox > div {
+		@apply !flex gap-3 mt-2;
+
+		input {
+			@apply w-6 h-6 shrink-0 !important;
+		}
+
+		label {
+			a {
+				@apply underline;
+			}
+		}
+	}
+}
+
+#discountCode[readonly] {
+	@apply !bg-[#E8E8E8] !border-[#E8E8E8] cursor-not-allowed !rounded-lg;
+}
+
+/* Datepicker for signup form */
+.qs-overlay .qs-overlay-year {
+	@apply text-brandBlack;
+}
+
+/* Form styles go here */
+select {
+	appearance: none;
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M13 1L7 7L1 1' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+	background-repeat: no-repeat;
+	background-position: right 1rem center;
+}
+
+.all_trainers select {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M13 1L7 7L1 1' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+}
+
+input:not([hidden]):not([type='reset']):not(.customRadio):not(.paymentRadio):not(.checkbox):not([type='submit']),
+textarea,
+select {
+	@apply bg-pureWhite border-2 border-brandBlack text-brandBlack rounded-lg px-4 placeholder:text-brandBlack/30 h-12 flex items-center w-full;
+}
+
+input.customRadio {
+	&:after {
+		content: '';
+		@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[105%] h-[105%] origin-center rounded-[60px] border-4 border-transparent;
+	}
+
+	&:checked {
+		&:after {
+			@apply border-brandBlack w-full h-full;
+		}
+	}
+}
+
+input.paymentRadio:checked {
+	@apply !bg-brandBlack;
+
+	+ label {
+		@apply !text-white;
+	}
+}
+
+.input-wrapper:has([required]) label {
+	@apply relative after:content-['*'] after:text-brandRed after:px-1;
+}
+
+.input-wrapper {
+	@apply flex flex-col gap-1;
+
+	label {
+		@apply font-semibold ml-4;
+	}
+}
+
+/* Google Map */
+#gymMap {
+	button[aria-label='Close'] {
+		@apply right-4 top-4 !important;
+
+		> span {
+			@apply w-8 h-8 m-0 right-0 top-0 absolute !important;
+		}
+	}
+}
+
+.checkbox {
+	@apply appearance-none relative bg-transparent flex-shrink-0 w-4 md:w-8 h-4 md:h-8 border-2 border-brandBlack rounded-full overflow-hidden cursor-pointer;
+}
+
+.checkbox:checked::before {
+	@apply scale-100;
+}
+
+.checkbox:before {
+	@apply h-8 w-8 flex items-center justify-center absolute -top-[2px] -left-[2px] rounded-full transform scale-0 duration-300 content-[''] transition-all bg-brandRed;
+}
+
+/* Hiitfit Login Form */
+#loginform {
+	@apply w-full grid grid-cols-2 md:grid-cols-4 gap-6;
+
+	.login-username,
+	.login-password {
+		@apply col-span-full;
+	}
+
+	label {
+		@apply font-bold;
+	}
+
+	.login-submit {
+		@apply md:col-start-2;
+	}
+
+	.button,
+	.button-outline {
+		@apply w-full;
+	}
+}
+
+.gform_wrapper {
+	.ginput_container_fileupload {
+		input[type='file'] {
+			@apply border-0 bg-transparent p-0 rounded-none !important;
+		}
+
+		.gform_fileupload_rules {
+			@apply !pt-0;
+		}
+	}
+}

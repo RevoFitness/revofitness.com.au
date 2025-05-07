@@ -1,0 +1,49 @@
+{% set stateName = {
+	'New South Wales': 'NSW',
+	Victoria: 'VIC',
+	'South Australia': 'SA',
+	'Western Australia': 'WA'
+} %}
+{% set userState = stateName[revo.mapHandler.getUserLocation.state] ?: 'WA' %}
+{% set gyms = userState ? revo.gymManager.getPresaleGyms(userState) : null %}
+
+{% if gyms and not isFiveWeekMembership and not isAppRegistration and not isInClubRegistration %}
+	<aside data-presale-banner class="banner-hidden overflow-scroll py-10 flex items-center justify-center fixed h-screen w-screen top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 duration-150 bg-brandEucalyptus bg-opacity-95 z-[9999999999]">
+		<div class="flex flex-col items-center justify-center gap-10">
+			<div class="relative w-[calc(100%-40px)] max-w-5xl md:w-full border-[3px] text-brandBlack border-brandBlack bg-brandYellow px-8 py-12 md:px-12 rounded-3xl font-bold">
+				<div class="grid grid-cols-1 md:grid-cols-3 md:gap-16">
+					<div class="col-span-2">
+						<div class="grid gap-5 md:gap-8">
+							<div class="flex flex-col gap-4">
+								<h2>
+									Presale on now!
+								</h2>
+								<p class="text-brandBlack">
+									Get your second and third month free. Don't miss out!
+								</p>
+							</div>
+							<div class="flex flex-wrap gap-4">
+								{% for item in gyms %}
+									{% if not item.meta('level_two_campaign') %}
+										<a data-action="close" class="is-button-outline after:hidden pr-5" href="{{ item.link }}">{{ item.name }}</a>
+									{% endif %}
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+					<div class="max-md:absolute max-md:-top-8 max-md:-right-4 md:col-span-1">
+						{% include 'icons/peace-pink.twig' with {
+							class: 'w-16 md:w-full rotate-6 animate-shake'
+						} %}
+					</div>
+				</div>
+			</div>
+			<button class="is-button !bg-brandBlack after:hidden pr-3" data-action="close">
+				<span>Close</span>
+				<div class="rounded-full bg-white w-8 h-8 flex items-center justify-center">
+					{% include 'icons/cross.twig' with { stroke: '#333132' } %}
+				</div>
+			</button>
+		</div>
+	</aside>
+{% endif %}

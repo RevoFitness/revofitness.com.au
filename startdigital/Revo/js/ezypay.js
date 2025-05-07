@@ -268,48 +268,34 @@ function checkIfGymAcceptsCardPayment(gymSelect) {
 	document.querySelector('[data-bank-form]')?.classList.remove('hidden')
 }
 
-function fetchAuthToken(gym) {
-	const container = document.querySelector('[data-hosted-page-container]')
-	const loader = document.querySelector('[data-ezypay-loader]')
+async function fetchAuthToken(gym) {
+    try {
+        console.log("fetchAuthToken called with gym:", gym);
 
-	if (!loader) {
-		return
-	}
+        if (gym === "select-a-gym") {
+            throw new Error("Invalid gym selected.");
+        }
 
-	if (document.querySelector('#gymSelect').value !== 'select-a-gym') {
-		loader.style.display = 'flex'
-	}
+        const response = await jQuery.ajax({
+            type: "GET",
+            dataType: "json",
+            url: ajax.url,
+            data: {
+                action: "get_auth_token",
+                security: ajax.nonce,
+                gym,
+            },
+        });
 
-	jQuery.ajax({
-		type: 'GET',
-		dataType: 'json',
-		url: '/wp-admin/admin-ajax.php',
-		data: {
-			action: 'get_auth_token',
-			security: ajax.nonce,
-			gym: gym,
-		},
-		success: ({ data }) => {
-			if (document.querySelector('#gymSelect').value === 'select-a-gym') {
-				loader.style.display = 'none'
-				return
-			}
-
-			if (document.querySelector('[data-payment-type="bank"].isActive')) {
-				document.querySelector('[data-bank-form]').classList.remove('hidden')
-			}
-
-			container.innerHTML = ''
-			loader.style.display = 'none'
-			container.insertAdjacentHTML('beforeend', ezypayFrame(data))
-			wait(300)
-		},
-		error: (error) => {
-			console.log('error: ', error)
-		},
-	})
+        console.log("AJAX Success:", response);
+        return response;
+    } catch (error) {
+        console.error("Error in fetchAuthToken:", error);
+        console.error("Status:", error.status);
+        console.error("Response Text:", error.responseText);
+        throw error; // Ensure the error is propagated if needed
+    }
 }
-
 /**
  * Returns the iFrame to be loaded
  */

@@ -1,0 +1,12 @@
+<section class="workouts_grid">
+	<div class="container flex flex-col gap-8">
+		<div data-animate-left class="block-content">
+			{{ block.content }}
+		</div>
+		<div data-animate-stagger class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+			{% for item in workouts %}
+				{% include 'tease-workout.twig' %}
+			{% endfor %}
+		</div>
+	</div>
+</section>

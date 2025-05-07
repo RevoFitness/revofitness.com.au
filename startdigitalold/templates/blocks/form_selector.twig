@@ -1,0 +1,12 @@
+<section class="relative">
+	<div class="container">
+		<div class="form-container flex flex-col gap-10 bg-lightPink rounded-[35px] px-6 py-10 md:px-20 md:py-16 relative">
+			{% if block.top_content %}
+				<div class="block-content items-center text-center mx-auto">
+					{{ block.top_content }}
+				</div>
+			{% endif %}
+			{{ fn('do_shortcode', '[gravityform id="'~ block.form_id ~'" title="false" description="false" ajax="false"]') }}
+		</div>
+	</div>
+</section>

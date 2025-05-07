@@ -1,0 +1,30 @@
+<div id="membership-summary" class="flex flex-col gap-4 md:gap-6 pt-8 md:pb-12">
+	<h3 class="text-brandBlack">Membership summary</h3>
+	<div class="grid md:grid-cols-2 gap-4">
+		<div class="flex flex-col gap-6">
+			<div class="flex flex-col gap-3">
+				<span class="font-medium text-lg text-brandBlack">Billing Frequency</span>
+				<input type="text" name="paymentFrequency" class="focus:outline-none capitalize text-3xl font-bold text-brandBlack !pl-0 !border-transparent !bg-transparent" readonly value="&#8212;"/>
+			</div>
+
+			<div class="flex flex-col gap-3">
+				<span class="font-medium text-lg text-brandBlack">Start Date</span>
+				<span data-start-date-placeholder class="text-3xl font-bold text-brandBlack"></span>
+			</div>
+		</div>
+
+		<div class="grid gap-3">
+			<div class="bg-pureWhite p-5 rounded-xl grid self-start grid-cols-5">
+				<div class="col-span-4 flex flex-col gap-2">
+					<strong class="text-xl">First &amp; Recurring Payments</strong>
+					<p>Regular Payment</p>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p>Total</p>
+					<strong>$<span>0.00</span>
+					</strong>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

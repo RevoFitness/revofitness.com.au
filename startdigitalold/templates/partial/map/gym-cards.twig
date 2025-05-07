@@ -1,0 +1,6 @@
+{% for key, item in get_posts(gyms) %}
+	{% include 'partial/map/gym-card.twig' with {
+		prevGym: gyms[key - 1],
+		nextGym: gyms[key + 1]
+	} %}
+{% endfor %}
