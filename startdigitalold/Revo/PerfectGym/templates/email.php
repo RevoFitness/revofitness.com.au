@@ -12,7 +12,9 @@
       <tr align='center' style='background-color:#fff;color:#333'>
          <td colspan='2' style='background-color:#fff;color:#333;padding:0px 15px 50px 15px;'><br><br>
             <!-- Section -->
-            <?= nl2br($data['welcomeMessage']) ?>
+           <?= $content ?>
+
+
             <!-- End section -->
 
             <br /><br />

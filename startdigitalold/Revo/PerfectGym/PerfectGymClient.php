@@ -15,7 +15,15 @@ class PerfectGymClient
 
     public function __construct()
     {
-        $this->baseURL = $_ENV['ENV'] === 'production' ? 'https://revofitness.perfectgym.com.au/Api' : 'https://revofitnessuat.perfectgym.com.au/Api';
+        error_log("🚀 Constructing PerfectGymClient");
+
+        error_log("ENV: " . ($_ENV['ENV'] ?? 'not set'));
+        error_log("PG_SANDBOX_CLIENT_ID: " . ($_ENV['PG_SANDBOX_CLIENT_ID'] ?? 'not set'));
+
+        $this->baseURL = $_ENV['ENV'] === 'production'
+            ? 'https://revofitness.perfectgym.com.au/Api'
+            : 'https://revofitnessuat.perfectgym.com.au/Api';
+
         $this->key = $this->getApiKey();
 
         add_action('wp_ajax_nopriv_handle_form_submission', [$this, 'handleFormSubmission']);
@@ -32,57 +40,61 @@ class PerfectGymClient
      * @throws RequestException If an error occurs during the request.
      */
     public function postApiRequest(string $apiUrl, array|string $data, ?array $newHeaders = null, int $maxRetries = 0): string|false
-    {
-        $client = new Client(['timeout' => 60]);
+{
+    $client = new Client(['timeout' => 60]);
 
-        $defaultHeaders = [
-            'X-Client-Id' => $this->key->id,
-            'X-Client-Secret' =>  $this->key->secret,
-            'Cache-Control' => 'no-cache',
-            'Content-Type' => 'application/json',
-        ];
+    $defaultHeaders = [
+        'X-Client-Id' => $this->key->id,
+        'X-Client-Secret' =>  $this->key->secret,
+        'Cache-Control' => 'no-cache',
+        'Content-Type' => 'application/json',
+    ];
 
-        // Optionally override headers
-        $headers = $defaultHeaders;
-        if ($newHeaders !== null) {
-            foreach ($newHeaders as $key => $value) {
-                $headers[$key] = $value;
-            }
+    // Optionally override headers
+    $headers = $defaultHeaders;
+    if ($newHeaders !== null) {
+        foreach ($newHeaders as $key => $value) {
+            $headers[$key] = $value;
         }
-
-        $attempt = 0;
-        while ($attempt <= $maxRetries) {
-            try {
-                $response = $client->request('POST', $apiUrl, [
-                    'headers' => $headers,
-                    'body' => gettype($data) === 'string' ? $data : json_encode($data)
-                ]);
-
-                if ($response->getStatusCode() == 200) {
-                    write_log("POST REQUEST to $apiUrl successful");
-                    return (string) $response->getBody();
-                }
-
-                $attempt++;
-                sleep(1);
-            } catch (RequestException $e) {
-                write_log(["$apiUrl RequestException", $e->getMessage()]);
-                if ($e->getResponse() !== null) {
-                    $errors = json_decode($e->getResponse()->getBody());
-                    write_log(['POST REQUEST', $errors]);
-                    // ValidationException::throw(array($errors[0]->message));
-                }
-                $attempt++;
-            } catch (ConnectException $e) {
-                $message = 'Unable to connect to the server. Please try again';
-                write_log($message);
-                ValidationException::throw(array($message));
-                $attempt++;
-            }
-        }
-
-        return false;
     }
+
+    $attempt = 0;
+    while ($attempt <= $maxRetries) {
+        try {
+            $response = $client->request('POST', $apiUrl, [
+                'headers' => $headers,
+                'body' => gettype($data) === 'string' ? $data : json_encode($data),
+                'verify' => false // 🔥 TEMPORARY: disable SSL verification for local dev
+            ]);
+
+            if ($response->getStatusCode() == 200) {
+                write_log("POST REQUEST to $apiUrl successful");
+                return (string) $response->getBody();
+            }
+
+            $attempt++;
+            sleep(1);
+
+        } catch (RequestException $e) {
+            write_log(["$apiUrl RequestException", $e->getMessage()]);
+            if ($e->getResponse() !== null) {
+                $errors = json_decode($e->getResponse()->getBody());
+                write_log(['POST REQUEST', $errors]);
+            }
+            $attempt++;
+
+        } catch (ConnectException $e) {
+            $message = 'Unable to connect to the server. Please try again';
+            write_log(['BASE_URL' => $this->baseURL]);
+            write_log(['ERROR' => $e->getMessage()]);
+            ValidationException::throw([$message]);
+            $attempt++;
+        }
+    }
+
+    return false;
+}
+
 
     /**
      * Sends a GET API request to the specified URL.

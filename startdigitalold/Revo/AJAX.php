@@ -241,10 +241,56 @@ class AJAX
      *
      * @return $authToken string
      */
-    public function ajaxAuthToken($gym)
-    {
-        $authToken = $this->ezypayClient->authToken($gym);
-
-        return wp_send_json_success($authToken);
+   /**
+ * AJAX handler for fetching gym credentials
+ */
+/**
+ * AJAX handler for fetching gym credentials from .env
+ */
+/**
+ * AJAX handler for fetching gym credentials from .env with enhanced debugging
+ */
+/**
+ * AJAX handler for fetching gym credentials - simplified version
+ */
+public function ajaxAuthToken() {
+    // Verify security nonce
+    check_ajax_referer('ajax-nonce', 'security');
+    
+    // Get the gym parameter
+    $gym = isset($_GET['gym']) ? sanitize_text_field($_GET['gym']) : '';
+    
+    // Skip processing for invalid gym
+    if ($gym === 'select-a-gym' || empty($gym)) {
+        wp_send_json_error(['message' => 'Please select a valid gym']);
+        wp_die();
     }
+    
+    // Format gym name to match variable naming convention
+    $gym_key = strtoupper(str_replace([' ', '-'], '_', $gym));
+    
+    // Get credentials from environment variables
+    $merchant_id = getenv('EZYPAY_MERCHANT_ID_' . $gym_key);
+    $username = getenv('EZYPAY_USERNAME_' . $gym_key);
+    $password = getenv('EZYPAY_PASSWORD_' . $gym_key);
+    
+    // Check if we found all required credentials
+    if ($merchant_id && $username && $password) {
+        wp_send_json_success([
+            'merchant_id' => $merchant_id,
+            'username' => $username,
+            'password' => $password,
+            'gym' => $gym
+        ]);
+    } else {
+        // If we get here, credentials were not found
+        wp_send_json_error([
+            'message' => 'Credentials not found for this gym: ' . $gym,
+            'gym_key' => $gym_key
+        ]);
+    }
+    
+    wp_die();
 }
+}
+

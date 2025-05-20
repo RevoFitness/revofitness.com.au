@@ -267,44 +267,48 @@ function checkIfGymAcceptsCardPayment(gymSelect) {
 		?.classList.add('isActive')
 	document.querySelector('[data-bank-form]')?.classList.remove('hidden')
 }
+console.log('ajax object:', typeof ajax !== 'undefined' ? ajax : 'undefined');
 
-function fetchAuthToken(gym) {
+
+
+// Update your fetchAuthToken function to use the correct property names
+async function fetchAuthToken(gym) {
+	console.log('helo');
+  try {
     console.log("fetchAuthToken called with gym:", gym);
-    const container = document.querySelector("[data-hosted-page-container]");
-    const loader = document.querySelector("[data-ezypay-loader]");
-
-    if (!loader) {
-        return;
+    if (gym === "select-a-gym" || !gym) {
+      console.warn("No gym selected, please select a gym first");
+      throw new Error("Please select a gym to continue");
     }
 
-    if (gym === "select-a-gym") {
-        console.log("Invalid gym selected. Aborting fetchAuthToken.");
-        return;
-    }
+    const ajaxUrl = typeof ajax !== "undefined" && ajax.ajax_url
+      ? ajax.ajax_url
+      : "https://revofitness.test/wp-admin/admin-ajax.php";
+    const ajaxNonce = typeof ajax !== "undefined" && ajax.nonce ? ajax.nonce : "";
 
-    loader.style.display = "flex";
+    console.log("Using AJAX URL:", ajaxUrl);
+    console.log("Using nonce:", ajaxNonce);
 
-    jQuery.ajax({
-        type: "GET",
-        dataType: "json",
-        url: "/wp-admin/admin-ajax.php",
-        data: {
-            action: "get_auth_token",
-            security: ajax.nonce,
-            gym,
-        },
-        success: ({ data }) => {
-            console.log("AJAX Success:", data);
-            loader.style.display = "none";
-            container.innerHTML = "";
-            container.insertAdjacentHTML("beforeend", ezypayFrame(data));
-        },
-        error: (error) => {
-            console.error("AJAX Error:", error);
-            loader.style.display = "none";
-            alert("Failed to fetch auth token. Please try again.");
-        },
-    });
+    const response = await jQuery.ajax({
+	  type: "GET",
+	  dataType: "json",
+	  url: ajaxUrl,
+	  data: {
+	    action: "get_auth_token",
+	    security: ajaxNonce,
+	    gym
+	  }
+	});
+    console.log("AJAX Success:", response);
+    console.log(JSON.stringify(response.data, null, 2));
+
+	document.getElementById('paymentMethodToken').value = response.data.paymentMethodToken;
+
+    return response.data;
+  } catch (error) {
+    console.error("Error in fetchAuthToken:", error);
+    throw error; // Rethrow to allow external .catch() to handle it
+  }
 }
 
 /**

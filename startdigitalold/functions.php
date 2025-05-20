@@ -7,7 +7,8 @@
  * @package  WordPress
  * @subpackage  Timber
  * @since   Timber 0.1
- */
+ *Make sure no BOM or blank line exists here
+**/
 
 use Timber\Timber;
 use Timber\Post;
@@ -20,8 +21,10 @@ use Revo\PerfectGym\FormDataParser;
  * to load your dependencies and initialize Timber. If you are using Timber via the WordPress.org
  * plug-in, you can safely delete this block.
  */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-session_start();
 
 $composer_autoload = __DIR__ . '/vendor/autoload.php';
 if (file_exists($composer_autoload)) {
@@ -199,10 +202,15 @@ class StartDigital extends \Timber\Site
         wp_enqueue_style('startdigital', get_stylesheet_directory_uri() . '/static/style.css', array(), $style_version);
 
         $script_version = filemtime(get_stylesheet_directory() . '/static/site.js');
-        wp_enqueue_script('startdigital', get_stylesheet_directory_uri() . '/static/site.js', array(), $script_version);
+        wp_enqueue_script('startdigital', get_stylesheet_directory_uri() . '/static/site.js', array('jquery'), $script_version);
+        
+        // Add this block to localize the script with AJAX URL and nonce
+        wp_localize_script('startdigital', 'ajax', array(
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('ajax-nonce')
+        ));
     }
-
-
+   
 
     /** This is where you add some context
      *
@@ -262,7 +270,6 @@ class StartDigital extends \Timber\Site
 
         return $context;
     }
-
 
 
     public function theme_supports()
@@ -347,6 +354,19 @@ function acf_wysiwyg_height()
 add_action('acf/input/admin_footer', 'acf_wysiwyg_height');
 
 new StartDigital();
+
+add_action('admin_menu', function () {
+    add_menu_page(
+        'Email Preview',
+        'Email Preview',
+        'manage_options',
+        'email-preview',
+        'render_email_preview_page',
+        'dashicons-email-alt',
+        28
+    );
+});
+
 
 /**
  * Adds functionality to Twig.
@@ -661,39 +681,6 @@ function getPresaleGymOpenDate(WP_Post|Post $gym): string
  * @param $postId
  * @return void
  */
-function regenerateVendingDiscount($postId)
-{
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
-    }
-
-    $template = basename(get_page_template($postId));
-    if ($template === 'template-vending-discount.php') {
-        delete_transient('vending_discount_qr_code');
-        $code = get_field('code', $postId);
-        $request = wp_remote_get("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$code");
-        $body = wp_remote_retrieve_body($request);
-        $qrCode = base64_encode($body);
-
-        set_transient('vending_discount_qr_code', $qrCode);
-    }
-}
-add_action('acf/save_post', 'regenerateVendingDiscount', 20);
-
-/* 2025 may --> */
-function add_email_preview_page() {
-    add_menu_page(
-        'Email Preview', // Page title
-        'Email Preview', // Menu title
-        'manage_options', // Capability
-        'email-preview', // Menu slug
-        'render_email_preview_page', // Callback function
-        'dashicons-email-alt', // Icon
-        28 // Position
-    );
-}
-add_action('admin_menu', 'add_email_preview_page');
-
 function render_email_preview_page() {
     // Get all email notifications
     $email_notifications = get_posts(array(
@@ -726,44 +713,39 @@ function render_email_preview_page() {
             <h2>Preview:</h2>
             <div style="border: 1px solid #ccc; padding: 20px; background: #fff;">
                 <?php
-                // Include the email template and pass data to it
                 $template_path = get_template_directory() . '/Revo/PerfectGym/templates/email.php';
                 if (file_exists($template_path)) {
-                    // Prepare data for the template
                     $post = get_post($selected_post_id);
                     $membership_type = get_field('membership_type', $selected_post_id);
                     $gym_association = get_field('gym_association', $selected_post_id);
 
-                    // Get gym names if gym_association is an array of IDs
                     if (is_array($gym_association)) {
                         $gym_names = array_map(function ($gym_id) {
                             return get_term($gym_id)->name;
                         }, $gym_association);
                         $gym_association = implode(', ', $gym_names);
                     }
-                    // Pass data to the template
+
                     $data = array(
                         'title' => $post->post_title,
-                        'content' => apply_filters('the_content', $post->post_content),
                         'membership_type' => $membership_type,
                         'gym_association' => $gym_association,
                         'gymName' => $gym_association,
                         'welcomeMessage' => get_field('welcome_message', $selected_post_id),
-                        'firstName' => 'John', // Example data for testing
-                        'lastName' => 'Doe', // Example data for testing
-                        'email' => 'john.doe@example.com', // Example data for testing
-                        'dateOfBirth' => '1989-01-01', // Example data for testing
-                        'paymentFrequency' => get_field('payment_frequency', $selected_post_id), // Example data for testing
-                        'cost' => get_field('cost', $selected_post_id), // Example data for testing
-                        'startDate' => '2025-05-01', // Example data for testing
-                        'isGuest' => false, // Example data for testing
-                        'directDebit' => get_field('directDebit', $selected_post_id) ? get_field('direct_debit', $selected_post_id) : "directDebit", // Example data for testing
-                        'promotion' => 1, // Example data for testing
-                        'promotionDescription' => get_field('promotion_description', $selected_post_id), // Example data for testing
-                        'displayJimnyImage' => false, // Example data for testing
+                        'firstName' => 'John',
+                        'lastName' => 'Doe',
+                        'email' => 'john.doe@example.com',
+                        'dateOfBirth' => '1989-01-01',
+                        'paymentFrequency' => get_field('payment_frequency', $selected_post_id),
+                        'cost' => get_field('cost', $selected_post_id),
+                        'startDate' => '2025-05-01',
+                        'isGuest' => false,
+                        'directDebit' => get_field('directDebit', $selected_post_id) ? get_field('direct_debit', $selected_post_id) : "directDebit",
+                        'promotion' => 1,
+                        'promotionDescription' => get_field('promotion_description', $selected_post_id),
+                        'displayJimnyImage' => false,
                     );
 
-                     // Replace placeholders in the welcomeMessage
                     $placeholders = array(
                         '{{firstName}}' => $data['firstName'],
                         '{{lastName}}' => $data['lastName'],
@@ -779,10 +761,16 @@ function render_email_preview_page() {
 
                     $data['welcomeMessage'] = str_replace(array_keys($placeholders), array_values($placeholders), $data['welcomeMessage']);
 
-                    // Extract data as variables for use in the template
-                    extract($data);
+                    // 🛠️ Replace placeholders inside post content too
+                    $data['content'] = str_replace(
+                        array_keys($placeholders),
+                        array_values($placeholders),
+                        apply_filters('the_content', $post->post_content)
+                    );
 
-                    // Include the template
+                    extract($data);
+                    $notificationPostId = $selected_post_id;
+
                     include $template_path;
                 } else {
                     echo '<p style="color: red;">Email template not found at: ' . esc_html($template_path) . '</p>';
@@ -793,3 +781,18 @@ function render_email_preview_page() {
     </div>
     <?php
 }
+
+
+add_action('wp_footer', function() {
+    // This will run after all other scripts and override any cached ajax object
+    ?>
+    <script type="text/javascript">
+    // Force override ajax object with fresh nonce
+    ajax = {
+        url: "<?php echo admin_url('admin-ajax.php'); ?>",
+        nonce: "<?php echo wp_create_nonce('ajax-nonce'); ?>"
+    };
+    console.log("Ajax object overridden with fresh nonce:", ajax);
+    </script>
+    <?php
+}, 999); // High priority to ensure it runs last

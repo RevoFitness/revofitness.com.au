@@ -198,3 +198,7 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/revofitnesscom/public_html/wp-content/themes/startdigital/index.php on line 19
+[14-May-2025 00:41:11 Australia/Sydney] PHP Fatal error:  Uncaught Error: Class "Timber\Timber" not found in /home/revofitnesscom/public_html/wp-content/themes/startdigital/index.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/revofitnesscom/public_html/wp-content/themes/startdigital/index.php on line 19

@@ -62,18 +62,19 @@ class EzyPayClient extends PerfectGymClient
             'branchNumber' => $branchNumber,
             'suffixNumber' => $suffixNumber,
             'termAndConditionAgreed' => true,
-            'countryCode' => $formData['countryCode'] ?? 'AU',
+            'countryCode' => 'AU',
         );
 
         // Log all data except account number
         write_log(['accountHolderName' => $formData['bankAccountHolder'], 'bankNumber' => $formData['BSB'], 'branchNumber' => $branchNumber, 'suffixNumber' => $suffixNumber]);
-        write_log("API Request Data for Bank Token: " . print_r($data, true));
+	write_log("Creating bank token with countryCode: " . $data['countryCode']);
+	write_log("API Request Data for Bank Token: " . print_r($data, true));
         try {
             $response = json_decode($self->postApiRequest($apiUrl, $data, $headers, 16));
-
+	    write_log("No response bank:", $response);
             if (!$response) {
                 write_log('No response from EzyPay creating bank token.');
-                $self->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again.";
+                $self->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again. paymentMethod - createBankToken";
                 $self->throw();
             }
 
@@ -103,14 +104,13 @@ class EzyPayClient extends PerfectGymClient
                 'address2' => null,
                 'postalCode' => null,
                 'state' => null,
-                'countryCode' => $formData['countryCode'] ?? 'AU',
+                'countryCode' => 'AU',
                 'city' => null
             ),
             'referenceCode' => "-$userId"
         );
-
-        write_log("API Request Data for Customer: " . print_r($data, true));
-
+	write_log("Registering customer with countryCode: " . $data['address']['countryCode']);
+	write_log("API Request Data for Customer: " . print_r($data, true));
         $attempt = 0;
         while ($attempt < 16) {
             try {
@@ -135,7 +135,7 @@ class EzyPayClient extends PerfectGymClient
             } catch (RequestException $e) {
                 if ($e->getResponse() !== null) {
                     $errors = json_decode($e->getResponse()->getBody())->errors;
-                    write_log('REGISTER CUSTOMER ERROR:', $errors);
+                    write_log($errors);
                 }
                 $attempt++;
             }
@@ -166,7 +166,7 @@ class EzyPayClient extends PerfectGymClient
         } catch (RequestException $e) {
             if ($e->getResponse() !== null) {
                 $errors = json_decode($e->getResponse()->getBody())->errors;
-                write_log('GET CUSTOMER:', $errors);
+                write_log($errors);
             }
         }
     }
@@ -189,12 +189,11 @@ class EzyPayClient extends PerfectGymClient
      * @return mixed Returns the response from the API if successful, or throws an error if there was an error.
      */
     public function setPrimaryPaymentMethod($formData, $customerId)
-    {     
+    {
         if ($this->getPrimaryPaymentMethod($formData, $customerId) !== null) {
             return;
         }
-        write_log("Setting primary payment method for customer with countryCode: AU");
-        write_log("Payment method token: " . $formData['cardToken']);
+
         $apiUrl =  $_ENV['ENV'] == 'production' ? "https://api-global.ezypay.com/v2/billing/customers/$customerId/paymentmethods" : "https://api-sandbox.ezypay.com/v2/billing/customers/$customerId/paymentmethods";
         $headers = array(
             'Authorization' => 'Bearer ' . $this->authToken($formData['gymName']),
@@ -208,53 +207,58 @@ class EzyPayClient extends PerfectGymClient
         );
 
         $response = $this->postApiRequest($apiUrl, $data, $headers);
+
         if (!$response) {
-            $this->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again.";
+		
+            write_log(["No response:", $response]);
+            $this->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again. setPrimaryMethod";
             $this->throw();
         }
 
         write_log(["Primary Payment Method Set", $response]);
-
+	write_log("Setting primary payment method for customer with countryCode: AU");
+	write_log("API Request Data for Primary Payment Method: " . print_r($data, true));
+	write_log("Payment method token: " . $formData['cardToken']);
         return json_decode($response);
     }
 
     public function getPrimaryPaymentMethod($formData, $customerId)
-    {
-        $apiUrl = $_ENV['ENV'] == 'production' 
-            ? "https://api-global.ezypay.com/v2/billing/customers/$customerId/paymentmethods" 
-            : "https://api-sandbox.ezypay.com/v2/billing/customers/$customerId/paymentmethods";
-        
-        $headers = array(
-            'Authorization' => 'Bearer ' . $this->authToken($formData['gymName']),
-            'Cache-Control' => 'no-cache',
-            'Content-Type' => 'application/json',
-            'merchant' => $this->getMerchantId($formData['gymName']),
-        );
+{
+    $apiUrl = $_ENV['ENV'] == 'production' 
+        ? "https://api-global.ezypay.com/v2/billing/customers/$customerId/paymentmethods" 
+        : "https://api-sandbox.ezypay.com/v2/billing/customers/$customerId/paymentmethods";
+    
+    $headers = array(
+        'Authorization' => 'Bearer ' . $this->authToken($formData['gymName']),
+        'Cache-Control' => 'no-cache',
+        'Content-Type' => 'application/json',
+        'merchant' => $this->getMerchantId($formData['gymName']),
+    );
 
-        try {
-            $response = $this->getApiRequest($apiUrl, $headers, 16);
-            $decoded = json_decode($response);
-            
-            if (!$response || !$decoded || !isset($decoded->data)) {
-                write_log('Invalid response from EzyPay getting Primary Payment Method', $response);
-                return null;
-            }
-            
-            if (empty($decoded->data)) {
-                write_log('No payment methods found for customer', $customerId);
-                return null;
-            }
-            
-            $token = $decoded->data[0]->paymentMethodToken ?? null;
-            write_log("Primary Payment Method retrieved:", $token);
-            
-            return $token;
-        } catch (RequestException $e) {
-            write_log('Error getting primary payment method:', $e->getMessage());
-            $this->errors['paymentMethod'] = "Error retrieving payment method";
+    try {
+        $response = $this->getApiRequest($apiUrl, $headers, 16);
+        $decoded = json_decode($response);
+        
+        if (!$response || !$decoded || !isset($decoded->data)) {
+            write_log('Invalid response from EzyPay getting Primary Payment Method', $response);
             return null;
         }
+        
+        if (empty($decoded->data)) {
+            write_log('No payment methods found for customer', $customerId);
+            return null;
+        }
+        
+        $token = $decoded->data[0]->paymentMethodToken ?? null;
+        write_log("Primary Payment Method retrieved:", $token);
+        
+        return $token;
+    } catch (RequestException $e) {
+        write_log('Error getting primary payment method:', $e->getMessage());
+        $this->errors['paymentMethod'] = "Error retrieving payment method";
+        return null;
     }
+   }
 
     protected function clean($string)
     {
@@ -270,37 +274,42 @@ class EzyPayClient extends PerfectGymClient
         // Convert to uppercase
         return strtoupper($string);
     }
+
     public function authToken($gym)
     {
-        if (empty($gym)) {
-            return new WP_Error('missing_gym', 'Gym parameter is required.');
+
+        $gym = $gym ?: $_GET['gym'];
+        $gym = $this->clean($gym);
+
+        if ($_ENV['ENV'] != 'production') {
+            $gym = 'SANDBOX';
         }
-    
-        $apiUrl = $this->baseURL . '/auth';
-        $data = ['gym' => $gym];
-    
-        error_log('API Request URL: ' . $apiUrl);
-        error_log('API Request Data: ' . print_r($data, true));
-    
-        try {
-            $response = $this->postApiRequest($apiUrl, $data);
-    
-            if ($response === false) {
-                error_log('API Request Failed.');
-                return new WP_Error('api_request_failed', 'Failed to fetch auth token.');
-            }
-    
-            $responseData = json_decode($response, true);
-            error_log('API Response: ' . print_r($responseData, true));
-    
-            if (empty($responseData['authToken'])) {
-                return new WP_Error('invalid_response', 'Auth token not found in API response.');
-            }
-    
-            return $responseData['authToken'];
-        } catch (Exception $e) {
-            error_log('Exception in authToken: ' . $e->getMessage());
-            return new WP_Error('exception', 'An unexpected error occurred.');
+
+        $authToken = get_transient("ezypayAuthToken_$gym");
+        $credentials = array(
+            'API_URL' => $_ENV['ENV'] == 'production' ? 'https://identity.ezypay.com/token' : 'https://identity-sandbox.ezypay.com/token',
+            'CLIENT_ID' => $_ENV['ENV'] == 'production' ? $_ENV["EZYPAY_CLIENT_ID"] : $_ENV['SANDBOX_EZYPAY_CLIENT_ID'],
+            'CLIENT_SECRET' => $_ENV['ENV'] == 'production' ? $_ENV["EZYPAY_CLIENT_SECRET"] : $_ENV['SANDBOX_EZYPAY_CLIENT_SECRET'],
+            'MERCHANT_ID' => $_ENV['ENV'] == 'production' ? $_ENV["EZYPAY_MERCHANT_ID_$gym"] : $_ENV['SANDBOX_EZYPAY_MERCHANT_ID'],
+            'USERNAME' => $_ENV['ENV'] == 'production' ? $_ENV["EZYPAY_USERNAME_$gym"] : $_ENV['SANDBOX_EZYPAY_USERNAME'],
+            'PASSWORD' => $_ENV['ENV'] == 'production' ? $_ENV["EZYPAY_PASSWORD_$gym"] : $_ENV['SANDBOX_EZYPAY_PASSWORD'],
+        );
+
+        if ($authToken === false) {
+            $data = "grant_type=password&client_id={$credentials['CLIENT_ID']}&client_secret={$credentials['CLIENT_SECRET']}&username={$credentials['USERNAME']}&password={$credentials['PASSWORD']}&scope=integrator%20hosted_payment";
+            $headers = [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+                'merchant' => $this->getMerchantId($gym),
+            ];
+
+            $perfectGymClient = new PerfectGymClient;
+            $response = $perfectGymClient->postApiRequest($credentials['API_URL'], $data, $headers);
+
+            set_transient("ezypayAuthToken_$gym", json_decode($response, true)['access_token'], 1800);
+
+            $authToken = get_transient("ezypayAuthToken_$gym");
         }
+
+        return $authToken;
     }
 }

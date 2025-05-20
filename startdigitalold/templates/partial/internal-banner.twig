@@ -1,5 +1,3 @@
-<!-- display banner if selected to display -->
-{% if fields.internal_banner.display_banner %}
 <div class="internal-banner relative flex max-md:flex-col max-md:gap-10 bg-white bg-opacity-60">
 	<div class="banner-inner overflow-hidden w-full relative md:py-16 2xl:py-32 max-md:pb-6 max-lg:!pt-40 lg:mt-36 flex max-lg:flex-col gap-10 lg:items-center lg:min-h-[250px]">
 		<div class="banner-image-wrapper container lg:w-[calc(100%_-_40px)] top-0 left-0 absolute w-full h-full overflow-hidden rounded-br-[100px] lg:rounded-r-full">
@@ -12,7 +10,7 @@
 			{% endif %}
 		</div>
 		<div class="container relative z-[15] text-white">
-			<h1 data-animate-left class="relative z-20 text-[2.25rem] sm:text-[2.75rem] lg:text-[3.75rem] 2xl:text-7xl 2xl:w-1/2">
+			<h1 class="relative z-20 text-[2.25rem] sm:text-[2.75rem] lg:text-[3.75rem] 2xl:text-7xl 2xl:w-1/2">
 				{% if title %}
 					{{ title }}
 				{% elseif fields.internal_banner.custom_heading %}
@@ -24,6 +22,3 @@
 		</div>
 	</div>
 </div>
-{% else %}
-<div class="no-internal-banner"></div>
-{% endif %}

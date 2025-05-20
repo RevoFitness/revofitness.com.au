@@ -193,34 +193,45 @@ class EzyPayClient extends PerfectGymClient
         if ($this->getPrimaryPaymentMethod($formData, $customerId) !== null) {
             return;
         }
-
-        $apiUrl =  $_ENV['ENV'] == 'production' ? "https://api-global.ezypay.com/v2/billing/customers/$customerId/paymentmethods" : "https://api-sandbox.ezypay.com/v2/billing/customers/$customerId/paymentmethods";
+    
+        $apiUrl = $_ENV['ENV'] == 'production'
+            ? "https://api-global.ezypay.com/v2/billing/customers/$customerId/paymentmethods"
+            : "https://api-sandbox.ezypay.com/v2/billing/customers/$customerId/paymentmethods";
+    
+        write_log([
+            'EZYPAY Auth Token' => $this->authToken($formData['gymName']),
+            'EZYPAY Merchant ID' => $this->getMerchantId($formData['gymName']),
+        ]);
+    
         $headers = array(
             'Authorization' => 'Bearer ' . $this->authToken($formData['gymName']),
             'Cache-Control' => 'no-cache',
             'Content-Type' => 'application/json',
             'merchant' => $this->getMerchantId($formData['gymName']),
         );
+    
         $data = array(
             "paymentMethodToken" => $formData['cardToken'],
             "primary" => true
         );
-
+    
         $response = $this->postApiRequest($apiUrl, $data, $headers);
-
+    
         if (!$response) {
-		
-            write_log(["No response:", $response]);
+            write_log([
+                "No response from setPrimaryPaymentMethod",
+                "API URL" => $apiUrl,
+                "Headers" => $headers,
+                "Payload" => $data
+            ]);
             $this->errors['paymentMethod'] = "We've encountered an error with your payment method, please try again. setPrimaryMethod";
             $this->throw();
         }
-
+    
         write_log(["Primary Payment Method Set", $response]);
-	write_log("Setting primary payment method for customer with countryCode: AU");
-	write_log("API Request Data for Primary Payment Method: " . print_r($data, true));
-	write_log("Payment method token: " . $formData['cardToken']);
         return json_decode($response);
     }
+
 
     public function getPrimaryPaymentMethod($formData, $customerId)
 {

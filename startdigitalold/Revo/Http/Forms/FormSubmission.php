@@ -19,17 +19,11 @@ class FormSubmission
     {
         try {
             // User didn't submit any payment details
-           if (($data['paymentFrequency'] !== 'fiveWeek' && $data['paymentFrequency'] !== 'special_circumstances') && empty($data['BSB']) empty($data['cardType'])) {
+            if (($data['paymentFrequency'] !== 'fiveWeek' && $data['paymentFrequency'] !== 'special_circumstances') && empty($data['BSB']) && empty($data['cardType'])) {
 
                 write_log("{$data['email']} submitted with no payment details. Aborting");
-                write_log("Payment Frequency: {$data['paymentFrequency']}");
-                write_log("BSB: {$data['BSB']}");
-                write_log("Card Type: {$data['cardType']}");
-                
                 $this->errors['user'] = 'Cannot create user. Please try again later.';
                 $this->throw();
-            } else {
-                write_log("Payment details are valid for {$data['email']}");
             }
 
             // Is a bank, get the token
@@ -69,7 +63,11 @@ class FormSubmission
 
             // Create the user
             $user = User::create($data, $paymentIdOne);
+            write_log('Creating user with data:', $data);
+
             if (!$user) {
+                write_log('User object result:', $user);
+
                 write_log('Can\'t create user. Aborting');
                 $this->errors['user'] = 'Cannot create user. Please try again later.';
                 $this->throw();
