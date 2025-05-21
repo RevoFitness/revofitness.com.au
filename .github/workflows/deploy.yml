@@ -37,8 +37,8 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_3
           chmod 600 ~/.ssh/id_rsa_dev_3
 
-      - name: Sync theme to VPS
+      - name: Sync theme to VPS using SCP
         run: |
-          rsync -avz --delete \
-            -e "ssh -p 2222 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3" \
-            ./startdigital/ developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/startdigital
+          scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
+          ./startdigital/* developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/startdigital
+
