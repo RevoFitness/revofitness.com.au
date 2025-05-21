@@ -13,32 +13,21 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v3
 
-      - name: Install Composer dependencies (project root)
+      - name: Install Composer dependencies (theme only)
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
-        working-directory: public_html
-
-      - name: Install Composer dependencies (theme)
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-        working-directory: public_html/wp-content/themes/startdigital
 
       - name: Install npm packages & build frontend (theme)
         run: |
           npm install
           npm run build
-        working-directory: public_html/wp-content/themes/startdigital
 
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan 43.250.141.151 >> ~/.ssh/known_hosts
-          
-      - name: Sync files to VPS (development)
+      - name: Sync theme to VPS (development)
         run: |
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
-            ./public_html/ developmentrevof@43.250.141.151:/home/developmentrevof/public_html
+            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+            ./ developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/startdigital
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Done
-        run: echo "✅ Deployment to development server complete."
+        run: echo "✅ Theme deployed to development server."
