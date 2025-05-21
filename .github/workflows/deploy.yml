@@ -9,19 +9,25 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: .
+
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v3
 
       - name: Install Composer dependencies (theme only)
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        working-directory: .
 
       - name: Install npm packages & build frontend (theme)
         run: |
           npm install
           npm run build
+        working-directory: .
 
-      - name: Sync theme to VPS (development)
+      - name: Sync theme to VPS
         run: |
           rsync -avz --delete \
             -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
@@ -30,4 +36,4 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Done
-        run: echo "✅ Theme deployed to development server."
+        run: echo "✅ Theme deployment complete."
