@@ -21,7 +21,13 @@ use Revo\PerfectGym\FormDataParser;
  * plug-in, you can safely delete this block.
  */
 
-session_start();
+//session_start();
+add_action('init', function () {
+    if (!session_id()) {
+        ini_set('session.save_path', sys_get_temp_dir()); // or set a custom path
+        session_start();
+    }
+});
 
 $composer_autoload = __DIR__ . '/vendor/autoload.php';
 if (file_exists($composer_autoload)) {
