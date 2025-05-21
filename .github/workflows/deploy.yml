@@ -31,13 +31,17 @@ jobs:
           npm run build
         working-directory: startdigital
 
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_2
+          chmod 600 ~/.ssh/id_rsa_dev_2
+
       - name: Sync theme to VPS
         run: |
           rsync -avz --delete \
-            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_2" \
             ./startdigital/ developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/startdigital
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Done
         run: echo "✅ Theme deployment complete."
