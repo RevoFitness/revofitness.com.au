@@ -40,4 +40,7 @@ jobs:
       - name: Sync theme to VPS using SCP
         run: |
           scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
-          ./startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
+          startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
+
+      - name: Done
+        run: echo "✅ Theme deployment complete."
