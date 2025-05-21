@@ -37,6 +37,8 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_3
           chmod 600 ~/.ssh/id_rsa_dev_3
           ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
+      - name: Clean unnecessary files
+        run: rm -rf startdigital/node_modules
 
       - name: Sync theme to VPS using SCP
         run: |
