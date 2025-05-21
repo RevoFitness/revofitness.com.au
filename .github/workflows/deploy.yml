@@ -6,30 +6,39 @@ on:
       - develop
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get latest code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install PHP dependencies
-        run: |
-          composer install
-          cd wp-content/themes/stardigital
-          composer install
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: mbstring, xml, curl, zip, json
+          tools: composer
 
-      - name: Install JS dependencies and build
+      - name: Install composer dependencies (project root)
+        working-directory: public_html
+        run: composer install --no-dev --prefer-dist --no-progress --no-interaction
+
+      - name: Install composer dependencies (theme)
+        working-directory: public_html/wp-content/themes/startdigital
+        run: composer install --no-dev --prefer-dist --no-progress --no-interaction
+
+      - name: Install Node modules & Build Theme
+        working-directory: public_html/wp-content/themes/startdigital
         run: |
-          cd wp-content/themes/stardigital
-          npm ci
+          npm install
           npm run build
 
-      - name: FTP Deploy
+      - name: Deploy to server via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: development.revofitness.com.au
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /
-
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: public_html/
+          server-dir: /public_html/
