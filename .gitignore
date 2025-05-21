@@ -8,5 +8,6 @@ twentytwentyfour
 /node_modules
 *:Zone.Identifier
 Zone.Identifier
+*Zone.Identifier
 tmp
 .vscode
