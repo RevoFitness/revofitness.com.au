@@ -36,11 +36,12 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_2
           chmod 600 ~/.ssh/id_rsa_dev_2
+          ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
 
       - name: Sync theme to VPS
         run: |
           rsync -avz --delete \
-            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_2" \
+            -e "ssh -p 2222 -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_2" \
             ./startdigital/ developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/startdigital
 
       - name: Done
