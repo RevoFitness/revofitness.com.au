@@ -17,21 +17,25 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v3
 
-      - name: Install Composer dependencies (theme only)
+      - name: Install Composer dependencies (project root)
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
         working-directory: .
+
+      - name: Install Composer dependencies (theme)
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        working-directory: startdigital
 
       - name: Install npm packages & build frontend (theme)
         run: |
           npm install
           npm run build
-        working-directory: .
+        working-directory: startdigital
 
       - name: Sync theme to VPS
         run: |
           rsync -avz --delete \
             -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
-            ./ developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/startdigital
+            ./startdigital/ developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/startdigital
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
