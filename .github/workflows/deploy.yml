@@ -1,4 +1,3 @@
-# .github/workflows/deploy.yml
 name: build-and-deploy
 
 on:
@@ -7,34 +6,27 @@ on:
       - develop
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout latest code
         uses: actions/checkout@v3
 
-      - name: Install Composer dependencies (root)
-        run: |
-          cd public_html
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Install Composer dependencies (theme)
-        run: |
-          cd public_html/wp-content/themes/startdigital
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Install NPM packages and build assets
-        run: |
-          cd public_html/wp-content/themes/startdigital
-          npm install
-          npm run build
-
-      - name: Deploy via SSH
-        uses: appleboy/scp-action@master
+      - name: Deploy and build on remote VPS via SSH
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "public_html/*"
-          target: "/home/developmentrevof/public_html"
+          script: |
+            cd /home/developmentrevof/public_html
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+
+            cd wp-content/themes/startdigital
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+            npm install
+            npm run build
+
+      - name: Done
+        run: echo "✅ Deployment to development server complete."
