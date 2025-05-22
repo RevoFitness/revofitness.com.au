@@ -1,0 +1,189 @@
+{% extends "base.twig" %}
+
+{# Include Slick CSS #}
+{% block styles %}
+  {{ parent() }}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+{% endblock %}
+
+{% set errors = session.get('errors') %}
+{% set old = session.get('old') %}
+
+{% block content %}
+
+  {# Presale section #}
+  {# {% include "components/presale-list.twig" %} #}
+    <div class="container flex mt-4 space-x-[5px] pt-10" id="tab-wrapper" style="border-bottom:5px solid #000">
+        <button 
+        data-slide="0"
+        class="is-tab px-6 py-3 font-semibold rounded-t-[10px] border-l-[2px] border-t-[2px] border-r-[2px] border-black border-b-0 bg-brandRed text-white">
+            Select Club
+        </button>
+        <button 
+        data-slide="1"
+        class="is-tab px-6 py-3 font-semibold rounded-t-[10px] border-l-[2px] border-t-[2px] border-r-[2px] border-black border-b-0 bg-lightPink text-gray-400 cursor-[crosshair]" disabled>
+            Membership
+        </button>
+        <button 
+        data-slide="2"
+        class="is-tab px-6 py-3 font-semibold rounded-t-[10px] border-l-[2px] border-t-[2px] border-r-[2px] border-black border-b-0 bg-lightPink text-gray-400 cursor-[crosshair]" disabled>
+            Contact Details
+        </button>
+        <button 
+        data-slide="3"
+        class="is-tab px-6 py-3 font-semibold rounded-t-[10px] border-l-[2px] border-t-[2px] border-r-[2px] border-black border-b-0 bg-lightPink text-gray-400 cursor-[crosshair]" disabled>
+            Summary
+        </button>
+        <button 
+        data-slide="4"
+        class="is-tab px-6 py-3 font-semibold rounded-t-[10px] border-l-[2px] border-t-[2px] border-r-[2px] border-black border-b-0 bg-lightPink text-gray-400 cursor-[crosshair]" disabled>
+            Payment
+        </button>
+        <button 
+        data-slide="5"
+        class="is-tab px-6 py-3 font-semibold rounded-t-[10px] border-l-[2px] border-t-[2px] border-r-[2px] border-black border-b-0 bg-lightPink text-gray-400 cursor-[crosshair]" disabled>
+            Terms
+        </button>
+        </div>
+
+  {# Slick Slider Wrapper #}
+    <div class="form-slider bg-lightPink pt-10 pb-10">
+    <div class="slide">
+        {% include "components/gym-select.twig" %}
+    </div>
+    <div class="slide">
+        {% include "partial/sign-up-form-test.twig" %}
+    </div>
+    </div>
+    <div class="custom-buttons flex container bg-lightPink pb-10 gap-10 pt-10">
+        <button class="is-button custom-next group bg-brandRed pl-8 pr-4 py-4 rounded-full text-xl lg:text-2xl font-bold flex flex-wrap justify-between items-center">Next</button>
+    </div>
+
+
+{% endblock %}
+
+{# Load jQuery and Slick scripts #}
+{% block scripts %}
+  {{ parent() }}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      const $slider = $('.form-slider');
+      const $nextBtn = $('.custom-next');
+      const $tabs = $('.is-tab');
+
+      $slider.slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+        dots: false,
+        infinite: false,
+        adaptiveHeight: true,
+        draggable: false,
+      });
+
+      let currentSlide = 0;
+
+      function updateNavButtons(current, total) {
+        $nextBtn.prop('disabled', false);
+      }
+      // Disable the next button if on the last slide
+      $slider.on('afterChange', function (event, slick, current) {
+        currentSlide = current;
+        updateNavButtons(current, slick.slideCount);
+      });
+      // Disable the next button initially
+      function unlockTab(index) {
+        const $tab = $tabs.eq(index);
+        $tab.removeAttr('disabled');
+        $tab.removeClass('bg-lightPink text-gray-400 cursor-[crosshair]');
+        $tab.addClass('bg-brandRed text-white cursor-pointer');
+      }
+       // Check for required fields in the customer details section
+      function validateSlide(slideIndex) {
+        const $currentSlide = $slider.find(`.slick-slide[data-slick-index="${slideIndex}"]`);
+
+        if (slideIndex === 0) {
+          const selectedGym = $('#gymSelect').val();
+          return selectedGym && selectedGym !== 'select-a-gym';
+        }
+
+        if (slideIndex === 1) {
+          const selectedRadio = $currentSlide.find('input[name="membershipType"]:checked');
+          return selectedRadio.length > 0;
+        }
+     
+        const $customerDetails = $currentSlide.find('#customer-details');
+        if ($customerDetails.length > 0) {
+          let allValid = true;
+
+          $customerDetails.find('input[required], select[required], textarea[required]').each(function () {
+            const $field = $(this);
+            const isRadio = $field.is(':radio');
+            const isSelect = $field.is('select');
+            let valid = true;
+
+            if (isRadio) {
+              const name = $field.attr('name');
+              valid = $customerDetails.find(`input[name="${name}"]:checked`).length > 0;
+            } else if (isSelect) {
+              valid = $field.val() && $field.prop('selectedIndex') !== 0;
+            } else {
+              valid = $field.val().trim() !== '';
+            }
+
+            if (!valid) {
+              $field.addClass('border-red-500');
+              allValid = false;
+            } else {
+              $field.removeClass('border-red-500');
+            }
+          });
+
+          return allValid;
+        }
+
+        return true;
+      }
+      // next buttn functionality - on click it will check if the current slide is valid and if so, move to the next slide and unlock the next tab.
+      $nextBtn.on('click', function () {
+        if (validateSlide(currentSlide)) {
+          $slider.slick('slickNext');
+          unlockTab(currentSlide + 1);
+
+          $('html, body').animate({
+            scrollTop: $('#tab-wrapper').offset().top - 200
+          }, 300);
+        } else {
+          alert('Please complete the required fields before proceeding.');
+        }
+      });
+      // Initialize the tabs - makes sure the hover effect isn't applied to tabs that are disabled.
+      function unlockTab(index) {
+        const $tab = $tabs.eq(index);
+        $tab.removeAttr('disabled');
+        $tab.removeClass('bg-lightPink text-gray-400 cursor-[crosshair]');
+        $tab.addClass('bg-brandRed text-white cursor-pointer hover:bg-brandRedDark');
+      }
+      //tab functionality - once a tab is active the user can then click it to go back to the corresponding slide to update their details agains if needed.
+      $tabs.on('click', function () {
+        const targetIndex = parseInt($(this).data('slide'), 10);
+        if (!isNaN(targetIndex)) {
+          $slider.slick('slickGoTo', targetIndex, false);
+          currentSlide = targetIndex;
+          console.log('Current Slide:', currentSlide);
+          console.log('targetIndex:', targetIndex);
+
+          $('html, body').animate({
+            scrollTop: $('#tab-wrapper').offset().top - 200
+          }, 300);
+        }
+      });
+
+
+    });
+  </script>
+{% endblock %}
+

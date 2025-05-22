@@ -1,0 +1,65 @@
+<div id="terms-and-conditions" class="flex flex-col gap-4 md:gap-6 pt-8 pb-10 bg-lightPink">
+	<span class="is-h5">Terms &amp; Conditions:</span>
+	<label class="flex items-start gap-3 cursor-pointer w-fit" for="joinConfirmation">
+		<input type="checkbox" id="termsConditions" name="termsConditions" class="checkbox" required {{ old.termsConditions ? 'checked' }}/>
+		<div class="flex flex-col gap-1">
+			<strong class="mt-[2px]">
+				By clicking this button, you agree that:
+			</strong>
+			<ul class="list-disc !ml-4">
+				<li>
+					you are joining as a member of Revo Fitness as from
+					<span data-start-date-placeholder>{{ revo.utils.getPossibleStartDates[0]|trim }}</span>
+				</li>
+				<li>
+					the
+					{% if hiitfit %}
+						<a class="text-brandRed hover:underline" href="/wp-content/uploads/2023/10/Terms-of-Use-Revo-Fitness-HIITFIT_Final-23.03.20.pdf" target="_blank">Terms &amp; Conditions and Membership Agreement</a>
+					{% else %}
+						<a class="text-brandRed hover:underline" href="/terms" target="_blank">Revo Fitness Membership Agreement Terms &amp; Conditions</a> (as amended from time to time) 
+					{% endif %}
+					apply to your membership as from
+					<span data-start-date-placeholder>{{ revo.utils.getPossibleStartDates[0]|trim }}</span>
+				</li>
+				{% if not isFiveWeekMembership and not isGuest and not isSpecialCircumstances %}
+					<li data-monthly-surcharge>
+						the
+						<a class="text-brandRed hover:underline" href="https://forms.ezypay.com/hubfs/document/AU_Customer_Terms_&amp;_Conditions.pdf?t=1537574674274" target="_blank">Ezypay Terms &amp; Conditions</a>
+						apply to your monthly membership payments as from today's date and you authorise Ezypay to debit payments on behalf of Revo Fitness as Principal, as well as additional Ezypay fees of:
+						<div style="list-style-type:disc; margin-left:25px;">either $2.00 or 1.8% + 35c plus GST, whichever is greater, in respect of Visa or Mastercard payments made before 10 June 2025; or</div>
+						<div style="list-style-type:disc; margin-left:25px;">1.8% + $1.00 plus GST, in respect of Visa or Mastercard payments made on or after 10 June 2025</div>
+					</li>
+					<li data-fortnightly-surcharge class="hidden">
+						That the
+						<a class="text-brandRed hover:underline" href="https://forms.ezypay.com/hubfs/document/AU_Customer_Terms_&amp;_Conditions.pdf?t=1537574674274" target="_blank">Ezypay Terms &amp; Conditions</a>
+						apply to your membership payments as from today's date and you will be charged an additional $0.61 fortnightly charge for visa or mastercard payments
+					</li>
+					<li data-level-three-surcharge class="hidden">
+						the
+						<a class="text-brandRed hover:underline" href="https://forms.ezypay.com/hubfs/document/AU_Customer_Terms_&amp;_Conditions.pdf?t=1537574674274" target="_blank">Ezypay Terms &amp; Conditions</a>
+						apply to your fortnightly membership payments as from today's date and you authorise Ezypay to debit payments on behalf of Revo Fitness as Principal, 
+						as well as additional Ezypay fees of either $0.61 or 1.5% plus GST, whichever is greater, in respect of Visa or Mastercard payments. 
+					</li>
+				{% endif %}
+				<li>
+					That you have watched the
+					<button type="button" class="text-brandRed hover:underline" data-open-modal>
+						Orientation &amp; Induction Program
+					</button>
+				</li>
+			</ul>
+		</div>
+	</label>
+</div>
+
+<div data-orientation-video-container class="fixed bg-black top-0 left-0 w-full h-full z-[99999] hidden fade-in">
+
+	<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:-translate-y-[40%] 2xl:-translate-y-1/2 aspect-video w-full md:w-1/2">
+		<video src="https://revofitness.com.au/wp-content/uploads/2023/10/orientation.mp4" controls data-orientation-video></video>
+		<div data-close-video class="absolute -top-16 right-0 p-4 flex items-center gap-2 cursor-pointer">
+			{% include "icons/cross.twig" with { stroke: "#ffffff" } %}
+			<span class="text-white">Close</span>
+		</div>
+	</div>
+
+</div>

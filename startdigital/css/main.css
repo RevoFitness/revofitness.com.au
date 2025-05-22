@@ -32,6 +32,32 @@
 	scroll-margin-top: 5rem;
 }
 
+.slick-track {
+	display:flex;
+}
+.form-slider .slick-slide {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+.cursor-cross {
+  cursor: crosshair;
+}
+.is-tab {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 0px, rgb(51, 51, 51) 0px -1px 0px 1px;
+    border-right: 2px solid black;
+	border-top-left-radius:15px;
+	border-top-right-radius:15px;
+}
+.form-slider .slick-slide.slick-active {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+}
+
 @layer utilities {
 	/* Hide scrollbar for Chrome, Safari and Opera */
 	.no-scrollbar::-webkit-scrollbar {

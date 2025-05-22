@@ -22,7 +22,34 @@
 5. Use the user's configured `sans` font-feature-settings by default.
 6. Use the user's configured `sans` font-variation-settings by default.
 7. Disable tap highlights on iOS
-*/html,
+*/.slick-track {
+display:flex;
+}
+
+.form-slider .slick-slide {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.form-slider .slick-slide.slick-active {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+}
+.cursor-cross {
+  cursor: crosshair;
+}
+.is-tab {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 0px, rgb(51, 51, 51) 0px -1px 0px 1px;
+    border-right: 2px solid black;
+    border-top-left-radius:15px;
+	border-top-right-radius:15px;
+}
+html,
 :host {
   line-height: 1.5; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
@@ -40,6 +67,7 @@
   margin: 0; /* 1 */
   line-height: inherit; /* 2 */
 }/*
+
 1. Add the correct height in Firefox.
 2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
 3. Ensure horizontal rules are visible by default.

@@ -1,0 +1,27 @@
+{% if presaleGyms %}
+	<div class="bg-pureWhite container pt-12 pb-6">
+		<div data-presale-slider class="container pt-12 pb-6 md:pt-24 md:pb-12">
+			<div class="flex justify-between items-end mb-6 md:mb-8">
+				<h2>Presales</h2>
+				<div class="max-md:hidden flex items-center gap-10">
+					<div class="swiper-button-prev !relative"></div>
+					<div class="swiper-button-next !relative"></div>
+				</div>
+			</div>
+			<div class="swiper-wrapper">
+				{% for item in presaleGyms %}
+					{% set club = revo.api.getClubWhereName(item.title) %}
+					<a href="{{ item.link }}" class="swiper-slide">
+						<div class="is-button group bg-brandRed pl-8 pr-4 py-4 rounded-full text-xl lg:text-2xl font-bold flex flex-wrap justify-between items-center">
+							<div class="flex flex-col gap-1 md:gap-2 text-white">
+								{{ item.title }}
+							</div>
+							{% include "icons/arrow-right-white-bg.twig" with { class: "duration-300 ease-in-out w-16 md:w-20 flex-shrink-0 group-hover:-rotate-45" } %}
+						</div>
+					</a>
+				{% endfor %}
+			</div>
+			<div class="swiper-scrollbar !relative mt-6 md:mt-12"></div>
+		</div>
+	</div>
+{% endif %}

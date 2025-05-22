@@ -1,0 +1,44 @@
+{% set stateName = {
+    'All': 'All',
+    'New South Wales': 'NSW',
+    'Victoria': 'VIC',
+    'Queensland': 'QLD',
+    'South Australia': 'SA',
+    'Western Australia': 'WA',
+    'Tasmania': 'TAS',
+    'Northern Territory': 'NT',
+} %}
+
+{% set userState = stateName[revo.mapHandler.getUserLocation.state] %}
+
+<div class="container pt-12 pb-6 bg-lightPink">
+	<h3 class="text-brandBlack mb-4 lg:mb-8">Choose your Gym</h3>
+	<div class="grid sm:grid-cols-2 gap-4 mb-6">
+
+		<div class="input-wrapper">
+			<label for="stateSelect">State</label>
+			<select class="cursor-pointer" name="stateSelect" id="stateSelect">
+				<option disabled>Select a state</option>
+				<option value='All' {{ selectedGym ? 'selected'}}>All</option>
+				{% for key, item in revo.gymManager.getGymsByState %}
+					<option value="{{ key }}" {{ old.state == key ? 'selected' : key == userState ? 'selected' }}>{{ key }}</option>
+				{% endfor %}
+			</select>
+		</div>
+
+		<div class="input-wrapper">
+			<label for="gymSelect">Gym</label>
+			<select class="cursor-pointer" name="gymSelect" id="gymSelect">
+				<option disabled value="select-a-gym" {{ gymSelect == null ? 'selected' }}>Select a gym</option>
+				{% for key, state in revo.gymManager.getGymsByState %}
+					<option disabled class="{{ key == 'All' or key != userState ? 'hidden' : '' }}">{{ key }}</option>
+					{% for gym in state %}
+						{% include "partial/sign-up-form/gym-option.twig" %}
+					{% endfor %}
+				{% endfor %}
+			</select>
+			<input type="hidden" name="state" id="state"/>
+		</div>
+
+	</div>
+</div>

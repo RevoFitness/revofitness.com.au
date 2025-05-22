@@ -1,0 +1,86 @@
+{% set errors = session.get('errors') %}
+{% set old = session.get('old') %}
+{% set currentPage = fn('getCurrentPage') %}
+
+{% if errors %}
+  <div class="pt-16">
+    {% include 'partial/errors.twig' %}
+  </div>
+{% endif %}
+
+<form id="sign-up-form" name="sign-up-form"
+  class="form-slider container relative flex flex-col gap-6"
+  method="POST"
+  action="{{ currentPage }}"
+  {{ isFiveWeekMembership ? 'data-five-week-membership' }}
+  {{ isPresale ? 'data-presale-form' }}
+>
+
+  <div class="slide">
+    {% include 'partial/loader.twig' %}
+    {% if gym_select is defined %}
+      {{ gym_select }}
+    {% else %}
+      {% include 'components/gym-select-test.twig' %}
+    {% endif %}
+  </div>
+
+  <div class="slide">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <h3 class="text-brandBlack">Choose your membership</h3>
+      <a href="/memberships" class="button-outline !bg-pureWhite">Compare memberships</a>
+    </div>
+    {% include 'partial/sign-up-form/membership-select-test.twig' %}
+  </div>
+
+  <div class="slide">
+    {% include 'partial/sign-up-form/customer-details-test.twig' %}
+  </div>
+
+  <div class="slide">
+    {% include 'partial/sign-up-form/membership-summary-test.twig' %}
+  </div>
+
+  {% if not isFiveWeekMembership %}
+    <div class="slide">
+      {% include 'partial/sign-up-form/billing-details-test.twig' %}
+    </div>
+  {% endif %}
+
+  <div class="slide">
+    {% include 'partial/sign-up-form/terms-conditions-test.twig' %}
+    <button type="submit" id="PostPaymentMethod" class="button mt-8 disabled:!opacity-[0.5]">
+        Get Started
+    </button>
+  </div>
+
+  {% if isInClubRegistration or isFiveWeekMembership %}
+    <div class="slide">
+      {# Signature #}
+      <div class="sm:w-1/2">
+        <h3 class="text-brandRed my-6">Sign here:</h3>
+        <canvas id="signature" class="w-full mb-2 aspect-[16/7] bg-white relative z-10 rounded-lg"></canvas>
+        <input type="text" class="invisible" id="signed" name="signed" required/>
+        <input type="text" class="invisible" id="signedPart2" name="signedPart2" required/>
+        <button data-action="clear" type="button" class="bg-brandRed px-2 py-1 text-white w-fit ml-auto flex self-end">Clear</button>
+      </div>
+    </div>
+    <button type="submit" id="PostPaymentMethod" class="button mt-8 disabled:!opacity-[0.5]">
+        Get Started
+    </button>
+  {% endif %}
+
+  <input type="hidden" name="paymentMethodToken" id="paymentMethodToken"/>
+  <input type="hidden" name="accountHolderName" id="accountHolderName"/>
+  <input type="hidden" name="lastFour" id="lastFour"/>
+  <input type="hidden" name="firstSix" id="firstSix"/>
+  <input type="hidden" name="cardExpiry" id="cardExpiry"/>
+  <input type="hidden" name="cardType" id="cardType"/>
+  <input type="hidden" name="captchaToken" id="captchaToken"/>
+  {% if isPresale %}
+    <input type="hidden" name="isPresale" value="true"/>
+    <input type="hidden" name="openDate" value="{{ openDate }}"/>
+  {% endif %}
+
+  
+</form>

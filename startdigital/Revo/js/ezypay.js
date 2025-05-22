@@ -268,6 +268,38 @@ function checkIfGymAcceptsCardPayment(gymSelect) {
 	document.querySelector('[data-bank-form]')?.classList.remove('hidden')
 }
 
+function setupCardAsDefaultInTestBilling(gymSelect) {
+	const selected = gymSelect.options[gymSelect.selectedIndex];
+	const acceptsCardPayment = selected.hasAttribute('data-accepts-card-payment');
+
+	const billingSection = document.querySelector('#billing-details-test');
+	const cardBtn = billingSection.querySelector('[data-payment-type="card"]');
+	const bankBtn = billingSection.querySelector('[data-payment-type="bank"]');
+	const hostedPage = billingSection.querySelector('[data-hosted-page-container]');
+	const bankForm = billingSection.querySelector('[data-bank-form]');
+	const svg = billingSection.querySelector('.bank-fee-svg');
+
+	if (acceptsCardPayment) {
+		cardBtn?.classList.remove('hidden');
+		cardBtn?.classList.add('isActive');
+		bankBtn?.classList.remove('isActive');
+
+		hostedPage?.classList.remove('hidden');
+		bankForm?.classList.add('hidden');
+
+		svg?.classList.remove('hidden');
+	} else {
+		cardBtn?.classList.add('hidden');
+		bankBtn?.classList.add('isActive');
+
+		bankForm?.classList.remove('hidden');
+		hostedPage?.classList.add('hidden');
+
+		svg?.classList.add('hidden');
+	}
+}
+
+
 function fetchAuthToken(gym) {
 	const container = document.querySelector('[data-hosted-page-container]')
 	const loader = document.querySelector('[data-ezypay-loader]')
