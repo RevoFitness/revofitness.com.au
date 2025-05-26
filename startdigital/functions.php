@@ -646,3 +646,73 @@ add_action('acf/save_post', 'regenerateVendingDiscount', 20);
 
 
 
+// admin ajax for member cancellaton
+add_action('wp_ajax_check_member', 'check_member_callback');
+add_action('wp_ajax_nopriv_check_member', 'check_member_callback');
+
+function check_member_callback() {
+    // same logic as your existing `check-for-existing-member.php`
+    $email = sanitize_email($_POST['email'] ?? '');
+
+    if (empty($email)) {
+        wp_send_json_error(['message' => 'Email is required.']);
+    }
+
+    $clientId = getenv('PG_APP_CLIENT_ID');
+    $clientSecret = getenv('PG_APP_CLIENT_SECRET');
+
+    if (!$clientId || !$clientSecret) {
+        wp_send_json_error(['message' => 'API credentials not configured.']);
+    }
+
+    $response = wp_remote_post('https://auth.perfectgym.com/oauth/token', [
+        'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
+        'body' => [
+            'grant_type' => 'client_credentials',
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+        ],
+    ]);
+
+    if (is_wp_error($response)) {
+        wp_send_json_error(['message' => 'Authentication failed.']);
+    }
+
+    $tokenData = json_decode(wp_remote_retrieve_body($response), true);
+    error_log('PG AUTH RESPONSE: ' . print_r($tokenData, true));
+    $raw = wp_remote_retrieve_body($response);
+    error_log('RAW AUTH BODY: ' . $raw);
+
+
+    $token = $tokenData['access_token'] ?? null;
+    if (!$token) {
+        wp_send_json_error(['message' => 'No token received']);
+    }
+
+    $search = wp_remote_get("https://api.perfectgym.com/api/members?email=" . urlencode($email), [
+        'headers' => [
+            'Authorization' => "Bearer $token",
+            'Accept' => 'application/json',
+        ],
+    ]);
+
+    if (is_wp_error($search)) {
+        wp_send_json_error(['message' => 'API error']);
+    }
+
+    $data = json_decode(wp_remote_retrieve_body($search), true);
+
+    if (!empty($data['items'])) {
+        foreach ($data['items'] as $member) {
+            if (strtolower($member['status']) === 'active') {
+                wp_send_json_success([
+                    'id' => $member['id'],
+                    'firstName' => $member['firstName'],
+                    'lastName' => $member['lastName'],
+                ]);
+            }
+        }
+    }
+
+    wp_send_json_error(['message' => 'No active member found.']);
+}

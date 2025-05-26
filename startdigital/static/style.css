@@ -22,34 +22,7 @@
 5. Use the user's configured `sans` font-feature-settings by default.
 6. Use the user's configured `sans` font-variation-settings by default.
 7. Disable tap highlights on iOS
-*/.slick-track {
-display:flex;
-}
-
-.form-slider .slick-slide {
-  opacity: 0;
-  visibility: hidden;
-  height: 0;
-  overflow: hidden;
-  transition: opacity 0.3s ease;
-}
-
-.form-slider .slick-slide.slick-active {
-  opacity: 1;
-  visibility: visible;
-  height: auto;
-  overflow: visible;
-}
-.cursor-cross {
-  cursor: crosshair;
-}
-.is-tab {
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 0px, rgb(51, 51, 51) 0px -1px 0px 1px;
-    border-right: 2px solid black;
-    border-top-left-radius:15px;
-	border-top-right-radius:15px;
-}
-html,
+*/html,
 :host {
   line-height: 1.5; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
@@ -67,7 +40,6 @@ html,
   margin: 0; /* 1 */
   line-height: inherit; /* 2 */
 }/*
-
 1. Add the correct height in Firefox.
 2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
 3. Ensure horizontal rules are visible by default.
@@ -607,7 +579,8 @@ video {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0}.pointer-events-none{
-  pointer-events: none}.invisible{
+  pointer-events: none}.visible{
+  visibility: visible}.invisible{
   visibility: hidden}.static{
   position: static}.fixed{
   position: fixed}.absolute{
@@ -718,7 +691,8 @@ video {
   margin-left: auto}.mr-3{
   margin-right: 0.75rem}.mr-8{
   margin-right: 2rem}.mt-1{
-  margin-top: 0.25rem}.mt-12{
+  margin-top: 0.25rem}.mt-10{
+  margin-top: 2.5rem}.mt-12{
   margin-top: 3rem}.mt-16{
   margin-top: 4rem}.mt-2{
   margin-top: 0.5rem}.mt-20{
@@ -958,7 +932,10 @@ video {
   row-gap: 1.5rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){
   --tw-space-y-reverse: 0;
   margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))}.space-y-12 > :not([hidden]) ~ :not([hidden]){
+  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))}.space-y-10 > :not([hidden]) ~ :not([hidden]){
+  --tw-space-y-reverse: 0;
+  margin-top: calc(2.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(2.5rem * var(--tw-space-y-reverse))}.space-y-12 > :not([hidden]) ~ :not([hidden]){
   --tw-space-y-reverse: 0;
   margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(3rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){
@@ -2705,6 +2682,26 @@ footer .menu-item,
   --tw-bg-opacity: 1;
   background-color: rgb(255 253 249 / var(--tw-bg-opacity))}#the-studio {
 	scroll-margin-top: 5rem;
+}.slick-track {
+	display:flex;
+}.form-slider .slick-slide {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}.cursor-cross {
+  cursor: crosshair;
+}.is-tab {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 0px, rgb(51, 51, 51) 0px -1px 0px 1px;
+    border-right: 2px solid black;
+	border-top-left-radius:15px;
+	border-top-right-radius:15px;
+}.form-slider .slick-slide.slick-active {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
 }.revo-shadow {
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) 0px 3px 0px 1px;
 	border-width: 3px;
