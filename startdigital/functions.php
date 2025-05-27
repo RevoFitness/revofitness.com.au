@@ -648,7 +648,7 @@ add_action('acf/save_post', 'regenerateVendingDiscount', 20);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com.au'): void {
+function sendCancellationEmail(array $data, string $to = 'support@revofitness.com.au'): void {
     $email      = $data['email'] ?? 'N/A';
     $contractIds = is_array($data['contractIds']) ? implode(', ', $data['contractIds']) : $data['contractIds'];
     $cancelDate = $data['cancelDate'] ?? gmdate('c');
