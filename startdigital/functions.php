@@ -644,14 +644,47 @@ function regenerateVendingDiscount($postId)
 }
 add_action('acf/save_post', 'regenerateVendingDiscount', 20);
 
+// CANCELLATION OF MEMBERSHIPS ---------------------------------------------------------------->
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com.au'): void {
+    $email      = $data['email'] ?? 'N/A';
+    $contractIds = is_array($data['contractIds']) ? implode(', ', $data['contractIds']) : $data['contractIds'];
+    $cancelDate = $data['cancelDate'] ?? gmdate('c');
+
+    $subject = "Membership Cancelled";
+    $body    = "The following member has cancelled their membership:\n\n" .
+               "Email: $email\n" .
+               "Contract ID(s): $contractIds\n" .
+               "Cancelled At: $cancelDate";
+
+    // Send via PHPMailer
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isMail(); // Use PHP's mail() function
+        $mail->setFrom('noreply@revofitness.com.au', 'Revo Fitness');
+        $mail->addAddress($to);
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+
+        $mail->send();
+        write_log('PHPMailer: Email sent to ' . $to);
+    } catch (Exception $e) {
+        write_log('PHPMailer Error: ' . $mail->ErrorInfo);
+    }
+}
 
 
-// admin ajax for member cancellaton
+
 add_action('wp_ajax_check_member', 'check_member_callback');
 add_action('wp_ajax_nopriv_check_member', 'check_member_callback');
 
+add_action('wp_ajax_confirm_cancel_member', 'confirm_cancel_member_callback');
+add_action('wp_ajax_nopriv_confirm_cancel_member', 'confirm_cancel_member_callback');
+
 function check_member_callback() {
-    // same logic as your existing `check-for-existing-member.php`
     $email = sanitize_email($_POST['email'] ?? '');
 
     if (empty($email)) {
@@ -665,54 +698,138 @@ function check_member_callback() {
         wp_send_json_error(['message' => 'API credentials not configured.']);
     }
 
-    $response = wp_remote_post('https://auth.perfectgym.com/oauth/token', [
-        'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
-        'body' => [
-            'grant_type' => 'client_credentials',
-            'client_id' => $clientId,
-            'client_secret' => $clientSecret,
+    $odataUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members?\$filter=Email eq '" . urlencode($email) . "'";
+
+    $response = wp_remote_get($odataUrl, [
+        'headers' => [
+            'X-Client-Id'     => $clientId,
+            'X-Client-Secret' => $clientSecret,
+            'Accept'          => 'application/json',
         ],
     ]);
 
     if (is_wp_error($response)) {
-        wp_send_json_error(['message' => 'Authentication failed.']);
+        wp_send_json_error(['message' => 'API request failed.']);
     }
 
-    $tokenData = json_decode(wp_remote_retrieve_body($response), true);
-    error_log('PG AUTH RESPONSE: ' . print_r($tokenData, true));
-    $raw = wp_remote_retrieve_body($response);
-    error_log('RAW AUTH BODY: ' . $raw);
+    $data = json_decode(wp_remote_retrieve_body($response), true);
 
+    if (!empty($data['value'])) {
+        $member = $data['value'][0];
 
-    $token = $tokenData['access_token'] ?? null;
-    if (!$token) {
-        wp_send_json_error(['message' => 'No token received']);
-    }
+        if (!empty($member['isActive']) && $member['isActive'] === true) {
+            // Get contract ID
+            $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq {$member['id']}";
+            $contractRes = wp_remote_get($contractUrl, [
+                'headers' => [
+                    'X-Client-Id'     => $clientId,
+                    'X-Client-Secret' => $clientSecret,
+                    'Accept'          => 'application/json',
+                ],
+            ]);
 
-    $search = wp_remote_get("https://api.perfectgym.com/api/members?email=" . urlencode($email), [
-        'headers' => [
-            'Authorization' => "Bearer $token",
-            'Accept' => 'application/json',
-        ],
-    ]);
+            if (is_wp_error($contractRes)) {
+                wp_send_json_error(['message' => 'Failed to fetch contract.']);
+            }
 
-    if (is_wp_error($search)) {
-        wp_send_json_error(['message' => 'API error']);
-    }
+            $contractData = json_decode(wp_remote_retrieve_body($contractRes), true);
+            if (!empty($contractData['value'][0]['id'])) {
+                $contractId = $contractData['value'][0]['id'];
 
-    $data = json_decode(wp_remote_retrieve_body($search), true);
-
-    if (!empty($data['items'])) {
-        foreach ($data['items'] as $member) {
-            if (strtolower($member['status']) === 'active') {
                 wp_send_json_success([
                     'id' => $member['id'],
                     'firstName' => $member['firstName'],
                     'lastName' => $member['lastName'],
+                    'contractId' => $contractId,
                 ]);
+            } else {
+                wp_send_json_error(['message' => 'No contract found.']);
             }
         }
     }
 
     wp_send_json_error(['message' => 'No active member found.']);
 }
+
+function confirm_cancel_member_callback() {
+    $contractIds = [];
+    $cancelled = [];
+
+    $email = sanitize_email($_POST['email'] ?? '');
+    $memberId = intval($_POST['member_id'] ?? 0);
+    $cancelDate = date('c');
+
+    if (!$email || !$memberId) {
+        wp_send_json_error(['message' => 'Missing email or member ID.']);
+    }
+
+    $clientId = $_ENV['PG_APP_CLIENT_ID'];
+    $clientSecret = $_ENV['PG_APP_CLIENT_SECRET'];
+
+    if (!$clientId || !$clientSecret) {
+        wp_send_json_error(['message' => 'API credentials not configured.']);
+    }
+
+    // Fetch all contracts
+    $contractsUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq $memberId";
+    $res = wp_remote_get($contractsUrl, [
+        'headers' => [
+            'X-Client-Id' => $clientId,
+            'X-Client-Secret' => $clientSecret,
+            'Accept' => 'application/json',
+        ],
+    ]);
+
+    if (is_wp_error($res)) {
+        wp_send_json_error(['message' => 'Failed to fetch contracts.']);
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($res), true);
+
+    if (empty($body['value'])) {
+        wp_send_json_error(['message' => 'No contracts found for member.']);
+    }
+
+    foreach ($body['value'] as $contract) {
+        $contractId = $contract['id'] ?? null;
+        if (!$contractId) continue;
+
+        $cancelPayload = json_encode([
+            'contractId' => $contractId,
+            'cancelDate' => $cancelDate,
+            'contractEndDateType' => 'Standard',
+            'cancelComment' => 'Cancelled by user via website',
+            'removeBookings' => true
+        ]);
+
+        $cancelRes = wp_remote_post('https://revofitness.perfectgym.com.au/API/v2.2/Contracts/Cancel', [
+            'headers' => [
+                'X-Client-Id'     => $clientId,
+                'X-Client-Secret' => $clientSecret,
+                'Accept'          => 'application/json',
+                'Content-Type'    => 'application/json',
+            ],
+            'body' => $cancelPayload,
+        ]);
+
+        if (!is_wp_error($cancelRes)) {
+            $contractIds[] = $contractId;
+        }
+    }
+
+    if (empty($contractIds)) {
+        wp_send_json_error(['message' => 'No contracts were cancelled.']);
+    }
+
+    // Send admin email
+    sendCancellationEmail([
+        'email' => $email,
+        'memberId' => $memberId,
+        'contractIds' => $contractIds,
+        'cancelDate' => $cancelDate,
+    ]);
+
+    wp_send_json_success(['message' => 'All contracts cancelled successfully.']);
+}
+
+
