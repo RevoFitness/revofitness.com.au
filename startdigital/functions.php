@@ -658,8 +658,8 @@ function check_member_callback() {
         wp_send_json_error(['message' => 'Email is required.']);
     }
 
-    $clientId = getenv('PG_APP_CLIENT_ID');
-    $clientSecret = getenv('PG_APP_CLIENT_SECRET');
+    $clientId = $_ENV['PG_APP_CLIENT_ID'];
+    $clientSecret = $_ENV['PG_APP_CLIENT_SECRET'];
 
     if (!$clientId || !$clientSecret) {
         wp_send_json_error(['message' => 'API credentials not configured.']);
