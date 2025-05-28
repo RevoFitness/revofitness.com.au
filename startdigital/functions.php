@@ -657,7 +657,8 @@ function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com
     $clubName    = $data['clubName'] ?? 'Unknown';
     $currentYear = date('Y');
 
-    $subject = "'htmlspecialchars($clubName)' Member Cancellation";
+   $subject = htmlspecialchars($clubName) . ' Member Cancellation';
+
 
     $htmlBody = '
     <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" bgcolor="#F8F8F8" style="background-color: #F8F8F8;min-height:100vh;">
