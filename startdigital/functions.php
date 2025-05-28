@@ -649,34 +649,88 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 function sendCancellationEmail(array $data, string $to = 'support@revofitness.com.au'): void {
-    $email      = $data['email'] ?? 'N/A';
+    $email       = $data['email'] ?? 'N/A';
     $contractIds = is_array($data['contractIds']) ? implode(', ', $data['contractIds']) : $data['contractIds'];
-    $cancelDate = $data['cancelDate'] ?? gmdate('c');
+    $cancelDate  = $data['cancelDate'] ?? gmdate('c');
+    $firstName   = $data['firstName'] ?? 'Unknown';
+    $lastName    = $data['lastName'] ?? 'Unknown';
+    $clubName    = $data['clubName'] ?? 'Unknown';
+    $currentYear = date('Y');
 
-    $subject = "Membership Cancelled";
-    $body    = "The following member has cancelled their membership:\n\n" .
-               "Email: $email\n" .
-               "Contract ID(s): $contractIds\n" .
-               "Cancelled At: $cancelDate";
+    $subject = "'htmlspecialchars($clubName)' Member Cancellation";
 
-    // Send via PHPMailer
+    $htmlBody = '
+    <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" bgcolor="#F8F8F8" style="background-color: #F8F8F8;min-height:100vh;">
+      <tbody>
+        <tr>
+          <td align="center" style="padding: 16px;">
+            <table width="500" align="center" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" style="background-color: #FFFFFF;">
+              <tbody>
+                <tr>
+                  <td style="border: 1px solid #eeeeee; font-family: Helvetica, Arial, sans-serif; color: #000000; padding: 16px 32px;">
+                    <table width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFFFFF" style="background-color:#FFFFFF; border-collapse:collapse;">
+                      <tbody>
+                        <tr>
+                          <td align="center" valign="top" style="padding: 0 0 16px 0;">
+                            <a href="https://revofitness.com.au">
+                              <img src="https://revofitness.com.au/wp-content/uploads/2025/05/revofitness-logo.png" border="0" width="220" height="17.6" alt="Revo Fitness" title="Revo Fitness">
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td valign="top" style="padding: 32px 0; color: #333333; font-size: 15px; line-height: 24px; border-top: 1px solid #eeeeee;">
+                            <p><strong>Cancellation Request:</strong></p>
+                            <p><strong>Member ID:</strong> ' . htmlspecialchars($data['memberId'] ?? 'Unknown') . '</p>
+                            <p><strong>Member Name:</strong> ' . htmlspecialchars($firstName) . ' ' . htmlspecialchars($lastName) . '</p>
+                            <p><strong>Member Email:</strong> ' . htmlspecialchars($email) . '</p>
+                            <p><strong>Member Home Club:</strong> ' . htmlspecialchars($clubName) . '</p>
+                            <p><strong>Date & Time Requested:</strong> ' . htmlspecialchars($cancelDate) . '</p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center" valign="top" style="padding: 16px 0; font-size: 10px; line-height: 16px;">
+                            <a href="https://revofitness.com.au" target="_blank" style="color: #1a82b0; text-decoration: none;">Website</a>
+                            <span> | </span>
+                            <a href="https://revofitness.com.au/terms/" target="_blank" style="color: #1a82b0; text-decoration: none;">Legal</a>
+                            <span> | </span>
+                            <a href="https://revofitness.com.au/privacy" target="_blank" style="color: #1a82b0; text-decoration: none;">Privacy</a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center" valign="top" style="padding: 16px 0; border-top: 1px solid #eeeeee; font-size: 9px; line-height: 16px; color: #666666;">
+                            Contact us at <a style="text-decoration: none; color: #F77A1E;" href="tel:1300738638">1300 738 638</a>.<br>
+                            © ' . $currentYear . ', Revo Fitness. All rights reserved.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>';
+
     $mail = new PHPMailer(true);
-
     try {
-        $mail->isMail(); // Use PHP's mail() function
-        $mail->setFrom('noreply@revofitness.com.au', 'Revo Fitness');
+        $mail->isMail();
+        $mail->setFrom('no-reply@revofitness.com.au', 'Revo Fitness');
         $mail->addAddress($to);
         $mail->Subject = $subject;
-        $mail->Body    = $body;
-
+        $mail->isHTML(true);
+        $mail->Body    = $htmlBody;
         $mail->send();
-        write_log('PHPMailer: Email sent to ' . $to);
+        write_log('PHPMailer: HTML email sent to ' . $to);
     } catch (Exception $e) {
         write_log('PHPMailer Error: ' . $mail->ErrorInfo);
     }
 }
 
 
+
+   
 
 add_action('wp_ajax_check_member', 'check_member_callback');
 add_action('wp_ajax_nopriv_check_member', 'check_member_callback');
@@ -694,11 +748,7 @@ function check_member_callback() {
     $clientId = $_ENV['PG_APP_CLIENT_ID'];
     $clientSecret = $_ENV['PG_APP_CLIENT_SECRET'];
 
-    if (!$clientId || !$clientSecret) {
-        wp_send_json_error(['message' => 'API credentials not configured.']);
-    }
-
-    $odataUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members?\$filter=Email eq '" . urlencode($email) . "'";
+    $odataUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members?\$filter=Email eq '" . urlencode($email) . "'&\$expand=homeClub";
 
     $response = wp_remote_get($odataUrl, [
         'headers' => [
@@ -713,51 +763,51 @@ function check_member_callback() {
     }
 
     $data = json_decode(wp_remote_retrieve_body($response), true);
+    $member = $data['value'][0] ?? null;
 
-    if (!empty($data['value'])) {
-        $member = $data['value'][0];
-
-        if (!empty($member['isActive']) && $member['isActive'] === true) {
-            // Get contract ID
-            $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq {$member['id']}";
-            $contractRes = wp_remote_get($contractUrl, [
-                'headers' => [
-                    'X-Client-Id'     => $clientId,
-                    'X-Client-Secret' => $clientSecret,
-                    'Accept'          => 'application/json',
-                ],
-            ]);
-
-            if (is_wp_error($contractRes)) {
-                wp_send_json_error(['message' => 'Failed to fetch contract.']);
-            }
-
-            $contractData = json_decode(wp_remote_retrieve_body($contractRes), true);
-            if (!empty($contractData['value'][0]['id'])) {
-                $contractId = $contractData['value'][0]['id'];
-
-                wp_send_json_success([
-                    'id' => $member['id'],
-                    'firstName' => $member['firstName'],
-                    'lastName' => $member['lastName'],
-                    'contractId' => $contractId,
-                ]);
-            } else {
-                wp_send_json_error(['message' => 'No contract found.']);
-            }
-        }
+    if (!$member || empty($member['isActive'])) {
+        wp_send_json_error(['message' => 'No active member found.']);
     }
 
-    wp_send_json_error(['message' => 'No active member found.']);
+    // Get contract ID
+    $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq {$member['id']}";
+    $contractRes = wp_remote_get($contractUrl, [
+        'headers' => [
+            'X-Client-Id'     => $clientId,
+            'X-Client-Secret' => $clientSecret,
+            'Accept'          => 'application/json',
+        ],
+    ]);
+
+    if (is_wp_error($contractRes)) {
+        wp_send_json_error(['message' => 'Failed to fetch contract.']);
+    }
+
+    $contractData = json_decode(wp_remote_retrieve_body($contractRes), true);
+    write_log('Full member object: ' . print_r($member, true));
+
+    $contractId = $contractData['value'][0]['id'] ?? null;
+
+    if (!$contractId) {
+        wp_send_json_error(['message' => 'No contract found.']);
+    }
+
+    wp_send_json_success([
+        'id'         => $member['id'],
+        'firstName'  => $member['firstName'],
+        'lastName'   => $member['lastName'],
+        'contractId' => $contractId,
+        'clubName'   => $member['homeClub']['name'] ?? 'Unknown',
+    ]);
 }
 
-function confirm_cancel_member_callback() {
-    $contractIds = [];
-    $cancelled = [];
 
+
+
+function confirm_cancel_member_callback() {
     $email = sanitize_email($_POST['email'] ?? '');
     $memberId = intval($_POST['member_id'] ?? 0);
-    $cancelDate = date('c');
+    $requestedAt = date('c');
 
     if (!$email || !$memberId) {
         wp_send_json_error(['message' => 'Missing email or member ID.']);
@@ -770,7 +820,18 @@ function confirm_cancel_member_callback() {
         wp_send_json_error(['message' => 'API credentials not configured.']);
     }
 
-    // Fetch all contracts
+    // Get member details
+    $memberUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members($memberId)";
+    $memberRes = wp_remote_get($memberUrl, [
+        'headers' => [
+            'X-Client-Id'     => $clientId,
+            'X-Client-Secret' => $clientSecret,
+            'Accept'          => 'application/json',
+        ],
+    ]);
+    $member = json_decode(wp_remote_retrieve_body($memberRes), true);
+
+    // Get contracts to find photo and club
     $contractsUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq $memberId";
     $res = wp_remote_get($contractsUrl, [
         'headers' => [
@@ -785,51 +846,35 @@ function confirm_cancel_member_callback() {
     }
 
     $body = json_decode(wp_remote_retrieve_body($res), true);
-
     if (empty($body['value'])) {
         wp_send_json_error(['message' => 'No contracts found for member.']);
     }
 
+    $contractIds = [];
+    $homeClub = 'N/A';
+
     foreach ($body['value'] as $contract) {
-        $contractId = $contract['id'] ?? null;
-        if (!$contractId) continue;
-
-        $cancelPayload = json_encode([
-            'contractId' => $contractId,
-            'cancelDate' => $cancelDate,
-            'contractEndDateType' => 'Standard',
-            'cancelComment' => 'Cancelled by user via website',
-            'removeBookings' => true
-        ]);
-
-        $cancelRes = wp_remote_post('https://revofitness.perfectgym.com.au/API/v2.2/Contracts/Cancel', [
-            'headers' => [
-                'X-Client-Id'     => $clientId,
-                'X-Client-Secret' => $clientSecret,
-                'Accept'          => 'application/json',
-                'Content-Type'    => 'application/json',
-            ],
-            'body' => $cancelPayload,
-        ]);
-
-        if (!is_wp_error($cancelRes)) {
-            $contractIds[] = $contractId;
+        if (isset($contract['id'])) {
+            $contractIds[] = $contract['id'];
+            if (isset($contract['homeClub']['name'])) {
+                $homeClub = $contract['homeClub']['name'];
+            }
         }
     }
 
-    if (empty($contractIds)) {
-        wp_send_json_error(['message' => 'No contracts were cancelled.']);
-    }
+    $fullName = trim(($member['firstName'] ?? '') . ' ' . ($member['lastName'] ?? ''));
 
-    // Send admin email
     sendCancellationEmail([
         'email' => $email,
         'memberId' => $memberId,
         'contractIds' => $contractIds,
-        'cancelDate' => $cancelDate,
+        'cancelDate' => $requestedAt,
+        'name' => $fullName,
+        'clubName' => $homeClub,
     ]);
 
-    wp_send_json_success(['message' => 'All contracts cancelled successfully.']);
+    wp_send_json_success(['message' => 'Cancellation request submitted.']);
 }
+
 
 
