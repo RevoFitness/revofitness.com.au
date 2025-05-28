@@ -806,6 +806,7 @@ function check_member_callback() {
 
 
 function confirm_cancel_member_callback() {
+    $homeClub = sanitize_text_field($_POST['club_name'] ?? '');
     $email = sanitize_email($_POST['email'] ?? '');
     $memberId = intval($_POST['member_id'] ?? 0);
     $requestedAt = date('c');
@@ -865,15 +866,16 @@ function confirm_cancel_member_callback() {
 
     $fullName = trim(($member['firstName'] ?? '') . ' ' . ($member['lastName'] ?? ''));
 
-    sendCancellationEmail([
-        'email' => $email,
-        'memberId' => $memberId,
-        'contractIds' => $contractIds,
-        'cancelDate' => $requestedAt,
-        'firstName' => $member['firstName'] ?? 'Unknown',
-        'lastName' => $member['lastName'] ?? 'Unknown',
-        'clubName' => $homeClub,
-    ]);
+        sendCancellationEmail([
+            'email' => $email,
+            'memberId' => $memberId,
+            'contractIds' => $contractIds,
+            'cancelDate' => $requestedAt,
+            'firstName' => $member['firstName'] ?? 'Unknown',
+            'lastName' => $member['lastName'] ?? 'Unknown',
+            'clubName' => $homeClub ?: 'Unknown', 
+        ]);
+
 
 
     wp_send_json_success(['message' => 'Cancellation request submitted.']);

@@ -124,6 +124,7 @@ $email = '';
                         <input type="hidden" name="contract_id" value="${m.contractId}">
                         <input type="hidden" name="member_id" value="${m.id}">
                         <input type="hidden" name="email" value="${email}">
+                        <input type="hidden" name="club_name" value="${m.clubName}">
                         <button class="button gform_button mt-5" type="submit">
                             <span>Confirm Cancellation of Membership</span>
                         </button>
@@ -141,6 +142,7 @@ $email = '';
                 const contractId = form.querySelector('input[name="contract_id"]').value;
                 const email = form.querySelector('input[name="email"]').value;
                 const memberId = form.querySelector('input[name="member_id"]').value;
+                const clubName = form.querySelector('input[name="club_name"]').value;
 
                 form.innerHTML = `
                     <span class="loader"></span> 
@@ -156,7 +158,9 @@ $email = '';
                         action: 'confirm_cancel_member',
                         contract_id: contractId,
                         email: email,
-                        member_id: memberId
+                        member_id: memberId,
+                        club_name: clubName
+
                     })
                 });
 
