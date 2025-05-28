@@ -648,7 +648,10 @@ add_action('acf/save_post', 'regenerateVendingDiscount', 20);
  *  
 * CANCELLATION OF MEMBERSHIPS ---------------------------------------------------------------->
  */
-function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com.au'): void {
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+function sendCancellationEmail(array $data, string $to = 'support@revofitness.com.au'): void {
     $email       = $data['email'] ?? 'N/A';
     $contractIds = is_array($data['contractIds']) ? implode(', ', $data['contractIds']) : $data['contractIds'];
     $cancelDate  = $data['cancelDate'] ?? gmdate('c');
@@ -658,6 +661,7 @@ function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com
     $currentYear = date('Y');
 
     $subject = "{$clubName} Member Cancellation";
+
 
     $htmlBody = '
     <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" bgcolor="#F8F8F8" style="background-color: #F8F8F8;min-height:100vh;">
@@ -680,11 +684,11 @@ function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com
                         <tr>
                           <td valign="top" style="padding: 32px 0; color: #333333; font-size: 15px; line-height: 24px; border-top: 1px solid #eeeeee;">
                             <p><strong>Cancellation Request:</strong></p>
-                            <p><strong>Member ID:</strong> ' . esc_html($data['memberId'] ?? 'Unknown') . '</p>
-                            <p><strong>Member Name:</strong> ' . esc_html($firstName) . ' ' . esc_html($lastName) . '</p>
-                            <p><strong>Member Email:</strong> ' . esc_html($email) . '</p>
-                            <p><strong>Member Home Club:</strong> ' . esc_html($clubName) . '</p>
-                            <p><strong>Date & Time Requested:</strong> ' . esc_html($cancelDate) . '</p>
+                            <p><strong>Member ID:</strong> ' . htmlspecialchars($data['memberId'] ?? 'Unknown') . '</p>
+                            <p><strong>Member Name:</strong> ' . htmlspecialchars($firstName) . ' ' . htmlspecialchars($lastName) . '</p>
+                            <p><strong>Member Email:</strong> ' . htmlspecialchars($email) . '</p>
+                            <p><strong>Member Home Club:</strong> ' . htmlspecialchars($clubName) . '</p>
+                            <p><strong>Date & Time Requested:</strong> ' . htmlspecialchars($cancelDate) . '</p>
                           </td>
                         </tr>
                         <tr>
@@ -713,14 +717,20 @@ function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com
       </tbody>
     </table>';
 
-    $headers = [
-        'Content-Type: text/html; charset=UTF-8',
-        'From: Revo Fitness <info@revofitness.com.au>'
-    ];
-
-    wp_mail($to, $subject, $htmlBody, $headers);
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isMail();
+        $mail->setFrom('no-reply@revofitness.com.au', 'Revo Fitness');
+        $mail->addAddress($to);
+        $mail->Subject = $subject;
+        $mail->isHTML(true);
+        $mail->Body    = $htmlBody;
+        $mail->send();
+        write_log('PHPMailer: HTML email sent to ' . $to);
+    } catch (Exception $e) {
+        write_log('PHPMailer Error: ' . $mail->ErrorInfo);
+    }
 }
-
 
 
 
