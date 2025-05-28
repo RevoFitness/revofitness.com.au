@@ -657,7 +657,7 @@ function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com
     $clubName    = $data['clubName'] ?? 'Unknown';
     $currentYear = date('Y');
 
-   $subject = htmlspecialchars($clubName) . ' Member Cancellation';
+    $subject = "{$clubName} Member Cancellation";
 
 
     $htmlBody = '
@@ -700,7 +700,7 @@ function sendCancellationEmail(array $data, string $to = 'mathew@revofitness.com
                         <tr>
                           <td align="center" valign="top" style="padding: 16px 0; border-top: 1px solid #eeeeee; font-size: 9px; line-height: 16px; color: #666666;">
                             Contact us at <a style="text-decoration: none; color: #F77A1E;" href="tel:1300738638">1300 738 638</a>.<br>
-                            © ' . $currentYear . ', Revo Fitness. All rights reserved.
+                            ' . $currentYear . ', Revo Fitness. All rights reserved.
                           </td>
                         </tr>
                       </tbody>
@@ -870,9 +870,11 @@ function confirm_cancel_member_callback() {
         'memberId' => $memberId,
         'contractIds' => $contractIds,
         'cancelDate' => $requestedAt,
-        'name' => $fullName,
+        'firstName' => $member['firstName'] ?? 'Unknown',
+        'lastName' => $member['lastName'] ?? 'Unknown',
         'clubName' => $homeClub,
     ]);
+
 
     wp_send_json_success(['message' => 'Cancellation request submitted.']);
 }
