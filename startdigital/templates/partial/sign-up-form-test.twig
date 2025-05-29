@@ -9,7 +9,7 @@
 {% endif %}
 
 <form id="sign-up-form" name="sign-up-form"
-  class="form-slider container relative flex flex-col gap-6"
+  class="form-slider container relative flex flex-col gap-6 mb-10"
   method="POST"
   action="{{ currentPage }}"
   {{ isFiveWeekMembership ? 'data-five-week-membership' }}
@@ -65,7 +65,7 @@
         <button data-action="clear" type="button" class="bg-brandRed px-2 py-1 text-white w-fit ml-auto flex self-end">Clear</button>
       </div>
     </div>
-    <button type="submit" id="PostPaymentMethod" class="button mt-8 disabled:!opacity-[0.5]">
+    <button type="submit" id="PostPaymentMethod" class="button mt-8 mb-10 disabled:!opacity-[0.5]">
         Get Started
     </button>
   {% endif %}

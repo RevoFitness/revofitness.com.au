@@ -725,6 +725,11 @@ function sendCancellationEmail(array $data): void {
         'From: Revo Fitness <no-reply@revofitness.com.au>'
     ];
 
+     // Add CC if valid email
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $headers[] = 'Cc: ' . $email;
+    }
+
     $sent = wp_mail($to, $subject, $htmlBody, $headers);
 
     if ($sent) {
