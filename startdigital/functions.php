@@ -648,10 +648,7 @@ add_action('acf/save_post', 'regenerateVendingDiscount', 20);
  *  
 * CANCELLATION OF MEMBERSHIPS ---------------------------------------------------------------->
  */
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-function sendCancellationEmail(array $data, string $to = 'itsupport@revofitness.com.au'): void {
+function sendCancellationEmail(array $data): void {
     $email       = $data['email'] ?? 'N/A';
     $contractIds = is_array($data['contractIds']) ? implode(', ', $data['contractIds']) : $data['contractIds'];
     $cancelDate  = $data['cancelDate'] ?? gmdate('c');
@@ -660,11 +657,24 @@ function sendCancellationEmail(array $data, string $to = 'itsupport@revofitness.
     $clubName    = $data['clubName'] ?? 'Unknown';
     $currentYear = date('Y');
 
+    // Lookup the gym email
+    $to = 'mathew@revofitness.com.au'; // fallback
+   /* $gym = get_posts([
+        'post_type' => 'gyms',
+        'title'     => $clubName,
+        'numberposts' => 1,
+        'fields'    => 'ids'
+    ]);
+    if (!empty($gym)) {
+        $acfEmail = get_field('gym_email', $gym[0]);
+        if (!empty($acfEmail)) {
+            $to = sanitize_email($acfEmail);
+        }
+    }*/
+
     $subject = "{$clubName} Member Cancellation";
 
-
-    $htmlBody = '
-    <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" bgcolor="#F8F8F8" style="background-color: #F8F8F8;min-height:100vh;">
+    $htmlBody = '<table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" bgcolor="#F8F8F8" style="background-color: #F8F8F8;min-height:100vh;">
       <tbody>
         <tr>
           <td align="center" style="padding: 16px;">
@@ -717,20 +727,20 @@ function sendCancellationEmail(array $data, string $to = 'itsupport@revofitness.
       </tbody>
     </table>';
 
-    $mail = new PHPMailer(true);
-    try {
-        $mail->isMail();
-        $mail->setFrom('no-reply@revofitness.com.au', 'Revo Fitness');
-        $mail->addAddress($to);
-        $mail->Subject = $subject;
-        $mail->isHTML(true);
-        $mail->Body    = $htmlBody;
-        $mail->send();
-        write_log('PHPMailer: HTML email sent to ' . $to);
-    } catch (Exception $e) {
-        write_log('PHPMailer Error: ' . $mail->ErrorInfo);
+    $headers = [
+        'Content-Type: text/html; charset=UTF-8',
+        'From: Revo Fitness <no-reply@revofitness.com.au>'
+    ];
+
+    $sent = wp_mail($to, $subject, $htmlBody, $headers);
+
+    if ($sent) {
+        write_log("✅ wp_mail: Email sent to $to");
+    } else {
+        write_log("❌ wp_mail: Failed to send email to $to");
     }
 }
+
 
 
 

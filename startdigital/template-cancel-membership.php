@@ -120,7 +120,7 @@ $email = '';
                         <p><strong>Member ID:</strong> ${m.id}</p>
                         <p><strong>Home Club:</strong> ${m.clubName || 'Unknown'}</p>
                     </div>
-                    <form id="confirm-cancel-form">
+                    <form id="confirm-cancel-form" class=""mt-10">
                         <input type="hidden" name="contract_id" value="${m.contractId}">
                         <input type="hidden" name="member_id" value="${m.id}">
                         <input type="hidden" name="email" value="${email}">
@@ -170,8 +170,7 @@ $email = '';
                     form.outerHTML = `
                         <div class="bg-brandPink text-black rounded-xl mt-5 p-6 border border-green-500 shadow-md">
                             <h3 class="text-xl font-bold mb-2">Request Submitted</h3>
-                            <p>Your membership cancellation request has been received.</p>
-                            <p>Our team will process it shortly and send you a confirmation email.</p>
+                            <p>Our team will be in touch soon to chat about your cancellation request and confirm your final debit date and access day.</p>
                         </div>`;
                 } else {
                     form.innerHTML = `
