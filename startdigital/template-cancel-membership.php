@@ -120,7 +120,7 @@ $email = '';
                         <p><strong>Member ID:</strong> ${m.id}</p>
                         <p><strong>Home Club:</strong> ${m.clubName || 'Unknown'}</p>
                     </div>
-                    <form id="confirm-cancel-form" class=""mt-10">
+                    <form id="confirm-cancel-form" class="mt-10">
                         <input type="hidden" name="contract_id" value="${m.contractId}">
                         <input type="hidden" name="member_id" value="${m.id}">
                         <input type="hidden" name="email" value="${email}">

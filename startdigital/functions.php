@@ -657,20 +657,13 @@ function sendCancellationEmail(array $data): void {
     $clubName    = $data['clubName'] ?? 'Unknown';
     $currentYear = date('Y');
 
-    // Lookup the gym email
-    $to = 'mathew@revofitness.com.au'; // fallback
-   /* $gym = get_posts([
-        'post_type' => 'gyms',
-        'title'     => $clubName,
-        'numberposts' => 1,
-        'fields'    => 'ids'
-    ]);
-    if (!empty($gym)) {
-        $acfEmail = get_field('gym_email', $gym[0]);
-        if (!empty($acfEmail)) {
-            $to = sanitize_email($acfEmail);
-        }
-    }*/
+    // Build club-based email
+    if ($clubName !== 'Unknown') {
+        $to = strtolower(str_replace(' ', '', $clubName)) . '@revofitness.com.au';
+    } else {
+        $to = 'itsupport@revofitness.com.au';
+    }
+
 
     $subject = "{$clubName} Member Cancellation";
 
