@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	handleGuestSignUpForm()
 
 	setupTimeline()
+	// check email input for existing membership
+	// This is a custom function that checks if the email exists in the database
+	checkEmail()
 
 	if (document.querySelector('.tablepress')) {
 		initTables()
@@ -123,9 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			isActive = !isActive
 
 			isActive
-				? (filterModal.style.left = `${
-						filterModal.getBoundingClientRect().width / 2
-				  }px`)
+				? (filterModal.style.left = `${filterModal.getBoundingClientRect().width / 2
+					}px`)
 				: (filterModal.style.left = '-72px')
 		})
 	}
@@ -520,3 +522,33 @@ function isDateInPast(dateStr) {
 	const today = new Date()
 	return date < today
 }
+
+function checkEmail() {
+	document.getElementById('email').addEventListener('blur', async function () {
+		const email = this.value.trim();
+		if (!email) return;
+		console.log('hello');
+		try {
+			const response = await fetch('/wp-admin/admin-ajax.php', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams({
+					action: 'check_pg_membership',
+					email: email
+				})
+			});
+
+			const result = await response.json();
+			console.log(result); // You can handle UI updates here
+
+			if (result.exists) {
+				alert('You already have an existing membership.');
+			}
+
+		} catch (error) {
+			console.error('Error checking membership:', error);
+		}
+	});
+}
+
+

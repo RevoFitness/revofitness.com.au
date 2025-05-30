@@ -16443,6 +16443,7 @@
     handleScrollToStudioList();
     handleGuestSignUpForm();
     setupTimeline();
+    checkEmail();
     if (document.querySelector(".tablepress")) {
       initTables();
     }
@@ -16801,6 +16802,31 @@
     const date = new Date(year, month - 1, day);
     const today = /* @__PURE__ */ new Date();
     return date < today;
+  }
+  function checkEmail() {
+    document.getElementById("email").addEventListener("blur", async function() {
+      const email = this.value.trim();
+      if (!email)
+        return;
+      console.log("hello");
+      try {
+        const response = await fetch("/wp-admin/admin-ajax.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            action: "check_pg_membership",
+            email
+          })
+        });
+        const result = await response.json();
+        console.log(result);
+        if (result.exists) {
+          alert("You already have an existing membership.");
+        }
+      } catch (error) {
+        console.error("Error checking membership:", error);
+      }
+    });
   }
 })();
 /*! Bundled license information:

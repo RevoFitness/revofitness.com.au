@@ -286,7 +286,7 @@ class EzyPayClient extends PerfectGymClient
         return strtoupper($string);
     }
 
-    public function authToken($gym)
+  /*  public function authToken($gym)
     {
 
         $gym = $gym ?: $_GET['gym'];
@@ -322,5 +322,66 @@ class EzyPayClient extends PerfectGymClient
         }
 
         return $authToken;
+    } */
+
+    public function authToken($gym)
+{
+    $gym = $gym ?: $_GET['gym'];
+    $gym = $this->clean($gym);
+    write_log("📌 Requested auth token for gym: $gym");
+
+    if ($_ENV['ENV'] !== 'production') {
+        $gym = 'SANDBOX';
     }
+
+    $authToken = get_transient("ezypayAuthToken_$gym");
+
+    $credentials = [
+        'API_URL'       => $_ENV['ENV'] === 'production' ? 'https://identity.ezypay.com/token' : 'https://identity-sandbox.ezypay.com/token',
+        'CLIENT_ID'     => $_ENV['ENV'] === 'production' ? $_ENV["EZYPAY_CLIENT_ID"] : $_ENV['SANDBOX_EZYPAY_CLIENT_ID'],
+        'CLIENT_SECRET' => $_ENV['ENV'] === 'production' ? $_ENV["EZYPAY_CLIENT_SECRET"] : $_ENV['SANDBOX_EZYPAY_CLIENT_SECRET'],
+        'MERCHANT_ID'   => $_ENV['ENV'] === 'production' ? $_ENV["EZYPAY_MERCHANT_ID_$gym"] : $_ENV['SANDBOX_EZYPAY_MERCHANT_ID'],
+        'USERNAME'      => $_ENV['ENV'] === 'production' ? $_ENV["EZYPAY_USERNAME_$gym"] : $_ENV['SANDBOX_EZYPAY_USERNAME'],
+        'PASSWORD'      => $_ENV['ENV'] === 'production' ? $_ENV["EZYPAY_PASSWORD_$gym"] : $_ENV['SANDBOX_EZYPAY_PASSWORD'],
+    ];
+
+    write_log("🧪 Loaded credentials for $gym:");
+    write_log($credentials);
+
+    if ($authToken === false) {
+        $data = http_build_query([
+            'grant_type'    => 'password',
+            'client_id'     => $credentials['CLIENT_ID'],
+            'client_secret' => $credentials['CLIENT_SECRET'],
+            'username'      => $credentials['USERNAME'],
+            'password'      => $credentials['PASSWORD'],
+            'scope'         => 'integrator hosted_payment',
+        ]);
+
+        $headers = [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'merchant'     => $this->getMerchantId($gym),
+        ];
+
+        $perfectGymClient = new PerfectGymClient;
+        $response = $perfectGymClient->postApiRequest($credentials['API_URL'], $data, $headers);
+        write_log("🔴 Raw token response: " . $response);
+
+        $decoded = json_decode($response, true);
+        write_log("🧠 Decoded token response: " . print_r($decoded, true));
+
+        if (isset($decoded['access_token'])) {
+            set_transient("ezypayAuthToken_$gym", $decoded['access_token'], 1800);
+            $authToken = $decoded['access_token'];
+            write_log("✅ Token set and returned for $gym");
+        } else {
+            write_log("❌ Failed to retrieve access_token from response.");
+        }
+    } else {
+        write_log("♻️ Using cached token for $gym");
+    }
+
+    return $authToken;
+}
+
 }

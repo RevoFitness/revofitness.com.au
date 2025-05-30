@@ -884,3 +884,76 @@ function confirm_cancel_member_callback() {
 
 
 
+/**
+ *  
+* EMAIL CHECK IF EXISTING MEMBERSHIPS ---------------------------------------------------------------->
+ */
+
+add_action('wp_ajax_check_pg_membership', 'check_pg_membership');
+add_action('wp_ajax_nopriv_check_pg_membership', 'check_pg_membership');
+
+function check_pg_membership() {
+    $email = sanitize_email($_POST['email'] ?? '');
+
+    if (!$email) {
+        wp_send_json_error(['message' => 'Email is required']);
+    }
+
+    $clientId = $_ENV['PG_APP_CLIENT_ID'];
+    $clientSecret = $_ENV['PG_APP_CLIENT_SECRET'];
+
+    // Step 1: Find member by email
+    $memberUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members?\$filter=Email eq '" . urlencode($email) . "'";
+    $memberRes = wp_remote_get($memberUrl, [
+        'headers' => [
+            'X-Client-Id'     => $clientId,
+            'X-Client-Secret' => $clientSecret,
+            'Accept'          => 'application/json',
+        ],
+    ]);
+
+    if (is_wp_error($memberRes)) {
+        wp_send_json_error(['message' => 'Failed to fetch member.']);
+    }
+
+    $memberData = json_decode(wp_remote_retrieve_body($memberRes), true);
+    $member = $memberData['value'][0] ?? null;
+
+    if (!$member || empty($member['id'])) {
+        wp_send_json_success(['exists' => false]);
+    }
+
+    // Step 2: Look up contract for member
+    $memberId = $member['id'];
+    $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq $memberId";
+    $contractRes = wp_remote_get($contractUrl, [
+        'headers' => [
+            'X-Client-Id'     => $clientId,
+            'X-Client-Secret' => $clientSecret,
+            'Accept'          => 'application/json',
+        ],
+    ]);
+
+    if (is_wp_error($contractRes)) {
+        wp_send_json_error(['message' => 'Failed to fetch contract.']);
+    }
+
+    $contractData = json_decode(wp_remote_retrieve_body($contractRes), true);
+    $contract = $contractData['value'][0] ?? null;
+
+    if (!$contract) {
+        // No contract found, return quietly
+        wp_send_json_success(['exists' => false]);
+    }
+
+    
+
+    // Contract found – return key info
+    wp_send_json_success([
+        'exists'        => true,
+        'contractId'    => $contract['id'] ?? null,
+        'contractType'  => $contract['type'] ?? 'Unknown',
+        'status'        => $contract['status'] ?? 'Unknown',
+        'memberId'      => $memberId,
+    ]);
+}
