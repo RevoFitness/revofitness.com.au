@@ -41,7 +41,35 @@ $email = '';
 <section class="container mt-20 mb-10 relative w-full bt-10 pb-10 max-md:mt-20 py-8 px-6 block-content items-center mx-auto rounded-3xl bg-brandEucalyptus max-w-[1080px]">
     <div class="row pt-10 pb-10">
         <div class="col-md-12">
-            <h5 class="mb-2">Confirm your email to request cancellation of membership</h5>
+            <p>You may only cancel your Membership in accordance with clause 3.10(a) of your Membership Agreement.</p>
+
+            <p>Use this form to:</p><br/>   
+            <ul class="list-none">
+                <li style="list-style:none"><strong>(a)</strong> cancel your Membership by 30 days’ written notice;</li>
+                <li style="list-style:none"><strong>(b)</strong> request an immediate cancellation of your Membership where you have a medical certificate stating that<br />
+                    you cannot use your Revo Fitness Membership because of a permanent illness or physical incapacity; or</li>
+                <li style="list-style:none"><strong>(c)</strong> cancel your Membership immediately within the Cooling-Off Period (WA Members only).</li>
+            </ul>
+
+            <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (a) above, your Membership will remain active and you will be entitled to full use of the Revo Fitness Facilities until your Membership Agreement is cancelled, being:</p><br/>
+
+            <ul class="list-none" style="list-style:none">
+                <li style="list-style:none"><strong>(a)</strong> if you are not a SA Member, 30 days after the Cancellation Notice Date; and</li>
+                <li style="list-style:none"><strong>(b)</strong> if you are a SA Member:</li><br/>
+                <ul>
+                    <li style="list-style:none"><strong>(i)</strong> where you do not have a Direct Debit Date fall within 14 days after the Cancellation Notice Date, 11:59pm on the<br />
+                        day immediately before your next Direct Debit Date; or</li>
+                    <li style="list-style:none"><strong>(ii)</strong> where you do have a Direct Debit Date fall within 14 days after the Notice Date, 11:59pm on the day that is 14 days after the Cancellation Notice Date.</li>
+                </ul>
+            </ul>
+
+            <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (b) or (c) above (and in the case of (b), Revo Fitness grants your request), your Membership will end immediately, and you will no longer be entitled to use the Revo Fitness Facilities.</p>
+
+            <p>To the extent of any inconsistency between the terms of your Membership Agreement and the contents of this form, the terms of your Membership Agreement prevail.</p>
+
+
+            <h4 class="mt-10 mb-5">We’re sad to see you go.</h4>
+            <h5 class="mb-2 mt-5">Confirm your email to request cancellation of membership</h5>
 
             <?php if ($error): ?>
                 <p style="color:red;"><?= esc_html($error) ?></p>
@@ -85,13 +113,13 @@ $email = '';
 <script>
     const ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('#membership-cancel-form');
         const result = document.querySelector('#member-result');
 
         if (!form) return;
 
-        form.addEventListener('submit', async function (e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = form.querySelector('input[name="email"]').value;
 
@@ -134,7 +162,7 @@ $email = '';
             }
         });
 
-        document.addEventListener('submit', async function (e) {
+        document.addEventListener('submit', async function(e) {
             if (e.target && e.target.id === 'confirm-cancel-form') {
                 e.preventDefault();
 
