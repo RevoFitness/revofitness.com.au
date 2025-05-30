@@ -41,7 +41,7 @@ $email = '';
 <section class="container mt-20 mb-10 relative w-full bt-10 pb-10 max-md:mt-20 py-8 px-6 block-content items-center mx-auto rounded-3xl bg-brandEucalyptus max-w-[1080px]">
     <div class="row pt-10 pb-10">
         <div class="col-md-12">
-            <h5 class="mb-2">Confirm your email to cancel your membership.</h5>
+            <h5 class="mb-2">Confirm your email to request cancellation of membership</h5>
 
             <?php if ($error): ?>
                 <p style="color:red;"><?= esc_html($error) ?></p>
@@ -64,13 +64,13 @@ $email = '';
                     <input type="hidden" name="member_id" value="<?= esc_attr($memberData['id']) ?>">
                     <input type="hidden" name="email" value="<?= esc_attr($email) ?>">
                     <button class="button gform_button mt-5" type="submit">
-                        <span>Confirm Cancellation of Membership</span>
+                        <span>Submit request to cancel membership and access to the gym</span>
                     </button>
                 </form>
             <?php else: ?>
                 <form id="membership-cancel-form">
                     <input name="email" type="email" required class="large" placeholder="example@email.com.au">
-                    <button type="submit" class="button gform_button mt-5"><span>Cancel Membership</span></button>
+                    <button type="submit" class="button gform_button mt-5"><span>Verify Details</span></button>
                 </form>
                 <div id="member-result" class="mt-5"></div>
             <?php endif; ?>
