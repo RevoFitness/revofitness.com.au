@@ -170,7 +170,7 @@ $email = '';
                     form.outerHTML = `
                         <div class="bg-brandPink text-black rounded-xl mt-5 p-6 border border-green-500 shadow-md">
                             <h3 class="text-xl font-bold mb-2">Request Submitted</h3>
-                            <p>Our team will be in touch soon to chat about your cancellation request and confirm your final debit date and access to the gym.</p>
+                            <p>Our team will be in touch soon to chat about your cancellation request, confirm your final debit and final day of access to the gym..</p>
                         </div>`;
                 } else {
                     form.innerHTML = `
