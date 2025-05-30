@@ -126,7 +126,7 @@ $email = '';
                         <input type="hidden" name="email" value="${email}">
                         <input type="hidden" name="club_name" value="${m.clubName}">
                         <button class="button gform_button mt-5" type="submit">
-                            <span>Confirm Cancellation of Membership</span>
+                            <span>Submit request to cancel membership</span>
                         </button>
                     </form>`;
             } else {
@@ -170,7 +170,7 @@ $email = '';
                     form.outerHTML = `
                         <div class="bg-brandPink text-black rounded-xl mt-5 p-6 border border-green-500 shadow-md">
                             <h3 class="text-xl font-bold mb-2">Request Submitted</h3>
-                            <p>Our team will be in touch soon to chat about your cancellation request and confirm your final debit date and access day.</p>
+                            <p>Our team will be in touch soon to chat about your cancellation request and confirm your final debit date and access to the gym.</p>
                         </div>`;
                 } else {
                     form.innerHTML = `
