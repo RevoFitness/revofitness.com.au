@@ -42,6 +42,7 @@ $email = '';
     <div class="row pt-10 pb-10">
         <div class="col-md-12">
             <h4 class="mb-5">We’re sad to see you go!</h4>
+            <h5 class="mb-10">You know you can freeze your membership at no cost to you? Just ask our team member how!</h5?
             <p>You may only cancel your Membership in accordance with clause 3.10(a) of your Membership Agreement.</p>
 
             <p>Use this form to:</p><br/>   
