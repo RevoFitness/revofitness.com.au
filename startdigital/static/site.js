@@ -16803,12 +16803,23 @@
     const today = /* @__PURE__ */ new Date();
     return date < today;
   }
+  var isChecking = false;
   function checkEmail() {
-    document.getElementById("email").addEventListener("blur", async function() {
+    const emailInput = document.getElementById("email");
+    if (!emailInput)
+      return;
+    emailInput.addEventListener("blur", async function() {
       const email = this.value.trim();
-      if (!email)
+      const input = this;
+      const wrapper = input.closest(".input-wrapper");
+      if (!email || isChecking)
         return;
-      console.log("hello");
+      isChecking = true;
+      console.log("Checking email:", email);
+      input.className = input.className.split(" ").filter((c) => !["current", "ended", "notstarted", "freezed"].includes(c.toLowerCase())).join(" ");
+      const existingMessage = wrapper.querySelector(".email-notify-up");
+      if (existingMessage)
+        existingMessage.remove();
       try {
         const response = await fetch("/wp-admin/admin-ajax.php", {
           method: "POST",
@@ -16819,12 +16830,48 @@
           })
         });
         const result = await response.json();
-        console.log(result);
-        if (result.exists) {
-          alert("You already have an existing membership.");
-        }
-      } catch (error) {
-        console.error("Error checking membership:", error);
+        if (!result.success || !result.data.exists)
+          return;
+        const contractStatuses = result.data.members.flatMap((member) => member.statuses || []).map((status) => status.toLowerCase());
+        const firstName = result.data.members?.[0]?.firstName || "";
+        const messages = {
+          current: `You already have an active membership. Please do not sign up again. Contact us via chat if help is needed.`,
+          ended: `Welcome back ${firstName}!`,
+          notstarted: `You have an account but your membership hasn\u2019t started. Check your welcome email.`,
+          freezed: `Your membership is frozen \u2014 <a href='tel:1300738638'>Call us</a>.`
+        };
+        const PostPaymentMethodButton = document.getElementById("PostPaymentMethod");
+        const uniqueStatuses = new Set(contractStatuses);
+        uniqueStatuses.forEach((status) => {
+          input.classList.add(status);
+          if (messages[status]) {
+            const msg = document.createElement("div");
+            msg.classList.add(status);
+            msg.className = "email-notify-up";
+            msg.style.cssText = "margin-top:6px; font-size:0.9rem; display:flex; align-items:center; gap:6px;opacity:1;max-width:50%;right:15px;";
+            msg.innerHTML = `<span>${messages[status]}</span>`;
+            const closeBtn = document.createElement("span");
+            closeBtn.innerHTML = "&times;";
+            closeBtn.style.cursor = "pointer";
+            closeBtn.style.fontWeight = "bold";
+            closeBtn.style.fontSize = "37px";
+            closeBtn.addEventListener("click", () => {
+              msg.remove();
+              input.classList.remove(status);
+              if (PostPaymentMethodButton)
+                PostPaymentMethodButton.style.opacity = 1;
+            });
+            msg.appendChild(closeBtn);
+            wrapper.appendChild(msg);
+            if (PostPaymentMethodButton) {
+              PostPaymentMethodButton.style.opacity = ["current", "notstarted", "freezed"].includes(status) ? 0 : 1;
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Error checking membership:", err);
+      } finally {
+        isChecking = false;
       }
     });
   }
