@@ -6,12 +6,10 @@ on:
       - develop
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: .
+    outputs:
+      theme-path: ${{ steps.save-path.outputs.path }}
 
     steps:
       - name: Checkout latest code
@@ -19,7 +17,6 @@ jobs:
 
       - name: Install Composer dependencies (project root)
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
-        working-directory: .
 
       - name: Install Composer dependencies (theme)
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
@@ -31,19 +28,58 @@ jobs:
           npm run build
         working-directory: startdigital
 
+      - name: Save build path
+        id: save-path
+        run: echo "path=startdigital" >> $GITHUB_OUTPUT
+
+      - name: Upload built theme as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: startdigital-theme
+          path: startdigital
+
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download theme artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: startdigital-theme
+          path: startdigital
+
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_3
           chmod 600 ~/.ssh/id_rsa_dev_3
           ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
-      - name: Clean unnecessary files
-        run: rm -rf startdigital/node_modules
 
-      - name: Sync theme to VPS using SCP
+      - name: Sync theme to production (developmentrevof)
         run: |
           scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
           startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
 
-      - name: Done
-        run: echo "✅ Theme deployment complete."
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download theme artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: startdigital-theme
+          path: startdigital
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_3
+          chmod 600 ~/.ssh/id_rsa_dev_3
+          ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
+
+      - name: Sync theme to staging (revostaging)
+        run: |
+          scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
+          startdigital revostaging@43.250.141.151:/home/revostaging/public_html/wp-content/themes/
