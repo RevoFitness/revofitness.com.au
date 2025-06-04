@@ -8,8 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      theme-path: ${{ steps.save-path.outputs.path }}
 
     steps:
       - name: Checkout latest code
@@ -28,17 +26,13 @@ jobs:
           npm run build
         working-directory: startdigital
 
-      - name: Save build path
-        id: save-path
-        run: echo "path=startdigital" >> $GITHUB_OUTPUT
-
       - name: Upload built theme as artifact
         uses: actions/upload-artifact@v3
         with:
           name: startdigital-theme
-          path: startdigital
+          path: startdigital/
 
-  deploy-production:
+  deploy-development:
     needs: build
     runs-on: ubuntu-latest
 
@@ -56,7 +50,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa_dev_3
           ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
 
-      - name: Sync theme to production (developmentrevof)
+      - name: Sync theme to development (developmentrevof)
         run: |
           scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
           startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
