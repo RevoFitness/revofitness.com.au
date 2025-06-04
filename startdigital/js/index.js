@@ -523,11 +523,35 @@ function isDateInPast(dateStr) {
 	return date < today
 }
 
+let isChecking = false;
+
 function checkEmail() {
-	document.getElementById('email').addEventListener('blur', async function () {
+	const emailInput = document.getElementById('email');
+	if (!emailInput) return;
+
+	emailInput.addEventListener('blur', async function () {
 		const email = this.value.trim();
-		if (!email) return;
-		console.log('hello');
+		const input = this;
+		const wrapper = input.closest('.input-wrapper');
+		const label = wrapper.querySelector('label');
+		const PostPaymentMethodButton = document.getElementById('PostPaymentMethod');
+
+		if (!email || isChecking) return;
+		isChecking = true;
+
+		// Remove old classes and messages
+		input.className = input.className
+			.split(' ')
+			.filter(c => !['current', 'ended', 'notstarted', 'freezed'].includes(c.toLowerCase()))
+			.join(' ');
+		const oldMsg = wrapper.querySelector('.email-notify-up');
+		if (oldMsg) oldMsg.remove();
+
+		// Add loader to label
+		if (label) {
+			label.innerHTML = `Email <span class="loader" style="background:#fff; margin-left:6px; display:inline-block; width:12px; height:12px; border:2px solid #ccc; border-top-color:#333; border-radius:50%; animation:spin 1s linear infinite;"></span>`;
+		}
+
 		try {
 			const response = await fetch('/wp-admin/admin-ajax.php', {
 				method: 'POST',
@@ -539,16 +563,80 @@ function checkEmail() {
 			});
 
 			const result = await response.json();
-			console.log(result); // You can handle UI updates here
+			if (!result.success || !result.data.exists) return;
 
-			if (result.exists) {
-				alert('You already have an existing membership.');
+			const contractStatuses = result.data.members
+				.flatMap(member => member.statuses || [])
+				.map(status => status.toLowerCase());
+
+			const firstName = result.data.members?.[0]?.firstName || '';
+			const messages = {
+				current: `You already have an active membership. Please do not sign up again. Contact us via chat if help is needed.`,
+				ended: `Welcome back ${firstName}!`,
+				notstarted: `You have an account but your membership hasn’t started. Check your welcome email.`,
+				freezed: `Your membership is frozen — <a href='tel:1300738638'>Call us</a>.`
+			};
+
+			// Track if any status disables the button
+			let shouldHideButton = false;
+
+			const uniqueStatuses = new Set(contractStatuses);
+			uniqueStatuses.forEach(status => {
+				input.classList.add(status);
+
+				if (messages[status]) {
+					const msg = document.createElement('div');
+					msg.className = `email-notify-up ${status}`;
+					msg.style.cssText = 'margin-top:6px; font-size:0.9rem; display:flex; align-items:flex-start; gap:6px;';
+					msg.innerHTML = `<span>${messages[status]}</span>`;
+
+					const closeBtn = document.createElement('span');
+					closeBtn.innerHTML = '&times;';
+					closeBtn.style.cursor = 'pointer';
+					closeBtn.style.fontWeight = 'bold';
+					closeBtn.style.fontSize = '18px';
+					closeBtn.style.position = 'absolute';
+					closeBtn.style.right = '15px';
+					closeBtn.style.fontSize = '37px';
+					closeBtn.addEventListener('click', () => {
+						msg.remove();
+						input.classList.remove(status);
+						if (PostPaymentMethodButton) PostPaymentMethodButton.style.zIndex = -1;
+					});
+					msg.appendChild(closeBtn);
+					wrapper.appendChild(msg);
+				}
+
+				if (['current', 'notstarted', 'freezed'].includes(status)) {
+					shouldHideButton = true;
+				}
+			});
+
+			// Toggle visibility of the button
+			if (PostPaymentMethodButton) {
+				PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
 			}
-
-		} catch (error) {
-			console.error('Error checking membership:', error);
+		} catch (err) {
+			console.error('Error checking membership:', err);
+		} finally {
+			if (label) label.textContent = 'Email';
+			isChecking = false;
 		}
 	});
 }
 
-
+// Spinner animation (inject if not present)
+document.addEventListener('DOMContentLoaded', () => {
+	if (!document.querySelector('#email-spinner-style')) {
+		const style = document.createElement('style');
+		style.id = 'email-spinner-style';
+		style.innerHTML = `
+			@keyframes spin {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
+		`;
+		document.head.appendChild(style);
+	}
+	checkEmail();
+});

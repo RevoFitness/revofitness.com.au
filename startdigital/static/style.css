@@ -153,6 +153,44 @@ textarea {
     z-index:99;
   }
 }
+.email-notify-up {
+	width:50%;
+	right:0;
+	position:absolute;
+	display:flex;
+	align-items:flex-start;
+	opacity:0;
+	animation:notifyIn .6s ease-in-out 1 forwards;
+	top:0;
+
+}
+@keyframes notifyIn {
+	0%{
+		opacity:0;
+		top:0;
+	}
+	100% {
+		opacity:1;
+		top:-20px;
+	}
+}
+.email-notify-up.current,
+.email-notify-up.notstarted,
+.email-notify-up.freezed {
+    background: #dd2b32;
+    z-index:2;
+    color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) 0px 3px 0px 1px;
+}
+.email-notify-up > span {
+    color:#ffff;
+}
+.email-notify-up.ended {
+    background: #a3ac39;
+    z-index: 2;
+    color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) 0px 3px 0px 1px;
+}
 #sign-up-form .input-wrapper {
 	position:relative;
 }

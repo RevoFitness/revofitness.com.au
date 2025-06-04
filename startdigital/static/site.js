@@ -16812,14 +16812,18 @@
       const email = this.value.trim();
       const input = this;
       const wrapper = input.closest(".input-wrapper");
+      const label = wrapper.querySelector("label");
+      const PostPaymentMethodButton = document.getElementById("PostPaymentMethod");
       if (!email || isChecking)
         return;
       isChecking = true;
-      console.log("Checking email:", email);
       input.className = input.className.split(" ").filter((c) => !["current", "ended", "notstarted", "freezed"].includes(c.toLowerCase())).join(" ");
-      const existingMessage = wrapper.querySelector(".email-notify-up");
-      if (existingMessage)
-        existingMessage.remove();
+      const oldMsg = wrapper.querySelector(".email-notify-up");
+      if (oldMsg)
+        oldMsg.remove();
+      if (label) {
+        label.innerHTML = `Email <span class="loader" style="background:#fff; margin-left:6px; display:inline-block; width:12px; height:12px; border:2px solid #ccc; border-top-color:#333; border-radius:50%; animation:spin 1s linear infinite;"></span>`;
+      }
       try {
         const response = await fetch("/wp-admin/admin-ajax.php", {
           method: "POST",
@@ -16840,41 +16844,62 @@
           notstarted: `You have an account but your membership hasn\u2019t started. Check your welcome email.`,
           freezed: `Your membership is frozen \u2014 <a href='tel:1300738638'>Call us</a>.`
         };
-        const PostPaymentMethodButton = document.getElementById("PostPaymentMethod");
+        let shouldHideButton = false;
         const uniqueStatuses = new Set(contractStatuses);
         uniqueStatuses.forEach((status) => {
           input.classList.add(status);
           if (messages[status]) {
             const msg = document.createElement("div");
-            msg.classList.add(status);
-            msg.className = "email-notify-up";
-            msg.style.cssText = "margin-top:6px; font-size:0.9rem; display:flex; align-items:center; gap:6px;opacity:1;max-width:50%;right:15px;";
+            msg.className = `email-notify-up ${status}`;
+            msg.style.cssText = "margin-top:6px; font-size:0.9rem; display:flex; align-items:flex-start; gap:6px;";
             msg.innerHTML = `<span>${messages[status]}</span>`;
             const closeBtn = document.createElement("span");
             closeBtn.innerHTML = "&times;";
             closeBtn.style.cursor = "pointer";
             closeBtn.style.fontWeight = "bold";
+            closeBtn.style.fontSize = "18px";
+            closeBtn.style.position = "absolute";
+            closeBtn.style.right = "15px";
             closeBtn.style.fontSize = "37px";
             closeBtn.addEventListener("click", () => {
               msg.remove();
               input.classList.remove(status);
               if (PostPaymentMethodButton)
-                PostPaymentMethodButton.style.opacity = 1;
+                PostPaymentMethodButton.style.zIndex = -1;
             });
             msg.appendChild(closeBtn);
             wrapper.appendChild(msg);
-            if (PostPaymentMethodButton) {
-              PostPaymentMethodButton.style.opacity = ["current", "notstarted", "freezed"].includes(status) ? 0 : 1;
-            }
+          }
+          if (["current", "notstarted", "freezed"].includes(status)) {
+            shouldHideButton = true;
           }
         });
+        if (PostPaymentMethodButton) {
+          PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
+        }
       } catch (err) {
         console.error("Error checking membership:", err);
       } finally {
+        if (label)
+          label.textContent = "Email";
         isChecking = false;
       }
     });
   }
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!document.querySelector("#email-spinner-style")) {
+      const style = document.createElement("style");
+      style.id = "email-spinner-style";
+      style.innerHTML = `
+			@keyframes spin {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
+		`;
+      document.head.appendChild(style);
+    }
+    checkEmail();
+  });
 })();
 /*! Bundled license information:
 

@@ -42,67 +42,67 @@ $email = '';
     <div class="row pt-10 pb-10">
         <div class="col-md-12">
             <h4 class="mb-5">We’re sad to see you go!</h4>
-            <h5 class="mb-10">You know you can freeze your membership at no cost to you? Just ask our team member how!</h5?
-            <p>You may only cancel your Membership in accordance with clause 3.10(a) of your Membership Agreement.</p>
+            <h5 class="mb-10">You know you can freeze your membership at no cost to you? Just ask our team member how!</h5>
+                    <p>You may only cancel your Membership in accordance with clause 3.10(a) of your Membership Agreement.</p>
 
-            <p>Use this form to:</p><br/>   
-            <ul class="list-none">
-                <li style="list-style:none"><strong>(a)</strong> cancel your Membership by 30 days’ written notice;</li>
-                <li style="list-style:none"><strong>(b)</strong> request an immediate cancellation of your Membership where you have a medical certificate stating that<br />
-                    you cannot use your Revo Fitness Membership because of a permanent illness or physical incapacity; or</li>
-                <li style="list-style:none"><strong>(c)</strong> cancel your Membership immediately within the Cooling-Off Period (WA Members only).</li>
-            </ul>
-
-            <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (a) above, your Membership will remain active and you will be entitled to full use of the Revo Fitness Facilities until your Membership Agreement is cancelled, being:</p><br/>
-
-            <ul class="list-none" style="list-style:none">
-                <li style="list-style:none"><strong>(a)</strong> if you are not a SA Member, 30 days after the Cancellation Notice Date; and</li>
-                <li style="list-style:none"><strong>(b)</strong> if you are a SA Member:</li><br/>
-                <ul>
-                    <li style="list-style:none"><strong>(i)</strong> where you do not have a Direct Debit Date fall within 14 days after the Cancellation Notice Date, 11:59pm on the<br />
-                        day immediately before your next Direct Debit Date; or</li>
-                    <li style="list-style:none"><strong>(ii)</strong> where you do have a Direct Debit Date fall within 14 days after the Notice Date, 11:59pm on the day that is 14 days after the Cancellation Notice Date.</li>
+                <p>Use this form to:</p><br />
+                <ul class="list-none">
+                    <li style="list-style:none"><strong>(a)</strong> cancel your Membership by 30 days’ written notice;</li>
+                    <li style="list-style:none"><strong>(b)</strong> request an immediate cancellation of your Membership where you have a medical certificate stating that<br />
+                        you cannot use your Revo Fitness Membership because of a permanent illness or physical incapacity; or</li>
+                    <li style="list-style:none"><strong>(c)</strong> cancel your Membership immediately within the Cooling-Off Period (WA Members only).</li>
                 </ul>
-            </ul>
-            <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (b) or (c) above (and in the case of (b), Revo Fitness grants your request), your Membership will end immediately, and you will no longer be entitled to use the Revo Fitness Facilities.</p>
 
-            <p>To the extent of any inconsistency between the terms of your Membership Agreement and the contents of this form, the terms of your Membership Agreement prevail.</p>
-            <br/>   
+                <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (a) above, your Membership will remain active and you will be entitled to full use of the Revo Fitness Facilities until your Membership Agreement is cancelled, being:</p><br />
 
-            
-            <h5 class="mb-2 mt-5">Confirm your email to request cancellation of membership</h5>
+                <ul class="list-none" style="list-style:none">
+                    <li style="list-style:none"><strong>(a)</strong> if you are not a SA Member, 30 days after the Cancellation Notice Date; and</li>
+                    <li style="list-style:none"><strong>(b)</strong> if you are a SA Member:</li><br />
+                    <ul>
+                        <li style="list-style:none"><strong>(i)</strong> where you do not have a Direct Debit Date fall within 14 days after the Cancellation Notice Date, 11:59pm on the<br />
+                            day immediately before your next Direct Debit Date; or</li>
+                        <li style="list-style:none"><strong>(ii)</strong> where you do have a Direct Debit Date fall within 14 days after the Notice Date, 11:59pm on the day that is 14 days after the Cancellation Notice Date.</li>
+                    </ul>
+                </ul>
+                <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (b) or (c) above (and in the case of (b), Revo Fitness grants your request), your Membership will end immediately, and you will no longer be entitled to use the Revo Fitness Facilities.</p>
 
-            <?php if ($error): ?>
-                <p style="color:red;"><?= esc_html($error) ?></p>
-            <?php endif; ?>
+                <p>To the extent of any inconsistency between the terms of your Membership Agreement and the contents of this form, the terms of your Membership Agreement prevail.</p>
+                <br />
 
-            <?php if ($memberData): ?>
-                <?php
-                $photoUrl = $memberData['photoUrl'] ?? '';
-                $clubName = $memberData['clubName'] ?? 'Unknown';
-                ?>
-                <?php if ($photoUrl): ?>
-                    <img src="<?= esc_url($photoUrl) ?>" alt="Member Photo" style="max-width: 150px; border-radius: 8px; margin-bottom: 20px;">
+
+                <h5 class="mb-2 mt-5">Confirm your email to request cancellation of membership</h5>
+
+                <?php if ($error): ?>
+                    <p style="color:red;"><?= esc_html($error) ?></p>
                 <?php endif; ?>
-                <p><strong>Name:</strong> <?= esc_html($memberData['firstName']) ?> <?= esc_html($memberData['lastName']) ?></p>
-                <p><strong>Member ID:</strong> <?= esc_html($memberData['id']) ?></p>
-                <p><strong>Home Club:</strong> <?= esc_html($clubName) ?></p>
 
-                <form method="post" action="">
-                    <input type="hidden" name="confirm_cancel" value="1">
-                    <input type="hidden" name="member_id" value="<?= esc_attr($memberData['id']) ?>">
-                    <input type="hidden" name="email" value="<?= esc_attr($email) ?>">
-                    <button class="button gform_button mt-5" type="submit">
-                        <span>Submit request to cancel membership and access to the gym</span>
-                    </button>
-                </form>
-            <?php else: ?>
-                <form id="membership-cancel-form">
-                    <input name="email" type="email" required class="large" placeholder="example@email.com.au">
-                    <button type="submit" class="button gform_button mt-5"><span>Verify Details</span></button>
-                </form>
-                <div id="member-result" class="mt-5"></div>
-            <?php endif; ?>
+                <?php if ($memberData): ?>
+                    <?php
+                    $photoUrl = $memberData['photoUrl'] ?? '';
+                    $clubName = $memberData['clubName'] ?? 'Unknown';
+                    ?>
+                    <?php if ($photoUrl): ?>
+                        <img src="<?= esc_url($photoUrl) ?>" alt="Member Photo" style="max-width: 150px; border-radius: 8px; margin-bottom: 20px;">
+                    <?php endif; ?>
+                    <p><strong>Name:</strong> <?= esc_html($memberData['firstName']) ?> <?= esc_html($memberData['lastName']) ?></p>
+                    <p><strong>Member ID:</strong> <?= esc_html($memberData['id']) ?></p>
+                    <p><strong>Home Club:</strong> <?= esc_html($clubName) ?></p>
+
+                    <form method="post" action="">
+                        <input type="hidden" name="confirm_cancel" value="1">
+                        <input type="hidden" name="member_id" value="<?= esc_attr($memberData['id']) ?>">
+                        <input type="hidden" name="email" value="<?= esc_attr($email) ?>">
+                        <button class="button gform_button mt-5" type="submit">
+                            <span>Submit request to cancel membership and access to the gym</span>
+                        </button>
+                    </form>
+                <?php else: ?>
+                    <form id="membership-cancel-form">
+                        <input name="email" type="email" required class="large" placeholder="example@email.com.au">
+                        <button type="submit" class="button gform_button mt-5"><span>Verify Details</span></button>
+                    </form>
+                    <div id="member-result" class="mt-5"></div>
+                <?php endif; ?>
         </div>
     </div>
 </section>
@@ -117,7 +117,7 @@ $email = '';
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('#membership-cancel-form');
         const result = document.querySelector('#member-result');
-  e
+        
         if (!form) return;
 
         form.addEventListener('submit', async function(e) {

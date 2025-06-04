@@ -894,7 +894,6 @@ add_action('wp_ajax_nopriv_check_pg_membership', 'check_pg_membership');
 
 function check_pg_membership() {
     $email = sanitize_email($_POST['email'] ?? '');
-
     if (!$email) {
         wp_send_json_error(['message' => 'Email is required']);
     }
@@ -902,7 +901,6 @@ function check_pg_membership() {
     $clientId = $_ENV['PG_APP_CLIENT_ID'];
     $clientSecret = $_ENV['PG_APP_CLIENT_SECRET'];
 
-    // Step 1: Find member by email
     $memberUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members?\$filter=Email eq '" . urlencode($email) . "'";
     $memberRes = wp_remote_get($memberUrl, [
         'headers' => [
@@ -917,43 +915,71 @@ function check_pg_membership() {
     }
 
     $memberData = json_decode(wp_remote_retrieve_body($memberRes), true);
-    $member = $memberData['value'][0] ?? null;
+    $members = $memberData['value'] ?? [];
 
-    if (!$member || empty($member['id'])) {
+    if (empty($members)) {
         wp_send_json_success(['exists' => false]);
     }
 
-    // Step 2: Look up contract for member
-    $memberId = $member['id'];
-    $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq $memberId";
-    $contractRes = wp_remote_get($contractUrl, [
-        'headers' => [
-            'X-Client-Id'     => $clientId,
-            'X-Client-Secret' => $clientSecret,
-            'Accept'          => 'application/json',
-        ],
-    ]);
+    $results = [];
+    $hasMultiple = count($members) > 1;
 
-    if (is_wp_error($contractRes)) {
-        wp_send_json_error(['message' => 'Failed to fetch contract.']);
+    foreach ($members as $member) {
+        $memberId = $member['id'];
+        $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq $memberId";
+        $contractRes = wp_remote_get($contractUrl, [
+            'headers' => [
+                'X-Client-Id'     => $clientId,
+                'X-Client-Secret' => $clientSecret,
+                'Accept'          => 'application/json',
+            ],
+        ]);
+
+        if (is_wp_error($contractRes)) {
+            continue;
+        }
+
+        $contractData = json_decode(wp_remote_retrieve_body($contractRes), true);
+        $contracts = $contractData['value'] ?? [];
+
+        $hasActiveContract = false;
+        $statuses = [];
+        $cleanedContracts = [];
+
+        foreach ($contracts as $contract) {
+            $status = $contract['status'] ?? 'Unknown';
+            $statuses[] = strtolower($status);
+
+            $cleanedContracts[] = [
+                'contractId' => $contract['id'],
+                'status'     => $status,
+                'type'       => $contract['type'] ?? 'Unknown',
+                'startDate'  => $contract['startDate'] ?? null,
+                'endDate'    => $contract['endDate'] ?? null,
+            ];
+
+            if (strtolower($status) === 'current') {
+                $hasActiveContract = true;
+            }
+        }
+
+        if ($hasMultiple && !$hasActiveContract) {
+            continue;
+        }
+
+        $results[] = [
+            'memberId'   => $member['id'],
+            'firstName'  => $member['firstName'] ?? '',
+            'lastName'   => $member['lastName'] ?? '',
+            'homeClub'   => $member['homeClub']['name'] ?? 'Unknown',
+            'isActive'   => $member['isActive'] ?? false,
+            'contracts'  => $cleanedContracts,
+            'statuses'   => array_unique($statuses),
+        ];
     }
 
-    $contractData = json_decode(wp_remote_retrieve_body($contractRes), true);
-    $contract = $contractData['value'][0] ?? null;
-
-    if (!$contract) {
-        // No contract found, return quietly
-        wp_send_json_success(['exists' => false]);
-    }
-
-    
-
-    // Contract found – return key info
     wp_send_json_success([
-        'exists'        => true,
-        'contractId'    => $contract['id'] ?? null,
-        'contractType'  => $contract['type'] ?? 'Unknown',
-        'status'        => $contract['status'] ?? 'Unknown',
-        'memberId'      => $memberId,
+        'exists'  => count($results) > 0,
+        'members' => $results
     ]);
 }

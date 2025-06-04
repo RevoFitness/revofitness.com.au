@@ -216,6 +216,8 @@ class User extends PerfectGymClient
         $response = $self->getApiRequest($apiUrl, null, 16);
         $user = json_decode($response, true);
         $HIITFIT_ID = 8;
+        // remove return false to enable this function again
+        return false;
 
         write_log("Checking if $email exists...");
 
