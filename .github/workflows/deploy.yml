@@ -6,7 +6,7 @@ on:
       - develop
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,54 +26,25 @@ jobs:
           npm run build
         working-directory: startdigital
 
-      - name: Upload built theme as artifact
-        uses: actions/upload-artifact@v3.1.3
-        with:
-          name: startdigital-theme
-          path: startdigital/
-
-  deploy-development:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download theme artifact
-        uses: actions/download-artifact@v3.0.2
-        with:
-          name: startdigital-theme
-          path: startdigital
-
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_3
           chmod 600 ~/.ssh/id_rsa_dev_3
           ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
+
+      - name: Clean unnecessary files
+        run: rm -rf startdigital/node_modules
 
       - name: Sync theme to development (developmentrevof)
         run: |
           scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
           startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
 
-  deploy-staging:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download theme artifact
-        uses: actions/download-artifact@v3.0.2
-        with:
-          name: startdigital-theme
-          path: startdigital
-
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_3
-          chmod 600 ~/.ssh/id_rsa_dev_3
-          ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
-
       - name: Sync theme to staging (revostaging)
         run: |
           scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
           startdigital revostaging@43.250.141.151:/home/revostaging/public_html/wp-content/themes/
+
+      - name: Done
+        run: echo "✅ Deployment to development and staging complete."
