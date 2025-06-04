@@ -14,56 +14,63 @@ class User extends PerfectGymClient
     public static function create($data, $paymentIdOne)
     {
         $self = new self();
-        $apiUrl = "$self->baseURL/v2.1/Members/AddContractMember";
-        $args = array(
-            "contractData" => array(
-                'paymentPlanId' => $paymentIdOne,
-                'signUpDate' => $data['signUpDate'],
-                'startDate' => $data['startDate'],
-            ),
-            'homeClubId' => $data['gymId'],
-            "personalData" => array(
-                'firstName' => $data['firstName'],
-                'lastName' => $data['lastName'],
-                'birthDate' => $data['dateOfBirth'],
-                'sex' => $data['gender'],
-                'phoneNumber' => $data['phoneNumber'],
-                'email' => $data['email'],
-            ),
-            'addressData' => array(
-                'street' => $data['address'],
-                'cityName' => $data['suburb'],
-                'postalCode' => $data['postCode'],
-                'country' => 'AU'
-            ),
-            "agreements" => array(
-                array('agreementId' => 1, 'agreementAnswer' => true),
-                array('agreementId' => 2, 'agreementAnswer' => true),
-                array('agreementId' => 4, 'agreementAnswer' => true),
-                array('agreementId' => 6, 'agreementAnswer' => true),
-                array('agreementId' => 7, 'agreementAnswer' => true),
-                array('agreementId' => 8, 'agreementAnswer' => true),
-                array('agreementId' => 9, 'agreementAnswer' => true),
-            )
-        );
 
-        if (isset($data['discountId']) && $data['discountCode'] !== $_ENV['DISCOUNT_CODE']) {
-            $args["contractData"]["contractDiscountsData"] = array(
-                array(
-                    "contractDiscountDefinitionId" => $data['discountId']
-                )
-            );
+        // If memberId is provided, add contract to existing member
+        if (!empty($data['memberId'])) {
+            $apiUrl = "$self->baseURL/v2.1/Contracts/AddContract";
+            $args = [
+                "memberId"     => $data['memberId'],
+                "paymentPlanId" => $paymentIdOne,
+                "signUpDate"   => $data['signUpDate'],
+                "startDate"    => $data['startDate'],
+                "clubId"       => $data['gymId'],
+            ];
+        } else {
+            // Fallback: Add new member and contract
+            $apiUrl = "$self->baseURL/v2.1/Members/AddContractMember";
+            $args = [
+                "contractData" => [
+                    'paymentPlanId' => $paymentIdOne,
+                    'signUpDate'    => $data['signUpDate'],
+                    'startDate'     => $data['startDate'],
+                ],
+                "homeClubId" => $data['gymId'],
+                "personalData" => [
+                    'firstName'   => $data['firstName'],
+                    'lastName'    => $data['lastName'],
+                    'birthDate'   => $data['dateOfBirth'],
+                    'sex'         => $data['gender'],
+                    'phoneNumber' => $data['phoneNumber'],
+                    'email'       => $data['email'],
+                ],
+                "addressData" => [
+                    'street'     => $data['address'],
+                    'cityName'   => $data['suburb'],
+                    'postalCode' => $data['postCode'],
+                    'country'    => 'AU'
+                ],
+                "agreements" => [
+                    ['agreementId' => 1, 'agreementAnswer' => true],
+                    ['agreementId' => 2, 'agreementAnswer' => true],
+                    ['agreementId' => 4, 'agreementAnswer' => true],
+                    ['agreementId' => 6, 'agreementAnswer' => true],
+                    ['agreementId' => 7, 'agreementAnswer' => true],
+                    ['agreementId' => 8, 'agreementAnswer' => true],
+                    ['agreementId' => 9, 'agreementAnswer' => true],
+                ]
+            ];
         }
 
         $response = $self->postApiRequest($apiUrl, $args, null, 16);
 
         if (!$response) {
-            write_log("No response for adding user: {$data['firstName']} {$data['lastName']}");
+            write_log("No response for adding contract: " . json_encode($data));
             return false;
         }
 
         return json_decode($response);
     }
+
 
     /**
      * Creates a guest in the PerfectGym system.

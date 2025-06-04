@@ -967,19 +967,25 @@ function check_pg_membership() {
             continue;
         }
 
-        $results[] = [
-            'memberId'   => $member['id'],
-            'firstName'  => $member['firstName'] ?? '',
-            'lastName'   => $member['lastName'] ?? '',
-            'homeClub'   => $member['homeClub']['name'] ?? 'Unknown',
-            'isActive'   => $member['isActive'] ?? false,
-            'contracts'  => $cleanedContracts,
-            'statuses'   => array_unique($statuses),
+       $results[] = [
+            'memberId'    => $member['id'],
+            'firstName'   => $member['firstName'] ?? '',
+            'lastName'    => $member['lastName'] ?? '',
+            'phoneNumber' => $member['phoneNumber'] ?? '',
+            'gender'      => $member['sex'] ?? '',
+            'dateOfBirth' => $member['birthdate'] ?? '',
+            'homeClub'    => $member['homeClub']['name'] ?? 'Unknown',
+            'isActive'    => $member['isActive'] ?? false,
+            'contracts'   => $cleanedContracts,
+            'statuses'    => array_unique($statuses),
         ];
+
+
     }
 
     wp_send_json_success([
         'exists'  => count($results) > 0,
-        'members' => $results
+        'members' => $results,
+        'all' => $members,
     ]);
 }

@@ -16817,12 +16817,14 @@
       if (!email || isChecking)
         return;
       isChecking = true;
+      console.log("\u{1F7E1} Triggered blur event for email:", email);
       input.className = input.className.split(" ").filter((c) => !["current", "ended", "notstarted", "freezed"].includes(c.toLowerCase())).join(" ");
       const oldMsg = wrapper.querySelector(".email-notify-up");
       if (oldMsg)
         oldMsg.remove();
       if (label) {
-        label.innerHTML = `Email <span class="loader" style="background:#fff; margin-left:6px; display:inline-block; width:12px; height:12px; border:2px solid #ccc; border-top-color:#333; border-radius:50%; animation:spin 1s linear infinite;"></span>`;
+        console.log("\u23F3 Showing loading spinner on label");
+        label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:6px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 38px;"></span>`;
       }
       try {
         const response = await fetch("/wp-admin/admin-ajax.php", {
@@ -16834,38 +16836,81 @@
           })
         });
         const result = await response.json();
-        if (!result.success || !result.data.exists)
+        console.log("\u{1F7E2} Parsed JSON Result:", result);
+        if (!result.success) {
+          console.warn("\u274C Result success=false");
           return;
-        const contractStatuses = result.data.members.flatMap((member) => member.statuses || []).map((status) => status.toLowerCase());
-        const firstName = result.data.members?.[0]?.firstName || "";
+        }
+        if (!result.data || !result.data.exists) {
+          console.warn("\u274C No matching membership found (data.exists = false)");
+          return;
+        }
+        const members = result.data.members || [];
+        const contractStatuses = members.flatMap((member) => {
+          return member.statuses || [];
+        }).map((status) => status.toLowerCase());
+        const firstName = members?.[0]?.firstName || "Member";
         const messages = {
-          current: `You already have an active membership. Please do not sign up again. Contact us via chat if help is needed.`,
-          ended: `Welcome back ${firstName}!`,
+          current: `You already have an active membership. Please do not sign up again.\\n Contact us via our web chat if help is needed.`,
+          ended: `Back for more, ${firstName}? Let\u2019s get it!`,
           notstarted: `You have an account but your membership hasn\u2019t started. Check your welcome email.`,
           freezed: `Your membership is frozen \u2014 <a href='tel:1300738638'>Call us</a>.`
         };
         let shouldHideButton = false;
         const uniqueStatuses = new Set(contractStatuses);
         uniqueStatuses.forEach((status) => {
+          console.log(`\u{1F449} Applying status: ${status}`);
           input.classList.add(status);
+          if (status === "ended") {
+            const member = members?.[0];
+            const existingMemberId = member?.memberId;
+            console.log("\u{1F4BE} Setting hidden memberId field:", existingMemberId);
+            const hiddenField = document.getElementById("existing-member-id");
+            if (hiddenField && existingMemberId) {
+              hiddenField.value = existingMemberId;
+            }
+            console.log("\u{1F9CD} Prefilling form with:", member);
+            if (member?.firstName)
+              document.getElementById("firstName").value = member.firstName;
+            if (member?.lastName)
+              document.getElementById("lastName").value = member.lastName;
+            if (member?.phoneNumber)
+              document.getElementById("phoneNumber").value = member.phoneNumber;
+            if (member?.gender)
+              document.getElementById("gender").value = member.gender;
+            if (member?.dateOfBirth) {
+              const birth = new Date(member.dateOfBirth);
+              const day = String(birth.getDate()).padStart(2, "0");
+              const month = String(birth.getMonth() + 1).padStart(2, "0");
+              const year = birth.getFullYear();
+              const formattedDOB = `${day}/${month}/${year}`;
+              console.log("\u{1F4C5} Formatted DOB:", formattedDOB);
+              const dobInput = document.getElementById("dateOfBirth");
+              if (dobInput) {
+                dobInput.value = formattedDOB;
+                console.log("\u2705 DOB input filled successfully");
+              } else {
+                console.warn("\u274C DOB input not found in DOM");
+              }
+            }
+          }
           if (messages[status]) {
             const msg = document.createElement("div");
             msg.className = `email-notify-up ${status}`;
             msg.style.cssText = "margin-top:6px; font-size:0.9rem; display:flex; align-items:flex-start; gap:6px;";
-            msg.innerHTML = `<span>${messages[status]}</span>`;
+            msg.innerHTML = `<span style='width:calc(100% - 25px);'>${messages[status]}</span>`;
             const closeBtn = document.createElement("span");
+            closeBtn.classList.add("close-btn");
             closeBtn.innerHTML = "&times;";
             closeBtn.style.cursor = "pointer";
             closeBtn.style.fontWeight = "bold";
-            closeBtn.style.fontSize = "18px";
+            closeBtn.style.fontSize = "37px";
             closeBtn.style.position = "absolute";
             closeBtn.style.right = "15px";
-            closeBtn.style.fontSize = "37px";
             closeBtn.addEventListener("click", () => {
+              console.log(`\u274C Message for status ${status} manually closed`);
               msg.remove();
               input.classList.remove(status);
-              if (PostPaymentMethodButton)
-                PostPaymentMethodButton.style.zIndex = -1;
             });
             msg.appendChild(closeBtn);
             wrapper.appendChild(msg);
@@ -16878,11 +16923,12 @@
           PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
         }
       } catch (err) {
-        console.error("Error checking membership:", err);
+        console.error("\u{1F525} Error during membership check:", err);
       } finally {
         if (label)
           label.textContent = "Email";
         isChecking = false;
+        console.log("\u2705 Done checking email");
       }
     });
   }
@@ -16898,6 +16944,7 @@
 		`;
       document.head.appendChild(style);
     }
+    console.log("\u{1F4CC} DOM ready \u2014 initializing email check logic");
     checkEmail();
   });
 })();

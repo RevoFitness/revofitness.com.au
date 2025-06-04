@@ -93,9 +93,7 @@
     color: #fff;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) 0px 3px 0px 1px;
 }
-.email-notify-up > span {
-    width: calc(100% - 25px);
-}
+
 #sign-up-form .input-wrapper {
 	position:relative;
 }

@@ -539,6 +539,8 @@ function checkEmail() {
 		if (!email || isChecking) return;
 		isChecking = true;
 
+		console.log('🟡 Triggered blur event for email:', email);
+
 		// Remove old classes and messages
 		input.className = input.className
 			.split(' ')
@@ -547,9 +549,9 @@ function checkEmail() {
 		const oldMsg = wrapper.querySelector('.email-notify-up');
 		if (oldMsg) oldMsg.remove();
 
-		// Add loader to label
 		if (label) {
-			label.innerHTML = `Email <span class="loader" style="background:#fff; margin-left:6px; display:inline-block; width:12px; height:12px; border:2px solid #ccc; border-top-color:#333; border-radius:50%; animation:spin 1s linear infinite;"></span>`;
+			console.log('⏳ Showing loading spinner on label');
+			label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:6px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 38px;"></span>`;
 		}
 
 		try {
@@ -563,45 +565,95 @@ function checkEmail() {
 			});
 
 			const result = await response.json();
-			if (!result.success || !result.data.exists) return;
+			console.log('🟢 Parsed JSON Result:', result);
 
-			const contractStatuses = result.data.members
-				.flatMap(member => member.statuses || [])
-				.map(status => status.toLowerCase());
+			if (!result.success) {
+				console.warn('❌ Result success=false');
+				return;
+			}
 
-			const firstName = result.data.members?.[0]?.firstName || '';
+			if (!result.data || !result.data.exists) {
+				console.warn('❌ No matching membership found (data.exists = false)');
+				return;
+			}
+
+			const members = result.data.members || [];
+			const contractStatuses = members.flatMap(member => {
+				return member.statuses || [];
+			}).map(status => status.toLowerCase());
+
+			const firstName = members?.[0]?.firstName || 'Member';
 			const messages = {
-				current: `You already have an active membership. Please do not sign up again. Contact us via chat if help is needed.`,
-				ended: `Welcome back ${firstName}!`,
+				current: `You already have an active membership. Please do not sign up again.\\n Contact us via our web chat if help is needed.`,
+				ended: `Back for more, ${firstName}? Let’s get it!`,
 				notstarted: `You have an account but your membership hasn’t started. Check your welcome email.`,
 				freezed: `Your membership is frozen — <a href='tel:1300738638'>Call us</a>.`
 			};
 
-			// Track if any status disables the button
 			let shouldHideButton = false;
-
 			const uniqueStatuses = new Set(contractStatuses);
+
 			uniqueStatuses.forEach(status => {
+				console.log(`👉 Applying status: ${status}`);
 				input.classList.add(status);
+
+				// If status is 'ended', save the memberId in the hidden field
+				if (status === 'ended') {
+					const member = members?.[0];
+					const existingMemberId = member?.memberId;
+
+					console.log('💾 Setting hidden memberId field:', existingMemberId);
+					const hiddenField = document.getElementById('existing-member-id');
+					if (hiddenField && existingMemberId) {
+						hiddenField.value = existingMemberId;
+					}
+
+					console.log('🧍 Prefilling form with:', member);
+
+					if (member?.firstName) document.getElementById('firstName').value = member.firstName;
+					if (member?.lastName) document.getElementById('lastName').value = member.lastName;
+					if (member?.phoneNumber) document.getElementById('phoneNumber').value = member.phoneNumber;
+					if (member?.gender) document.getElementById('gender').value = member.gender;
+					if (member?.dateOfBirth) {
+						const birth = new Date(member.dateOfBirth);
+						const day = String(birth.getDate()).padStart(2, '0');
+						const month = String(birth.getMonth() + 1).padStart(2, '0');
+						const year = birth.getFullYear();
+						const formattedDOB = `${day}/${month}/${year}`;
+
+						console.log('📅 Formatted DOB:', formattedDOB);
+
+						const dobInput = document.getElementById('dateOfBirth');
+						if (dobInput) {
+							dobInput.value = formattedDOB;
+							console.log('✅ DOB input filled successfully');
+						} else {
+							console.warn('❌ DOB input not found in DOM');
+						}
+					}
+
+				}
+
+
 
 				if (messages[status]) {
 					const msg = document.createElement('div');
 					msg.className = `email-notify-up ${status}`;
 					msg.style.cssText = 'margin-top:6px; font-size:0.9rem; display:flex; align-items:flex-start; gap:6px;';
-					msg.innerHTML = `<span>${messages[status]}</span>`;
+					msg.innerHTML = `<span style='width:calc(100% - 25px);'>${messages[status]}</span>`;
 
 					const closeBtn = document.createElement('span');
+					closeBtn.classList.add('close-btn');
 					closeBtn.innerHTML = '&times;';
 					closeBtn.style.cursor = 'pointer';
 					closeBtn.style.fontWeight = 'bold';
-					closeBtn.style.fontSize = '18px';
+					closeBtn.style.fontSize = '37px';
 					closeBtn.style.position = 'absolute';
 					closeBtn.style.right = '15px';
-					closeBtn.style.fontSize = '37px';
 					closeBtn.addEventListener('click', () => {
+						console.log(`❌ Message for status ${status} manually closed`);
 						msg.remove();
 						input.classList.remove(status);
-						if (PostPaymentMethodButton) PostPaymentMethodButton.style.zIndex = -1;
 					});
 					msg.appendChild(closeBtn);
 					wrapper.appendChild(msg);
@@ -612,15 +664,15 @@ function checkEmail() {
 				}
 			});
 
-			// Toggle visibility of the button
 			if (PostPaymentMethodButton) {
 				PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
 			}
 		} catch (err) {
-			console.error('Error checking membership:', err);
+			console.error('🔥 Error during membership check:', err);
 		} finally {
 			if (label) label.textContent = 'Email';
 			isChecking = false;
+			console.log('✅ Done checking email');
 		}
 	});
 }
@@ -638,5 +690,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		`;
 		document.head.appendChild(style);
 	}
+	console.log('📌 DOM ready — initializing email check logic');
 	checkEmail();
 });
