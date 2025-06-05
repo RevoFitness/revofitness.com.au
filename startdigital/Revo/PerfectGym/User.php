@@ -25,6 +25,7 @@ class User extends PerfectGymClient
                 "startDate"    => $data['startDate'],
                 "clubId"       => $data['gymId'],
             ];
+            write_log('mb args:', $args);
         } else {
             // Fallback: Add new member and contract
             $apiUrl = "$self->baseURL/v2.1/Members/AddContractMember";
@@ -60,8 +61,10 @@ class User extends PerfectGymClient
                 ]
             ];
         }
-
+        write_log("➡️ Using memberId: {$data['memberId']} for AddContract");
+        write_log("📤 AddContract payload: " . json_encode($args));
         $response = $self->postApiRequest($apiUrl, $args, null, 16);
+        write_log("📥 PG response: $response");
 
         if (!$response) {
             write_log("No response for adding contract: " . json_encode($data));
