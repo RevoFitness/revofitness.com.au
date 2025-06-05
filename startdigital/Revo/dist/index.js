@@ -2145,6 +2145,14 @@
       this.handleLevelTwoCampaign();
       this.prefillPromoCodeForPresaleGyms();
     }
+    // this.setupTestSubmissionDetails()
+    setExistingMemberId(memberId) {
+      const hiddenInput = document.getElementById("existing-member-id");
+      if (hiddenInput) {
+        console.log("\u2705 Setting existing memberId to:", memberId);
+        hiddenInput.value = memberId;
+      }
+    }
     /**
      * Prefill the promo code for presale gyms if it's not already filled.
      *
@@ -2775,6 +2783,7 @@
     }
   };
   var SignUpForm_default = SignUpForm;
+  window.signUpFormInstance = new SignUpForm();
 
   // js/utils/add-child-event-listener.js
   function addListenerToChildElements(parentSelector, childSelector, handler) {

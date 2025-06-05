@@ -82,16 +82,17 @@ class SignUpForm {
 
 		this.prefillPromoCodeForPresaleGyms()
 
-		// this.setupTestSubmissionDetails()
-		setExistingMemberId(memberId) {
-			const hiddenInput = document.getElementById('existing-member-id')
-			if (hiddenInput) {
-				console.log('✅ Setting existing memberId to:', memberId)
-				hiddenInput.value = memberId
-			}
-		}
-
 	}
+
+	// this.setupTestSubmissionDetails()
+	setExistingMemberId(memberId) {
+		const hiddenInput = document.getElementById('existing-member-id')
+		if (hiddenInput) {
+			console.log('✅ Setting existing memberId to:', memberId)
+			hiddenInput.value = memberId
+		}
+	}
+
 
 	/**
 	 * Prefill the promo code for presale gyms if it's not already filled.
