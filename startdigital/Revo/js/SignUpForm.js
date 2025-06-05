@@ -83,6 +83,14 @@ class SignUpForm {
 		this.prefillPromoCodeForPresaleGyms()
 
 		// this.setupTestSubmissionDetails()
+		setExistingMemberId(memberId) {
+			const hiddenInput = document.getElementById('existing-member-id')
+			if (hiddenInput) {
+				console.log('✅ Setting existing memberId to:', memberId)
+				hiddenInput.value = memberId
+			}
+		}
+
 	}
 
 	/**
@@ -915,3 +923,6 @@ class SignUpForm {
 }
 
 export default SignUpForm
+
+// Make instance globally available
+window.signUpFormInstance = new SignUpForm()

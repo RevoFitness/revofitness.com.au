@@ -16823,7 +16823,6 @@
       if (oldMsg)
         oldMsg.remove();
       if (label) {
-        console.log("\u23F3 Showing loading spinner on label");
         label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:6px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 38px;"></span>`;
       }
       try {
@@ -16837,18 +16836,12 @@
         });
         const result = await response.json();
         console.log("\u{1F7E2} Parsed JSON Result:", result);
-        if (!result.success) {
-          console.warn("\u274C Result success=false");
-          return;
-        }
-        if (!result.data || !result.data.exists) {
-          console.warn("\u274C No matching membership found (data.exists = false)");
+        if (!result.success || !result.data?.exists) {
+          console.warn("\u274C Membership not found or invalid response");
           return;
         }
         const members = result.data.members || [];
-        const contractStatuses = members.flatMap((member) => {
-          return member.statuses || [];
-        }).map((status) => status.toLowerCase());
+        const contractStatuses = members.flatMap((member) => member.statuses || []).map((s) => s.toLowerCase());
         const firstName = members?.[0]?.firstName || "Member";
         const messages = {
           current: `You already have an active membership. Please do not sign up again.<br/><br/> Contact us via our web chat if help is needed.`,
@@ -16864,10 +16857,11 @@
           if (status === "ended") {
             const member = members?.[0];
             const existingMemberId = member?.memberId;
-            console.log("\u{1F4BE} Setting hidden memberId field:", existingMemberId);
-            const hiddenField = document.getElementById("existing-member-id");
-            if (hiddenField && existingMemberId) {
-              hiddenField.value = existingMemberId;
+            if (existingMemberId) {
+              console.log("\u{1F4BE} Setting existing member ID via SignUpForm instance:", existingMemberId);
+              if (window.signUpFormInstance?.setExistingMemberId) {
+                window.signUpFormInstance.setExistingMemberId(existingMemberId);
+              }
             }
             console.log("\u{1F9CD} Prefilling form with:", member);
             if (member?.firstName)
@@ -16880,18 +16874,10 @@
               document.getElementById("gender").value = member.gender;
             if (member?.dateOfBirth) {
               const birth = new Date(member.dateOfBirth);
-              const day = String(birth.getDate()).padStart(2, "0");
-              const month = String(birth.getMonth() + 1).padStart(2, "0");
-              const year = birth.getFullYear();
-              const formattedDOB = `${day}/${month}/${year}`;
-              console.log("\u{1F4C5} Formatted DOB:", formattedDOB);
+              const formattedDOB = `${String(birth.getDate()).padStart(2, "0")}/${String(birth.getMonth() + 1).padStart(2, "0")}/${birth.getFullYear()}`;
               const dobInput = document.getElementById("dateOfBirth");
-              if (dobInput) {
+              if (dobInput)
                 dobInput.value = formattedDOB;
-                console.log("\u2705 DOB input filled successfully");
-              } else {
-                console.warn("\u274C DOB input not found in DOM");
-              }
             }
           }
           if (messages[status]) {
@@ -16902,11 +16888,7 @@
             const closeBtn = document.createElement("span");
             closeBtn.classList.add("close-btn");
             closeBtn.innerHTML = "&times;";
-            closeBtn.style.cursor = "pointer";
-            closeBtn.style.fontWeight = "bold";
-            closeBtn.style.fontSize = "37px";
-            closeBtn.style.position = "absolute";
-            closeBtn.style.right = "15px";
+            closeBtn.style.cssText = "cursor:pointer;font-weight:bold;font-size:37px;position:absolute;right:15px;";
             closeBtn.addEventListener("click", () => {
               console.log(`\u274C Message for status ${status} manually closed`);
               msg.remove();
@@ -16921,11 +16903,7 @@
         });
         if (PostPaymentMethodButton) {
           PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
-          if (uniqueStatuses.has("ended")) {
-            PostPaymentMethodButton.style.zIndex = 2;
-          } else {
-            PostPaymentMethodButton.style.zIndex = -1;
-          }
+          PostPaymentMethodButton.style.zIndex = uniqueStatuses.has("ended") ? 2 : -1;
         }
       } catch (err) {
         console.error("\u{1F525} Error during membership check:", err);

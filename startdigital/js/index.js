@@ -550,7 +550,6 @@ function checkEmail() {
 		if (oldMsg) oldMsg.remove();
 
 		if (label) {
-			console.log('⏳ Showing loading spinner on label');
 			label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:6px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 38px;"></span>`;
 		}
 
@@ -567,22 +566,15 @@ function checkEmail() {
 			const result = await response.json();
 			console.log('🟢 Parsed JSON Result:', result);
 
-			if (!result.success) {
-				console.warn('❌ Result success=false');
-				return;
-			}
-
-			if (!result.data || !result.data.exists) {
-				console.warn('❌ No matching membership found (data.exists = false)');
+			if (!result.success || !result.data?.exists) {
+				console.warn('❌ Membership not found or invalid response');
 				return;
 			}
 
 			const members = result.data.members || [];
-			const contractStatuses = members.flatMap(member => {
-				return member.statuses || [];
-			}).map(status => status.toLowerCase());
-
+			const contractStatuses = members.flatMap(member => member.statuses || []).map(s => s.toLowerCase());
 			const firstName = members?.[0]?.firstName || 'Member';
+
 			const messages = {
 				current: `You already have an active membership. Please do not sign up again.<br/><br/> Contact us via our web chat if help is needed.`,
 				ended: `Back for more, ${firstName}? Let’s get it!`,
@@ -597,44 +589,30 @@ function checkEmail() {
 				console.log(`👉 Applying status: ${status}`);
 				input.classList.add(status);
 
-				// If status is 'ended', save the memberId in the hidden field
 				if (status === 'ended') {
 					const member = members?.[0];
 					const existingMemberId = member?.memberId;
 
-					console.log('💾 Setting hidden memberId field:', existingMemberId);
-					const hiddenField = document.getElementById('existing-member-id');
-					if (hiddenField && existingMemberId) {
-						hiddenField.value = existingMemberId;
+					if (existingMemberId) {
+						console.log('💾 Setting existing member ID via SignUpForm instance:', existingMemberId);
+						if (window.signUpFormInstance?.setExistingMemberId) {
+							window.signUpFormInstance.setExistingMemberId(existingMemberId);
+						}
 					}
 
 					console.log('🧍 Prefilling form with:', member);
-
 					if (member?.firstName) document.getElementById('firstName').value = member.firstName;
 					if (member?.lastName) document.getElementById('lastName').value = member.lastName;
 					if (member?.phoneNumber) document.getElementById('phoneNumber').value = member.phoneNumber;
 					if (member?.gender) document.getElementById('gender').value = member.gender;
+
 					if (member?.dateOfBirth) {
 						const birth = new Date(member.dateOfBirth);
-						const day = String(birth.getDate()).padStart(2, '0');
-						const month = String(birth.getMonth() + 1).padStart(2, '0');
-						const year = birth.getFullYear();
-						const formattedDOB = `${day}/${month}/${year}`;
-
-						console.log('📅 Formatted DOB:', formattedDOB);
-
+						const formattedDOB = `${String(birth.getDate()).padStart(2, '0')}/${String(birth.getMonth() + 1).padStart(2, '0')}/${birth.getFullYear()}`;
 						const dobInput = document.getElementById('dateOfBirth');
-						if (dobInput) {
-							dobInput.value = formattedDOB;
-							console.log('✅ DOB input filled successfully');
-						} else {
-							console.warn('❌ DOB input not found in DOM');
-						}
+						if (dobInput) dobInput.value = formattedDOB;
 					}
-
 				}
-
-
 
 				if (messages[status]) {
 					const msg = document.createElement('div');
@@ -645,11 +623,7 @@ function checkEmail() {
 					const closeBtn = document.createElement('span');
 					closeBtn.classList.add('close-btn');
 					closeBtn.innerHTML = '&times;';
-					closeBtn.style.cursor = 'pointer';
-					closeBtn.style.fontWeight = 'bold';
-					closeBtn.style.fontSize = '37px';
-					closeBtn.style.position = 'absolute';
-					closeBtn.style.right = '15px';
+					closeBtn.style.cssText = 'cursor:pointer;font-weight:bold;font-size:37px;position:absolute;right:15px;';
 					closeBtn.addEventListener('click', () => {
 						console.log(`❌ Message for status ${status} manually closed`);
 						msg.remove();
@@ -666,12 +640,7 @@ function checkEmail() {
 
 			if (PostPaymentMethodButton) {
 				PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
-
-				if (uniqueStatuses.has('ended')) {
-					PostPaymentMethodButton.style.zIndex = 2;
-				} else {
-					PostPaymentMethodButton.style.zIndex = -1;
-				}
+				PostPaymentMethodButton.style.zIndex = uniqueStatuses.has('ended') ? 2 : -1;
 			}
 
 		} catch (err) {
@@ -684,7 +653,6 @@ function checkEmail() {
 	});
 }
 
-// Spinner animation (inject if not present)
 document.addEventListener('DOMContentLoaded', () => {
 	if (!document.querySelector('#email-spinner-style')) {
 		const style = document.createElement('style');

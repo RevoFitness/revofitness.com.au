@@ -14,7 +14,7 @@ class User extends PerfectGymClient
     public static function create($data, $paymentIdOne)
     {
         $self = new self();
-
+        write_log("POST DATA:", json_encode($data));
         // If memberId is provided, add contract to existing member
         if (!empty($data['memberId'])) {
             $apiUrl = "$self->baseURL/v2.1/Contracts/AddContract";
