@@ -917,6 +917,12 @@ function check_pg_membership() {
     $memberData = json_decode(wp_remote_retrieve_body($memberRes), true);
     $members = $memberData['value'] ?? [];
 
+    // Filter out deleted members
+    $members = array_filter($members, fn($m) => empty($m['isDeleted']));
+
+    // Optional: sort by version descending (latest record first)
+    usort($members, fn($a, $b) => ($b['version'] ?? 0) <=> ($a['version'] ?? 0));
+
     if (empty($members)) {
         wp_send_json_success(['exists' => false]);
     }
@@ -925,6 +931,9 @@ function check_pg_membership() {
     $hasMultiple = count($members) > 1;
 
     foreach ($members as $member) {
+        if (!empty($member['isDeleted']) && $member['isDeleted'] === true) {
+            continue; // skip deleted members
+        }
         $memberId = $member['id'];
         $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq $memberId";
         $contractRes = wp_remote_get($contractUrl, [
@@ -963,9 +972,9 @@ function check_pg_membership() {
             }
         }
 
-        if ($hasMultiple && !$hasActiveContract) {
+       /* if ($hasMultiple && !$hasActiveContract) {
             continue;
-        }
+        }*/
 
        $results[] = [
             'memberId'    => $member['id'],

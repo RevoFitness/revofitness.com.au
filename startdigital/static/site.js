@@ -16851,10 +16851,10 @@
         }).map((status) => status.toLowerCase());
         const firstName = members?.[0]?.firstName || "Member";
         const messages = {
-          current: `You already have an active membership. Please do not sign up again.\\n Contact us via our web chat if help is needed.`,
+          current: `You already have an active membership. Please do not sign up again.<br/><br/> Contact us via our web chat if help is needed.`,
           ended: `Back for more, ${firstName}? Let\u2019s get it!`,
           notstarted: `You have an account but your membership hasn\u2019t started. Check your welcome email.`,
-          freezed: `Your membership is frozen \u2014 <a href='tel:1300738638'>Call us</a>.`
+          freezed: `Your membership is frozen \u2014 <a href='tel:1300738638' style="text-decoration:underline;">Call us!</a>`
         };
         let shouldHideButton = false;
         const uniqueStatuses = new Set(contractStatuses);
@@ -16921,6 +16921,11 @@
         });
         if (PostPaymentMethodButton) {
           PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
+          if (uniqueStatuses.has("ended")) {
+            PostPaymentMethodButton.style.zIndex = 2;
+          } else {
+            PostPaymentMethodButton.style.zIndex = -1;
+          }
         }
       } catch (err) {
         console.error("\u{1F525} Error during membership check:", err);
