@@ -163,13 +163,26 @@ function setInputValues(data) {
 	const { paymentMethodToken, card } = data
 
 	document.querySelector('#paymentMethodToken').value = paymentMethodToken
-	document.querySelector('#accountHolderName').value =
-		card !== null ? card.accountHolderName : null
-	document.querySelector('#firstSix').value = card !== null ? card.first6 : null
-	document.querySelector('#lastFour').value = card !== null ? card.last4 : null
-	document.querySelector('#cardExpiry').value =
-		card !== null ? `20${card.expiryYear}-${card.expiryMonth}` : null
-	document.querySelector('#cardType').value = card !== null ? card.type : null
+	document.querySelector('#accountHolderName').value = card ? card.accountHolderName : ''
+	document.querySelector('#firstSix').value = card ? card.first6 : ''
+	document.querySelector('#lastFour').value = card ? card.last4 : ''
+	document.querySelector('#cardExpiry').value = card ? `20${card.expiryYear}-${card.expiryMonth}` : ''
+	document.querySelector('#cardType').value = card ? card.type : ''
+
+	// ✅ Inject memberId before submit
+	const existingMemberId = document.getElementById('existing-member-id')?.value
+	if (existingMemberId) {
+		console.log('✅ Adding existing memberId to form before submit:', existingMemberId)
+
+		let hiddenInput = document.querySelector('input[name="memberId"]')
+		if (!hiddenInput) {
+			hiddenInput = document.createElement('input')
+			hiddenInput.type = 'hidden'
+			hiddenInput.name = 'memberId'
+			document.getElementById('sign-up-form').appendChild(hiddenInput)
+		}
+		hiddenInput.value = existingMemberId
+	}
 
 	submit()
 }
