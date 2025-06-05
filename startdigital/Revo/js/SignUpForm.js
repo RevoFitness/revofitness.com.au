@@ -405,9 +405,11 @@ class SignUpForm {
 			window.location.href.includes('?under-18=true')
 		const today = new Date()
 		const age = isAllowedToBeUnder18 ? 14 : 18
-		const ageText = document.querySelector('[data-age]')
+		const ageText = document.querySelector('[data-age]');
+		if (ageText) ageText.textContent = age;
 
 		ageText.textContent = age
+
 
 		return new Date(
 			today.getFullYear() - age,
@@ -924,6 +926,3 @@ class SignUpForm {
 }
 
 export default SignUpForm
-
-// Make instance globally available
-window.signUpFormInstance = new SignUpForm()

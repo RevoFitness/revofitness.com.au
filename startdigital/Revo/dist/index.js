@@ -2401,6 +2401,8 @@
       const today = /* @__PURE__ */ new Date();
       const age = isAllowedToBeUnder18 ? 14 : 18;
       const ageText = document.querySelector("[data-age]");
+      if (ageText)
+        ageText.textContent = age;
       ageText.textContent = age;
       return new Date(
         today.getFullYear() - age,
@@ -2783,7 +2785,6 @@
     }
   };
   var SignUpForm_default = SignUpForm;
-  window.signUpFormInstance = new SignUpForm();
 
   // js/utils/add-child-event-listener.js
   function addListenerToChildElements(parentSelector, childSelector, handler) {

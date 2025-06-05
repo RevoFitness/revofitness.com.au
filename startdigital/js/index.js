@@ -590,14 +590,13 @@ function checkEmail() {
 				input.classList.add(status);
 
 				if (status === 'ended') {
+					console.log('énded!');
 					const member = members?.[0];
 					const existingMemberId = member?.memberId;
-
+					console.log(existingMemberId);
 					if (existingMemberId) {
 						console.log('💾 Setting existing member ID via SignUpForm instance:', existingMemberId);
-						if (window.signUpFormInstance?.setExistingMemberId) {
-							window.signUpFormInstance.setExistingMemberId(existingMemberId);
-						}
+						document.getElementById('existing-member-id').value = existingMemberId
 					}
 
 					console.log('🧍 Prefilling form with:', member);
@@ -653,7 +652,7 @@ function checkEmail() {
 	});
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+
 	if (!document.querySelector('#email-spinner-style')) {
 		const style = document.createElement('style');
 		style.id = 'email-spinner-style';
@@ -667,4 +666,4 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 	console.log('📌 DOM ready — initializing email check logic');
 	checkEmail();
-});
+

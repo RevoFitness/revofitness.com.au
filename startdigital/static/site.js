@@ -16855,13 +16855,13 @@
           console.log(`\u{1F449} Applying status: ${status}`);
           input.classList.add(status);
           if (status === "ended") {
+            console.log("\xE9nded!");
             const member = members?.[0];
             const existingMemberId = member?.memberId;
+            console.log(existingMemberId);
             if (existingMemberId) {
               console.log("\u{1F4BE} Setting existing member ID via SignUpForm instance:", existingMemberId);
-              if (window.signUpFormInstance?.setExistingMemberId) {
-                window.signUpFormInstance.setExistingMemberId(existingMemberId);
-              }
+              document.getElementById("existing-member-id").value = existingMemberId;
             }
             console.log("\u{1F9CD} Prefilling form with:", member);
             if (member?.firstName)
@@ -16915,21 +16915,19 @@
       }
     });
   }
-  document.addEventListener("DOMContentLoaded", () => {
-    if (!document.querySelector("#email-spinner-style")) {
-      const style = document.createElement("style");
-      style.id = "email-spinner-style";
-      style.innerHTML = `
+  if (!document.querySelector("#email-spinner-style")) {
+    const style = document.createElement("style");
+    style.id = "email-spinner-style";
+    style.innerHTML = `
 			@keyframes spin {
 				0% { transform: rotate(0deg); }
 				100% { transform: rotate(360deg); }
 			}
 		`;
-      document.head.appendChild(style);
-    }
-    console.log("\u{1F4CC} DOM ready \u2014 initializing email check logic");
-    checkEmail();
-  });
+    document.head.appendChild(style);
+  }
+  console.log("\u{1F4CC} DOM ready \u2014 initializing email check logic");
+  checkEmail();
 })();
 /*! Bundled license information:
 
