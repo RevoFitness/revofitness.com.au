@@ -16818,7 +16818,8 @@
   var isChecking = false;
   function checkEmail() {
     const emailInput = document.getElementById("email");
-    if (!emailInput)
+    const phoneInput = document.getElementById("phoneNumber");
+    if (!emailInput || !phoneInput)
       return;
     const createMessage = (status, content) => {
       const msg = document.createElement("div");
@@ -16837,17 +16838,17 @@
       msg.appendChild(closeBtn);
       return msg;
     };
-    emailInput.addEventListener("blur", async function() {
-      const email = this.value.trim();
-      const input = this;
-      const wrapper = input.closest(".input-wrapper");
+    const runCheck = async () => {
+      const email = emailInput.value.trim();
+      const phone = phoneInput.value.replace(/\s+/g, "");
+      const wrapper = emailInput.closest(".input-wrapper");
       const label = wrapper.querySelector("label");
       const submitBtn = document.getElementById("PostPaymentMethod");
-      if (!email || isChecking)
+      if (!email && !phone || isChecking)
         return;
       isChecking = true;
-      console.log("\u{1F7E1} Triggered blur event for email:", email);
-      input.className = input.className.split(" ").filter((c) => !["current", "ended", "notstarted", "freezed"].includes(c.toLowerCase())).join(" ");
+      console.log("\u{1F7E1} Checking for existing membership with:", { email, phone });
+      emailInput.className = emailInput.className.split(" ").filter((c) => !["current", "ended", "notstarted", "freezed"].includes(c.toLowerCase())).join(" ");
       const oldMsg = wrapper.querySelector(".email-notify-up");
       if (oldMsg)
         oldMsg.remove();
@@ -16860,11 +16861,12 @@
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({
             action: "check_pg_membership",
-            email
+            email,
+            phoneNumber: phone
           })
         });
         const result = await response.json();
-        console.log("\u{1F7E2} Parsed JSON Result:", result);
+        console.log("\u{1F7E2} Membership check result:", result);
         if (!result.success || !result.data?.exists) {
           console.warn("\u274C Membership not found or invalid response");
           return;
@@ -16873,7 +16875,7 @@
         const statuses = members.flatMap((member) => member.statuses || []).filter((s) => typeof s === "string").map((s) => s.toLowerCase());
         const priority = ["current", "notstarted", "freezed", "ended"];
         const status = priority.find((s) => statuses.includes(s)) || "current";
-        input.classList.add(status);
+        emailInput.classList.add(status);
         const messages = {
           current: `You already have an active membership.<br/>Please do not sign up again.<br/><br/> Contact us via our web chat if help is needed.`,
           ended: `Back for more, ${members?.[0]?.firstName || "Member"}? Let\u2019s get it!`,
@@ -16892,6 +16894,10 @@
             document.getElementById("phoneNumber").value = member.phoneNumber;
           if (member?.gender)
             document.getElementById("gender").value = member.gender;
+          console.log("\xE9mail", member?.email);
+          if (member?.email) {
+            document.getElementById("email").value = member.email;
+          }
           if (member?.dateOfBirth) {
             const birth = new Date(member.dateOfBirth);
             const formattedDOB = `${String(birth.getDate()).padStart(2, "0")}/${String(birth.getMonth() + 1).padStart(2, "0")}/${birth.getFullYear()}`;
@@ -16913,9 +16919,11 @@
         if (label)
           label.textContent = "Email";
         isChecking = false;
-        console.log("\u2705 Done checking email");
+        console.log("\u2705 Done checking");
       }
-    });
+    };
+    emailInput.addEventListener("blur", runCheck);
+    phoneInput.addEventListener("blur", runCheck);
   }
   if (!document.querySelector("#email-spinner-style")) {
     const style = document.createElement("style");
@@ -16928,7 +16936,7 @@
 	`;
     document.head.appendChild(style);
   }
-  console.log("\u{1F4CC} DOM ready \u2014 initializing email check logic");
+  console.log("\u{1F4CC} DOM ready \u2014 initializing membership check logic");
   checkEmail();
 })();
 /*! Bundled license information:

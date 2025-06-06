@@ -522,12 +522,12 @@ function isDateInPast(dateStr) {
 	const today = new Date()
 	return date < today
 }
-
 let isChecking = false;
 
 function checkEmail() {
 	const emailInput = document.getElementById('email');
-	if (!emailInput) return;
+	const phoneInput = document.getElementById('phoneNumber');
+	if (!emailInput || !phoneInput) return;
 
 	const createMessage = (status, content) => {
 		const msg = document.createElement('div');
@@ -548,20 +548,20 @@ function checkEmail() {
 		return msg;
 	};
 
-	emailInput.addEventListener('blur', async function () {
-		const email = this.value.trim();
-		const input = this;
-		const wrapper = input.closest('.input-wrapper');
+	const runCheck = async () => {
+		const email = emailInput.value.trim();
+		const phone = phoneInput.value.replace(/\s+/g, '');
+		const wrapper = emailInput.closest('.input-wrapper');
 		const label = wrapper.querySelector('label');
 		const submitBtn = document.getElementById('PostPaymentMethod');
 
-		if (!email || isChecking) return;
+		if ((!email && !phone) || isChecking) return;
 		isChecking = true;
 
-		console.log('🟡 Triggered blur event for email:', email);
+		console.log('🟡 Checking for existing membership with:', { email, phone });
 
 		// Clean old state
-		input.className = input.className
+		emailInput.className = emailInput.className
 			.split(' ')
 			.filter(c => !['current', 'ended', 'notstarted', 'freezed'].includes(c.toLowerCase()))
 			.join(' ');
@@ -577,12 +577,13 @@ function checkEmail() {
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams({
 					action: 'check_pg_membership',
-					email: email
+					email: email,
+					phoneNumber: phone
 				})
 			});
 
 			const result = await response.json();
-			console.log('🟢 Parsed JSON Result:', result);
+			console.log('🟢 Membership check result:', result);
 
 			if (!result.success || !result.data?.exists) {
 				console.warn('❌ Membership not found or invalid response');
@@ -598,7 +599,7 @@ function checkEmail() {
 			const priority = ['current', 'notstarted', 'freezed', 'ended'];
 			const status = priority.find(s => statuses.includes(s)) || 'current';
 
-			input.classList.add(status);
+			emailInput.classList.add(status);
 
 			const messages = {
 				current: `You already have an active membership.<br/>Please do not sign up again.<br/><br/> Contact us via our web chat if help is needed.`,
@@ -614,7 +615,10 @@ function checkEmail() {
 				if (member?.lastName) document.getElementById('lastName').value = member.lastName;
 				if (member?.phoneNumber) document.getElementById('phoneNumber').value = member.phoneNumber;
 				if (member?.gender) document.getElementById('gender').value = member.gender;
-
+				console.log('émail', member?.email);
+				if (member?.email) {
+					document.getElementById('email').value = member.email;
+				}
 				if (member?.dateOfBirth) {
 					const birth = new Date(member.dateOfBirth);
 					const formattedDOB = `${String(birth.getDate()).padStart(2, '0')}/${String(birth.getMonth() + 1).padStart(2, '0')}/${birth.getFullYear()}`;
@@ -636,9 +640,13 @@ function checkEmail() {
 		} finally {
 			if (label) label.textContent = 'Email';
 			isChecking = false;
-			console.log('✅ Done checking email');
+			console.log('✅ Done checking');
 		}
-	});
+	};
+
+	// Trigger check on both email and phone blur
+	emailInput.addEventListener('blur', runCheck);
+	phoneInput.addEventListener('blur', runCheck);
 }
 
 if (!document.querySelector('#email-spinner-style')) {
@@ -653,5 +661,5 @@ if (!document.querySelector('#email-spinner-style')) {
 	document.head.appendChild(style);
 }
 
-console.log('📌 DOM ready — initializing email check logic');
+console.log('📌 DOM ready — initializing membership check logic');
 checkEmail();

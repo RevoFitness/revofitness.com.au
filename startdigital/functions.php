@@ -646,9 +646,10 @@ add_action('acf/save_post', 'regenerateVendingDiscount', 20);
 
 /**
  *  
-* CANCELLATION OF MEMBERSHIPS ---------------------------------------------------------------->
+ * CANCELLATION OF MEMBERSHIPS ---------------------------------------------------------------->
  */
-function sendCancellationEmail(array $data): void {
+function sendCancellationEmail(array $data): void
+{
     $email       = $data['email'] ?? 'N/A';
     $contractIds = is_array($data['contractIds']) ? implode(', ', $data['contractIds']) : $data['contractIds'];
     $cancelDate  = $data['cancelDate'] ?? gmdate('c');
@@ -725,7 +726,7 @@ function sendCancellationEmail(array $data): void {
         'From: Revo Fitness <no-reply@revofitness.com.au>'
     ];
 
-     // Add CC if valid email
+    // Add CC if valid email
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $headers[] = 'Cc: ' . $email;
     }
@@ -742,7 +743,7 @@ function sendCancellationEmail(array $data): void {
 
 
 
-   
+
 
 add_action('wp_ajax_check_member', 'check_member_callback');
 add_action('wp_ajax_nopriv_check_member', 'check_member_callback');
@@ -750,7 +751,8 @@ add_action('wp_ajax_nopriv_check_member', 'check_member_callback');
 add_action('wp_ajax_confirm_cancel_member', 'confirm_cancel_member_callback');
 add_action('wp_ajax_nopriv_confirm_cancel_member', 'confirm_cancel_member_callback');
 
-function check_member_callback() {
+function check_member_callback()
+{
     $email = sanitize_email($_POST['email'] ?? '');
 
     if (empty($email)) {
@@ -816,7 +818,8 @@ function check_member_callback() {
 
 
 
-function confirm_cancel_member_callback() {
+function confirm_cancel_member_callback()
+{
     $homeClub = sanitize_text_field($_POST['club_name'] ?? '');
     $email = sanitize_email($_POST['email'] ?? '');
     $memberId = intval($_POST['member_id'] ?? 0);
@@ -867,15 +870,15 @@ function confirm_cancel_member_callback() {
 
     $fullName = trim(($member['firstName'] ?? '') . ' ' . ($member['lastName'] ?? ''));
 
-        sendCancellationEmail([
-            'email' => $email,
-            'memberId' => $memberId,
-            'contractIds' => $contractIds,
-            'cancelDate' => $requestedAt,
-            'firstName' => $member['firstName'] ?? 'Unknown',
-            'lastName' => $member['lastName'] ?? 'Unknown',
-            'clubName' => $homeClub ?: 'Unknown', 
-        ]);
+    sendCancellationEmail([
+        'email' => $email,
+        'memberId' => $memberId,
+        'contractIds' => $contractIds,
+        'cancelDate' => $requestedAt,
+        'firstName' => $member['firstName'] ?? 'Unknown',
+        'lastName' => $member['lastName'] ?? 'Unknown',
+        'clubName' => $homeClub ?: 'Unknown',
+    ]);
 
 
 
@@ -886,22 +889,49 @@ function confirm_cancel_member_callback() {
 
 /**
  *  
-* EMAIL CHECK IF EXISTING MEMBERSHIPS ---------------------------------------------------------------->
+ * EMAIL CHECK IF EXISTING MEMBERSHIPS ---------------------------------------------------------------->
  */
 
 add_action('wp_ajax_check_pg_membership', 'check_pg_membership');
 add_action('wp_ajax_nopriv_check_pg_membership', 'check_pg_membership');
 
-function check_pg_membership() {
-    $email = sanitize_email($_POST['email'] ?? '');
-    if (!$email) {
-        wp_send_json_error(['message' => 'Email is required']);
+function check_pg_membership()
+{
+    $email       = sanitize_email($_POST['email'] ?? '');
+    $rawPhone = preg_replace('/\s+/', '', $_POST['phoneNumber'] ?? '');
+    $phoneNumber = '';
+
+    if (!empty($rawPhone)) {
+        // Convert 04XXXXXXXX to +614XXXXXXXX
+        if (preg_match('/^04\d{8}$/', $rawPhone)) {
+            $phoneNumber = '+61' . substr($rawPhone, 1);
+        } elseif (preg_match('/^\+614\d{8}$/', $rawPhone)) {
+            $phoneNumber = $rawPhone;
+        }
+    }
+
+
+    if (!$email && !$phoneNumber) {
+        wp_send_json_error(['message' => 'Email or phone is required']);
     }
 
     $clientId = $_ENV['PG_APP_CLIENT_ID'];
     $clientSecret = $_ENV['PG_APP_CLIENT_SECRET'];
 
-    $memberUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members?\$filter=Email eq '" . urlencode($email) . "'";
+    // 🔧 Build dynamic OData filter
+    $filters = [];
+    if ($email) {
+       $filters[] = "(Email eq '$email')";
+    }
+    if ($phoneNumber) {
+        $filters[] = "(PhoneNumber eq '$phoneNumber')";
+    }
+
+    $filterQuery = implode(' or ', $filters);
+    $memberUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Members?\$filter=" . rawurlencode($filterQuery);
+
+
+
     $memberRes = wp_remote_get($memberUrl, [
         'headers' => [
             'X-Client-Id'     => $clientId,
@@ -920,7 +950,7 @@ function check_pg_membership() {
     // Filter out deleted members
     $members = array_filter($members, fn($m) => empty($m['isDeleted']));
 
-    // Optional: sort by version descending (latest record first)
+    // Optional: sort by version descending
     usort($members, fn($a, $b) => ($b['version'] ?? 0) <=> ($a['version'] ?? 0));
 
     if (empty($members)) {
@@ -928,14 +958,11 @@ function check_pg_membership() {
     }
 
     $results = [];
-    $hasMultiple = count($members) > 1;
 
     foreach ($members as $member) {
-        if (!empty($member['isDeleted']) && $member['isDeleted'] === true) {
-            continue; // skip deleted members
-        }
         $memberId = $member['id'];
         $contractUrl = "https://revofitness.perfectgym.com.au/API/v2.2/odata/Contracts?\$filter=MemberId eq $memberId";
+
         $contractRes = wp_remote_get($contractUrl, [
             'headers' => [
                 'X-Client-Id'     => $clientId,
@@ -972,11 +999,7 @@ function check_pg_membership() {
             }
         }
 
-       /* if ($hasMultiple && !$hasActiveContract) {
-            continue;
-        }*/
-
-       $results[] = [
+        $results[] = [
             'memberId'    => $member['id'],
             'firstName'   => $member['firstName'] ?? '',
             'lastName'    => $member['lastName'] ?? '',
@@ -988,13 +1011,11 @@ function check_pg_membership() {
             'contracts'   => $cleanedContracts,
             'statuses'    => array_unique($statuses),
         ];
-
-
     }
 
     wp_send_json_success([
         'exists'  => count($results) > 0,
         'members' => $results,
-        'all' => $members,
+        'all'     => $members,
     ]);
 }
