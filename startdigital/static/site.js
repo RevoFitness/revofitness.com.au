@@ -16820,12 +16820,29 @@
     const emailInput = document.getElementById("email");
     if (!emailInput)
       return;
+    const createMessage = (status, content) => {
+      const msg = document.createElement("div");
+      msg.className = `email-notify-up ${status}`;
+      msg.style.cssText = "margin-top:6px; font-size:0.9rem; display:flex; align-items:flex-start; gap:6px;";
+      msg.innerHTML = `<span style='width:calc(100% - 25px);'>${content}</span>`;
+      const closeBtn = document.createElement("span");
+      closeBtn.classList.add("close-btn");
+      closeBtn.innerHTML = "&times;";
+      closeBtn.style.cssText = "cursor:pointer;font-weight:bold;font-size:37px;position:absolute;right:15px;";
+      closeBtn.addEventListener("click", () => {
+        console.log(`\u274C Message for status ${status} manually closed`);
+        msg.remove();
+        emailInput.classList.remove(status);
+      });
+      msg.appendChild(closeBtn);
+      return msg;
+    };
     emailInput.addEventListener("blur", async function() {
       const email = this.value.trim();
       const input = this;
       const wrapper = input.closest(".input-wrapper");
       const label = wrapper.querySelector("label");
-      const PostPaymentMethodButton = document.getElementById("PostPaymentMethod");
+      const submitBtn = document.getElementById("PostPaymentMethod");
       if (!email || isChecking)
         return;
       isChecking = true;
@@ -16835,7 +16852,7 @@
       if (oldMsg)
         oldMsg.remove();
       if (label) {
-        label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:6px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 38px;"></span>`;
+        label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:8px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 42px;"></span>`;
       }
       try {
         const response = await fetch("/wp-admin/admin-ajax.php", {
@@ -16853,69 +16870,42 @@
           return;
         }
         const members = result.data.members || [];
-        const contractStatuses = members.flatMap((member) => member.statuses || []).map((s) => s.toLowerCase());
-        const firstName = members?.[0]?.firstName || "Member";
+        const statuses = members.flatMap((member) => member.statuses || []).filter((s) => typeof s === "string").map((s) => s.toLowerCase());
+        const priority = ["current", "notstarted", "freezed", "ended"];
+        const status = priority.find((s) => statuses.includes(s)) || "current";
+        input.classList.add(status);
         const messages = {
-          current: `You already have an active membership. Please do not sign up again.<br/><br/> Contact us via our web chat if help is needed.`,
-          ended: `Back for more, ${firstName}? Let\u2019s get it!`,
+          current: `You already have an active membership.<br/>Please do not sign up again.<br/><br/> Contact us via our web chat if help is needed.`,
+          ended: `Back for more, ${members?.[0]?.firstName || "Member"}? Let\u2019s get it!`,
           notstarted: `You have an account but your membership hasn\u2019t started. Check your welcome email.`,
           freezed: `Your membership is frozen \u2014 <a href='tel:1300738638' style="text-decoration:underline;">Call us!</a>`
         };
-        let shouldHideButton = false;
-        const uniqueStatuses = new Set(contractStatuses);
-        uniqueStatuses.forEach((status) => {
-          console.log(`\u{1F449} Applying status: ${status}`);
-          input.classList.add(status);
-          if (status === "ended") {
-            console.log("\xE9nded!");
-            const member = members?.[0];
-            const existingMemberId = member?.memberId;
-            console.log(existingMemberId);
-            if (existingMemberId) {
-              console.log("\u{1F4BE} Setting existing member ID via SignUpForm instance:", existingMemberId);
-              document.getElementById("existing-member-id").value = existingMemberId;
-            }
-            console.log("\u{1F9CD} Prefilling form with:", member);
-            if (member?.firstName)
-              document.getElementById("firstName").value = member.firstName;
-            if (member?.lastName)
-              document.getElementById("lastName").value = member.lastName;
-            if (member?.phoneNumber)
-              document.getElementById("phoneNumber").value = member.phoneNumber;
-            if (member?.gender)
-              document.getElementById("gender").value = member.gender;
-            if (member?.dateOfBirth) {
-              const birth = new Date(member.dateOfBirth);
-              const formattedDOB = `${String(birth.getDate()).padStart(2, "0")}/${String(birth.getMonth() + 1).padStart(2, "0")}/${birth.getFullYear()}`;
-              const dobInput = document.getElementById("dateOfBirth");
-              if (dobInput)
-                dobInput.value = formattedDOB;
-            }
+        if (status === "ended") {
+          const member = members?.[0];
+          if (member?.memberId)
+            document.getElementById("existing-member-id").value = member.memberId;
+          if (member?.firstName)
+            document.getElementById("firstName").value = member.firstName;
+          if (member?.lastName)
+            document.getElementById("lastName").value = member.lastName;
+          if (member?.phoneNumber)
+            document.getElementById("phoneNumber").value = member.phoneNumber;
+          if (member?.gender)
+            document.getElementById("gender").value = member.gender;
+          if (member?.dateOfBirth) {
+            const birth = new Date(member.dateOfBirth);
+            const formattedDOB = `${String(birth.getDate()).padStart(2, "0")}/${String(birth.getMonth() + 1).padStart(2, "0")}/${birth.getFullYear()}`;
+            const dobInput = document.getElementById("dateOfBirth");
+            if (dobInput)
+              dobInput.value = formattedDOB;
           }
-          if (messages[status]) {
-            const msg = document.createElement("div");
-            msg.className = `email-notify-up ${status}`;
-            msg.style.cssText = "margin-top:6px; font-size:0.9rem; display:flex; align-items:flex-start; gap:6px;";
-            msg.innerHTML = `<span style='width:calc(100% - 25px);'>${messages[status]}</span>`;
-            const closeBtn = document.createElement("span");
-            closeBtn.classList.add("close-btn");
-            closeBtn.innerHTML = "&times;";
-            closeBtn.style.cssText = "cursor:pointer;font-weight:bold;font-size:37px;position:absolute;right:15px;";
-            closeBtn.addEventListener("click", () => {
-              console.log(`\u274C Message for status ${status} manually closed`);
-              msg.remove();
-              input.classList.remove(status);
-            });
-            msg.appendChild(closeBtn);
-            wrapper.appendChild(msg);
-          }
-          if (["current", "notstarted", "freezed"].includes(status)) {
-            shouldHideButton = true;
-          }
-        });
-        if (PostPaymentMethodButton) {
-          PostPaymentMethodButton.style.opacity = shouldHideButton ? 0 : 1;
-          PostPaymentMethodButton.style.zIndex = uniqueStatuses.has("ended") ? 2 : -1;
+        }
+        const msgElement = createMessage(status, messages[status]);
+        wrapper.appendChild(msgElement);
+        if (submitBtn) {
+          const hide = ["current", "notstarted", "freezed"].includes(status);
+          submitBtn.style.opacity = hide ? 0 : 1;
+          submitBtn.style.zIndex = status === "ended" ? 2 : -1;
         }
       } catch (err) {
         console.error("\u{1F525} Error during membership check:", err);
@@ -16931,11 +16921,11 @@
     const style = document.createElement("style");
     style.id = "email-spinner-style";
     style.innerHTML = `
-			@keyframes spin {
-				0% { transform: rotate(0deg); }
-				100% { transform: rotate(360deg); }
-			}
-		`;
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+	`;
     document.head.appendChild(style);
   }
   console.log("\u{1F4CC} DOM ready \u2014 initializing email check logic");

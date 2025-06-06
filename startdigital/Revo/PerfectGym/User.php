@@ -11,67 +11,90 @@ class User extends PerfectGymClient
      * @param string $paymentId The payment ID.
      * @return mixed The created user object.
      */
-    public static function create($data, $paymentIdOne)
+    public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
     {
         $self = new self();
         write_log("POST DATA:", json_encode($data));
-        // If memberId is provided, add contract to existing member
+
+        // If member exists, attach contract(s) to existing member
         if (!empty($data['memberId'])) {
-            $apiUrl = "$self->baseURL/v2.1/Contracts/AddContract";
+            // ✅ Add base level-1 contract first
+            $apiUrl = "$self->baseURL/v2.2/Contracts/AddContract";
             $args = [
-                "memberId"     => $data['memberId'],
-                "paymentPlanId" => $paymentIdOne,
-                "signUpDate"   => $data['signUpDate'],
-                "startDate"    => $data['startDate'],
-                "clubId"       => $data['gymId'],
-            ];
-            write_log('mb args:', $args);
-        } else {
-            // Fallback: Add new member and contract
-            $apiUrl = "$self->baseURL/v2.1/Members/AddContractMember";
-            $args = [
-                "contractData" => [
-                    'paymentPlanId' => $paymentIdOne,
-                    'signUpDate'    => $data['signUpDate'],
-                    'startDate'     => $data['startDate'],
-                ],
-                "homeClubId" => $data['gymId'],
-                "personalData" => [
-                    'firstName'   => $data['firstName'],
-                    'lastName'    => $data['lastName'],
-                    'birthDate'   => $data['dateOfBirth'],
-                    'sex'         => $data['gender'],
-                    'phoneNumber' => $data['phoneNumber'],
-                    'email'       => $data['email'],
-                ],
-                "addressData" => [
-                    'street'     => $data['address'],
-                    'cityName'   => $data['suburb'],
-                    'postalCode' => $data['postCode'],
-                    'country'    => 'AU'
-                ],
-                "agreements" => [
-                    ['agreementId' => 1, 'agreementAnswer' => true],
-                    ['agreementId' => 2, 'agreementAnswer' => true],
-                    ['agreementId' => 4, 'agreementAnswer' => true],
-                    ['agreementId' => 6, 'agreementAnswer' => true],
-                    ['agreementId' => 7, 'agreementAnswer' => true],
-                    ['agreementId' => 8, 'agreementAnswer' => true],
-                    ['agreementId' => 9, 'agreementAnswer' => true],
+                "memberId"        => $data['memberId'],
+                "clubId"          => $data['gymId'],
+                "paymentSourceId" => null,
+                "contractData"    => [
+                    "paymentPlanId" => $paymentIdLevel1,
+                    "signUpDate"    => $data['signUpDate'],
+                    "startDate"     => $data['startDate'],
                 ]
             ];
+
+            write_log("➡️ Adding LEVEL 1 contract to existing member...");
+            $response = $self->postApiRequest($apiUrl, $args, null, 16);
+            write_log("📥 PG response: $response");
+
+            if (!$response) {
+                write_log("❌ Failed adding LEVEL 1 contract.");
+                return false;
+            }
+
+            // ✅ If level-2 selected, add it as secondary contract
+            if (($data['membershipType'] ?? '') === 'level-2' && !empty($paymentIdLevel2)) {
+                $contractHandler = new \Revo\PerfectGym\ContractHandler();
+                $level1ContractId = json_decode($response)->contractId ?? null;
+
+                if ($level1ContractId) {
+                    write_log("🧩 Adding LEVEL 2 contract (secondary)...");
+                    $contractHandler->addSecondaryContract($data, $paymentIdLevel2, $data['memberId'], $level1ContractId);
+                } else {
+                    write_log("⚠️ Could not get contractId from level 1 to sync level 2");
+                }
+            }
+
+            return json_decode($response);
         }
-        write_log("➡️ Using memberId: {$data['memberId']} for AddContract");
-        write_log("📤 AddContract payload: " . json_encode($args));
+
+        // New member: create with base contract (level 1)
+        $apiUrl = "$self->baseURL/v2.1/Members/AddContractMember";
+        $args = [
+            "contractData" => [
+                'paymentPlanId' => $paymentIdLevel1,
+                'signUpDate'    => $data['signUpDate'],
+                'startDate'     => $data['startDate'],
+            ],
+            "homeClubId" => $data['gymId'],
+            "personalData" => [
+                'firstName'   => $data['firstName'],
+                'lastName'    => $data['lastName'],
+                'birthDate'   => $data['dateOfBirth'],
+                'sex'         => $data['gender'],
+                'phoneNumber' => $data['phoneNumber'],
+                'email'       => $data['email'],
+            ],
+            "addressData" => [
+                'street'     => $data['address'],
+                'cityName'   => $data['suburb'],
+                'postalCode' => $data['postCode'],
+                'country'    => 'AU'
+            ],
+            "agreements" => [
+                ['agreementId' => 1, 'agreementAnswer' => true],
+                ['agreementId' => 2, 'agreementAnswer' => true],
+                ['agreementId' => 4, 'agreementAnswer' => true],
+                ['agreementId' => 6, 'agreementAnswer' => true],
+                ['agreementId' => 7, 'agreementAnswer' => true],
+                ['agreementId' => 8, 'agreementAnswer' => true],
+                ['agreementId' => 9, 'agreementAnswer' => true],
+            ]
+        ];
+
+        write_log("➡️ Creating NEW MEMBER with LEVEL 1 contract...");
         $response = $self->postApiRequest($apiUrl, $args, null, 16);
         write_log("📥 PG response: $response");
 
-        if (!$response) {
-            write_log("No response for adding contract: " . json_encode($data));
-            return false;
-        }
-
-        return json_decode($response);
+        return $response ? json_decode($response) : false;
     }
 
 
