@@ -16890,8 +16890,6 @@
             document.getElementById("firstName").value = member.firstName;
           if (member?.lastName)
             document.getElementById("lastName").value = member.lastName;
-          if (member?.phoneNumber)
-            document.getElementById("phoneNumber").value = member.phoneNumber;
           if (member?.gender)
             document.getElementById("gender").value = member.gender;
           console.log("\xE9mail", member?.email);
