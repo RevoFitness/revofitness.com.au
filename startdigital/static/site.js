@@ -16838,7 +16838,13 @@
       msg.appendChild(closeBtn);
       return msg;
     };
-    const runCheck = async () => {
+    const runCheck = (source) => async () => {
+      const alreadyChecked = sessionStorage.getItem("membership-check-source");
+      if (alreadyChecked && alreadyChecked !== source) {
+        console.log(`\u26D4\uFE0F Skipping check \u2014 already handled by ${alreadyChecked}`);
+        return;
+      }
+      sessionStorage.setItem("membership-check-source", source);
       const email = emailInput.value.trim();
       const phone = phoneInput.value.replace(/\s+/g, "");
       const wrapper = emailInput.closest(".input-wrapper");
@@ -16847,13 +16853,13 @@
       if (!email && !phone || isChecking)
         return;
       isChecking = true;
-      console.log("\u{1F7E1} Checking for existing membership with:", { email, phone });
+      console.log(`\u{1F7E1} Checking (${source}) for membership with:`, { email, phone });
       emailInput.className = emailInput.className.split(" ").filter((c) => !["current", "ended", "notstarted", "freezed"].includes(c.toLowerCase())).join(" ");
       const oldMsg = wrapper.querySelector(".email-notify-up");
       if (oldMsg)
         oldMsg.remove();
       if (label) {
-        label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:8px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 42px;"></span>`;
+        label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:8px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8.5px;left: 36px;"></span>`;
       }
       try {
         const response = await fetch("/wp-admin/admin-ajax.php", {
@@ -16892,10 +16898,8 @@
             document.getElementById("lastName").value = member.lastName;
           if (member?.gender)
             document.getElementById("gender").value = member.gender;
-          console.log("\xE9mail", member?.email);
-          if (member?.email) {
+          if (member?.email)
             document.getElementById("email").value = member.email;
-          }
           if (member?.dateOfBirth) {
             const birth = new Date(member.dateOfBirth);
             const formattedDOB = `${String(birth.getDate()).padStart(2, "0")}/${String(birth.getMonth() + 1).padStart(2, "0")}/${birth.getFullYear()}`;
@@ -16920,8 +16924,8 @@
         console.log("\u2705 Done checking");
       }
     };
-    emailInput.addEventListener("blur", runCheck);
-    phoneInput.addEventListener("blur", runCheck);
+    emailInput.addEventListener("blur", runCheck("email"));
+    phoneInput.addEventListener("blur", runCheck("phone"));
   }
   if (!document.querySelector("#email-spinner-style")) {
     const style = document.createElement("style");

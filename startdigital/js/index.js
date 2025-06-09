@@ -548,7 +548,15 @@ function checkEmail() {
 		return msg;
 	};
 
-	const runCheck = async () => {
+	const runCheck = (source) => async () => {
+		const alreadyChecked = sessionStorage.getItem('membership-check-source');
+		if (alreadyChecked && alreadyChecked !== source) {
+			console.log(`⛔️ Skipping check — already handled by ${alreadyChecked}`);
+			return;
+		}
+
+		sessionStorage.setItem('membership-check-source', source);
+
 		const email = emailInput.value.trim();
 		const phone = phoneInput.value.replace(/\s+/g, '');
 		const wrapper = emailInput.closest('.input-wrapper');
@@ -558,9 +566,8 @@ function checkEmail() {
 		if ((!email && !phone) || isChecking) return;
 		isChecking = true;
 
-		console.log('🟡 Checking for existing membership with:', { email, phone });
+		console.log(`🟡 Checking (${source}) for membership with:`, { email, phone });
 
-		// Clean old state
 		emailInput.className = emailInput.className
 			.split(' ')
 			.filter(c => !['current', 'ended', 'notstarted', 'freezed'].includes(c.toLowerCase()))
@@ -568,7 +575,7 @@ function checkEmail() {
 		const oldMsg = wrapper.querySelector('.email-notify-up');
 		if (oldMsg) oldMsg.remove();
 		if (label) {
-			label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:8px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8px;left: 42px;"></span>`;
+			label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:8px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8.5px;left: 36px;"></span>`;
 		}
 
 		try {
@@ -613,12 +620,8 @@ function checkEmail() {
 				if (member?.memberId) document.getElementById('existing-member-id').value = member.memberId;
 				if (member?.firstName) document.getElementById('firstName').value = member.firstName;
 				if (member?.lastName) document.getElementById('lastName').value = member.lastName;
-				//if (member?.phoneNumber) document.getElementById('phoneNumber').value = member.phoneNumber;
 				if (member?.gender) document.getElementById('gender').value = member.gender;
-				console.log('émail', member?.email);
-				if (member?.email) {
-					document.getElementById('email').value = member.email;
-				}
+				if (member?.email) document.getElementById('email').value = member.email;
 				if (member?.dateOfBirth) {
 					const birth = new Date(member.dateOfBirth);
 					const formattedDOB = `${String(birth.getDate()).padStart(2, '0')}/${String(birth.getMonth() + 1).padStart(2, '0')}/${birth.getFullYear()}`;
@@ -644,10 +647,11 @@ function checkEmail() {
 		}
 	};
 
-	// Trigger check on both email and phone blur
-	emailInput.addEventListener('blur', runCheck);
-	phoneInput.addEventListener('blur', runCheck);
+	// Always attach both — logic inside will decide if it runs
+	emailInput.addEventListener('blur', runCheck('email'));
+	phoneInput.addEventListener('blur', runCheck('phone'));
 }
+
 
 if (!document.querySelector('#email-spinner-style')) {
 	const style = document.createElement('style');
