@@ -25,14 +25,14 @@
 			</div>
 			<div class="flex gap-3 max-sm:w-full">
 				{% if options.global_download_app.app_store_link %}
-					<a href="{{ options.global_download_app.app_store_link }}" target="_blank">
+					<a href="{{ options.global_download_app.app_store_link }}" target="_blank" aria-label="Download IOS App Store">
 						{% include 'icons/download-app-store.twig' with {
 							class: 'max-sm:w-full max-lg:w-32'
 						} %}
 					</a>
 				{% endif %}
 				{% if options.global_download_app.google_play_link %}
-					<a href="{{ options.global_download_app.google_play_link }}" target="_blank">
+					<a href="{{ options.global_download_app.google_play_link }}" target="_blank" aria-label="Download Google Play">
 						{% include 'icons/download-google-play.twig' with {
 							class: 'max-sm:w-full max-lg:w-32'
 						} %}

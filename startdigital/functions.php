@@ -1019,3 +1019,68 @@ function check_pg_membership()
         'all'     => $members,
     ]);
 }
+
+/*
+** Enables ACF fields to be available via rest API
+*/
+
+add_filter('acf/update_value/name=latitude', function($value, $post_id, $field) {
+    update_post_meta($post_id, 'latitude', $value);
+    return $value;
+}, 10, 3);
+
+add_filter('acf/update_value/name=longitude', function($value, $post_id, $field) {
+    update_post_meta($post_id, 'longitude', $value);
+    return $value;
+}, 10, 3);
+
+add_action('rest_api_init', function () {
+    register_rest_route('revo/debug', '/acf/(?P<id>\d+)', [
+        'methods' => 'GET',
+        'callback' => function ($request) {
+            $id = $request['id'];
+            $fields = get_fields($id);
+
+            error_log("💡 get_fields($id): " . print_r($fields, true));
+            return $fields;
+        },
+        'permission_callback' => '__return_true',
+    ]);
+});
+/*
+run this after removing disabled attribute from lat and long + update each gym page after running then remove 
+add_action('init', function () {
+    write_log("🔥 Forced backfill running...");
+
+    $gyms = get_posts([
+        'post_type' => 'gyms',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+    ]);
+
+    $updated = 0;
+
+    foreach ($gyms as $gym) {
+        $id = $gym->ID;
+        $lat = get_field('latitude', $id);
+        $lng = get_field('longitude', $id);
+
+        write_log("→ Post ID $id — lat: $lat | lng: $lng");
+
+        if (!empty($lat)) {
+            update_post_meta($id, 'latitude', $lat);
+            write_log("✅ Updated latitude to $lat for post $id");
+            $updated++;
+        }
+
+        if (!empty($lng)) {
+            update_post_meta($id, 'longitude', $lng);
+            write_log("✅ Updated longitude to $lng for post $id");
+            $updated++;
+        }
+    }
+
+    write_log("🟢 Forced backfill complete: $updated values written.");
+});
+
+*/

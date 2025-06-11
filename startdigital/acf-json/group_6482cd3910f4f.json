@@ -237,33 +237,6 @@
             "append": ""
         },
         {
-            "key": "field_67e103fd3002a",
-            "label": "Presale Start Date",
-            "name": "presale_start_date",
-            "aria-label": "",
-            "type": "date_picker",
-            "instructions": "The date that the presale should be automatically turned on.",
-            "required": 0,
-            "conditional_logic": [
-                [
-                    {
-                        "field": "field_649ba02ca582e",
-                        "operator": "==",
-                        "value": "1"
-                    }
-                ]
-            ],
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "display_format": "F j, Y",
-            "return_format": "d\/m\/Y",
-            "first_day": 0,
-            "allow_in_bindings": 1
-        },
-        {
             "key": "field_649d3d11202a1",
             "label": "Presale End Date",
             "name": "presale_end_date",
@@ -594,9 +567,11 @@
                 "class": "",
                 "id": ""
             },
+            "show_in_rest": 1,
             "default_value": "",
             "min": "",
             "max": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "step": "",
             "prepend": "",
@@ -616,9 +591,11 @@
                 "class": "",
                 "id": ""
             },
+            "show_in_rest": 1,
             "default_value": "",
             "min": "",
             "max": "",
+            "allow_in_bindings": 1,
             "placeholder": "",
             "step": "",
             "prepend": "",
@@ -648,7 +625,9 @@
             "allow_null": 0,
             "ui": 0,
             "ajax": 0,
-            "placeholder": ""
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
         },
         {
             "key": "field_64e2f5576a061",
@@ -987,5 +966,5 @@
     "active": true,
     "description": "",
     "show_in_rest": 0,
-    "modified": 1742799900
+    "modified": 1749538715
 }
