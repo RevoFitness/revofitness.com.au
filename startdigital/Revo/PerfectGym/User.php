@@ -14,13 +14,12 @@ class User extends PerfectGymClient
     public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
     {
         $self = new self();
-        write_log("POST DATA:", json_encode($data));
 
-        // If member exists, attach contract(s) to existing member
+        // ✅ Existing Member: Add contract + update details
         if (!empty($data['memberId'])) {
-            // ✅ Add base level-1 contract first
-            $apiUrl = "$self->baseURL/v2.2/Contracts/AddContract";
-            $args = [
+            // ➕ Add contract
+            $contractUrl = "$self->baseURL/v2.2/Contracts/AddContract";
+            $contractArgs = [
                 "memberId"        => $data['memberId'],
                 "clubId"          => $data['gymId'],
                 "paymentSourceId" => null,
@@ -31,19 +30,41 @@ class User extends PerfectGymClient
                 ]
             ];
 
-            write_log("➡️ Adding LEVEL 1 contract to existing member...");
-            $response = $self->postApiRequest($apiUrl, $args, null, 16);
-            write_log("📥 PG response: $response");
+            $contractRes = $self->postApiRequest($contractUrl, $contractArgs, null, 16);
 
-            if (!$response) {
+            if (!$contractRes) {
                 write_log("❌ Failed adding LEVEL 1 contract.");
                 return false;
             }
 
-            // ✅ If level-2 selected, add it as secondary contract
+            // ➕ Update member details
+            $updateUrl = "$self->baseURL/v2.2/Members/updateMemberDetails";
+            $updateArgs = [
+                "memberId" => $data['memberId'],
+                "personalData" => [
+                    'firstName'   => $data['firstName'],
+                    'lastName'    => $data['lastName'],
+                    'birthDate'   => $data['dateOfBirth'],
+                    'sex'         => $data['gender'],
+                    'phoneNumber' => $data['phoneNumber'],
+                    'email'       => $data['email'],
+                    'citizenshipCountrySymbol' => 'AU'
+                ],
+                "addressData" => [
+                    'street'     => $data['address'],
+                    'cityName'   => $data['suburb'],
+                    'postalCode' => $data['postCode'],
+                    'countrySymbol' => 'AU'
+                ]
+            ];
+
+            $updateRes = $self->postApiRequest($updateUrl, $updateArgs, null, 16);
+            write_log("📤 Update Member Result: $updateRes");
+
+            // ➕ Optional Level-2 contract
             if (($data['membershipType'] ?? '') === 'level-2' && !empty($paymentIdLevel2)) {
                 $contractHandler = new \Revo\PerfectGym\ContractHandler();
-                $level1ContractId = json_decode($response)->contractId ?? null;
+                $level1ContractId = json_decode($contractRes)->contractId ?? null;
 
                 if ($level1ContractId) {
                     write_log("🧩 Adding LEVEL 2 contract (secondary)...");
@@ -53,12 +74,34 @@ class User extends PerfectGymClient
                 }
             }
 
-            return json_decode($response);
+            return json_decode($contractRes);
         }
 
-        // New member: create with base contract (level 1)
-        $apiUrl = "$self->baseURL/v2.1/Members/AddContractMember";
-        $args = [
+        // ⚠️ User rejected existing membership — change old membership email
+        if (!empty($data['oldMemberId'])) {
+            $updateOldEmailUrl = "$self->baseURL/v2.2/Members/updateMemberDetails";
+            $newEmail = 'cancelled-' . time() . '-' . $data['email'];
+            $updateOldEmailArgs = [
+                "memberId" => $data['oldMemberId'],
+                "personalData" => [
+                    'email' => $newEmail,
+                ]
+            ];
+
+            $res = $self->postApiRequest($updateOldEmailUrl, $updateOldEmailArgs, null, 16);
+
+            write_log("✏️ Attempted to update cancelled member ID {$data['oldMemberId']} to email: $newEmail");
+            write_log("📥 PG response (email update): $res");
+
+            if (!$res) {
+                write_log("❌ Failed to update email on cancelled member.");
+            }
+        }
+
+
+        // 🆕 New Member: Create with base contract
+        $createUrl = "$self->baseURL/v2.1/Members/AddContractMember";
+        $createArgs = [
             "contractData" => [
                 'paymentPlanId' => $paymentIdLevel1,
                 'signUpDate'    => $data['signUpDate'],
@@ -91,10 +134,10 @@ class User extends PerfectGymClient
         ];
 
         write_log("➡️ Creating NEW MEMBER with LEVEL 1 contract...");
-        $response = $self->postApiRequest($apiUrl, $args, null, 16);
-        write_log("📥 PG response: $response");
+        $createRes = $self->postApiRequest($createUrl, $createArgs, null, 16);
+        write_log("📥 PG response: $createRes");
 
-        return $response ? json_decode($response) : false;
+        return $createRes ? json_decode($createRes) : false;
     }
 
 
