@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Timber starter-theme
  * https://github.com/timber/starter-theme
@@ -816,7 +815,8 @@ function check_member_callback()
 }
 
 
-
+add_action('wp_ajax_confirm_cancel_member', 'confirm_cancel_member_callback');
+add_action('wp_ajax_nopriv_confirm_cancel_member', 'confirm_cancel_member_callback');
 
 function confirm_cancel_member_callback()
 {
@@ -888,7 +888,7 @@ function confirm_cancel_member_callback()
         'isPinned'   => true,
     ];
 
-    $noteRes = wp_remote_post("https://revofitness.perfectgym.com.au/API/v2.2/odata/v2.2/AddMemberNote", [
+    $noteRes = wp_remote_post("https://revofitness.perfectgym.com.au/API/v2.2/odata/AddMemberNote", [
         'headers' => [
             'X-Client-Id'     => $clientId,
             'X-Client-Secret' => $clientSecret,
@@ -899,14 +899,14 @@ function confirm_cancel_member_callback()
     ]);
 
     if (is_wp_error($noteRes) || wp_remote_retrieve_response_code($noteRes) !== 200) {
+        
         wp_send_json_error(['message' => 'Failed to add member note.']);
     }
 
     wp_send_json_success(['message' => 'Cancellation request submitted.']);
 }
 
-add_action('wp_ajax_confirm_cancel_member', 'confirm_cancel_member_callback');
-add_action('wp_ajax_nopriv_confirm_cancel_member', 'confirm_cancel_member_callback');
+
 
 
 
