@@ -16821,22 +16821,56 @@
     const phoneInput = document.getElementById("phoneNumber");
     if (!emailInput || !phoneInput)
       return;
+    document.querySelector("form")?.addEventListener("submit", (e) => {
+      if (document.querySelector(".email-notify-up")) {
+        console.log("\u{1F6AB} Prevented form submission due to popup");
+        e.preventDefault();
+      }
+    });
     const createMessage = (status, content, buttons = []) => {
+      console.log("\u{1F6E0} createMessage:", status, buttons);
       const msg = document.createElement("div");
       msg.className = `email-notify-up ${status}`;
-      msg.style.cssText = "margin-top:6px; font-size:0.9rem; display:flex; flex-direction:column; gap:10px; position:relative; padding:12px; background:#cb3d3b;position:absolute;right:24px;";
+      msg.style.cssText = `
+			margin-top:6px;
+			font-size:0.9rem;
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+			position:absolute;
+			right:24px;
+			padding:12px;
+			background:#cb3d3b;
+			z-index:9999;
+			pointer-events:auto;
+		`;
       const text = document.createElement("div");
       text.innerHTML = content;
       msg.appendChild(text);
       const btnContainer = document.createElement("div");
       btnContainer.style.cssText = "display:flex; gap:10px;";
       buttons.forEach(({ label, callback }) => {
+        console.log(`\u{1F527} Attaching click for ${label}`);
         const btn = document.createElement("button");
         btn.textContent = label;
-        btn.style.cssText = "padding:6px 12px; background:#000; color:#fff; border:none; border-radius:4px; cursor:pointer;";
-        btn.addEventListener("click", () => {
-          callback();
-          msg.remove();
+        btn.setAttribute("type", "button");
+        btn.style.cssText = `
+				padding:6px 12px;
+				background:#000;
+				color:#fff;
+				border:none;
+				border-radius:4px;
+				cursor:pointer;
+				z-index:10000;
+			`;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.warn(`\u{1F5B1} ${label} clicked`);
+          requestAnimationFrame(() => {
+            callback();
+            msg.remove();
+          });
         });
         btnContainer.appendChild(btn);
       });
@@ -16845,7 +16879,14 @@
       const closeBtn = document.createElement("span");
       closeBtn.classList.add("close-btn");
       closeBtn.innerHTML = "&times;";
-      closeBtn.style.cssText = "cursor:pointer;font-weight:bold;font-size:24px;position:absolute;top:8px;right:12px;";
+      closeBtn.style.cssText = `
+			cursor:pointer;
+			font-weight:bold;
+			font-size:24px;
+			position:absolute;
+			top:8px;
+			right:12px;
+		`;
       closeBtn.addEventListener("click", () => {
         msg.remove();
         emailInput.classList.remove(status);
@@ -16893,6 +16934,7 @@
         emailInput.classList.add(status);
         const member = members?.[0] || {};
         let msgElement;
+        console.log("\u{1F4A1} Status check:", statuses, "\u2192 chosen:", status);
         if (status === "current") {
           msgElement = createMessage(status, `
 					There is an existing active membership using this email.<br/><br/>
@@ -16905,28 +16947,35 @@
             `There is an ended membership with this email address. Are you <strong>${member.firstName}</strong>?`,
             [
               {
+                label: "NO",
+                callback: () => {
+                  console.log("\u274C NO clicked \u2014 keeping email, clearing other fields");
+                  document.getElementById("existing-member-id").value = "";
+                  document.getElementById("old-member-id").value = member.memberId || "";
+                  document.getElementById("email").value = "";
+                  document.getElementById("firstName").value = "";
+                  document.getElementById("lastName").value = "";
+                  document.getElementById("gender").value = "";
+                  const dobInput = document.getElementById("dateOfBirth");
+                  if (dobInput)
+                    dobInput.value = "";
+                }
+              },
+              {
                 label: "YES",
                 callback: () => {
+                  console.log("\u2705 YES clicked \u2014 pre-filling details");
                   document.getElementById("existing-member-id").value = member.memberId || "";
                   document.getElementById("old-member-id").value = "";
                   document.getElementById("firstName").value = member.firstName || "";
                   document.getElementById("lastName").value = member.lastName || "";
                   document.getElementById("gender").value = member.gender || "";
-                  document.getElementById("email").value = member.email || "";
-                  if (member?.dateOfBirth) {
+                  const dobInput = document.getElementById("dateOfBirth");
+                  if (dobInput && member.dateOfBirth) {
                     const birth = new Date(member.dateOfBirth);
                     const formatted = `${String(birth.getDate()).padStart(2, "0")}/${String(birth.getMonth() + 1).padStart(2, "0")}/${birth.getFullYear()}`;
-                    const dobInput = document.getElementById("dateOfBirth");
-                    if (dobInput)
-                      dobInput.value = formatted;
+                    dobInput.value = formatted;
                   }
-                }
-              },
-              {
-                label: "NO",
-                callback: () => {
-                  document.getElementById("existing-member-id").value = "";
-                  document.getElementById("old-member-id").value = member.memberId || "";
                 }
               }
             ]
@@ -16950,6 +16999,12 @@
           const hide = ["current", "notstarted", "freezed"].includes(status);
           submitBtn.style.opacity = hide ? 0 : 1;
           submitBtn.style.zIndex = status === "ended" ? 2 : -1;
+        }
+        if (emailInput.value.trim() === "") {
+          console.log("\u{1F501} Autofilling email with member.email");
+          emailInput.value = member.email;
+        } else {
+          console.log("\u{1F6AB} Email input already filled \u2014 skipping autofill");
         }
       } catch (err) {
         console.error("\u{1F525} Error during membership check:", err);

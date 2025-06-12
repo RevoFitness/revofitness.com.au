@@ -265,7 +265,7 @@ const toggleMenu = () => {
 			const tl = gsap.timeline({ paused: true })
 			const menuItems = document.querySelectorAll('[data-mobile-menu-item]')
 
-			// Set initial state for all menu items
+			// Set initial state for alfl menu items
 			gsap.set(menuItems, { opacity: 0, y: 20 })
 
 			// Add animation to timeline with stagger effect
@@ -529,10 +529,32 @@ function checkEmail() {
 	const phoneInput = document.getElementById('phoneNumber');
 	if (!emailInput || !phoneInput) return;
 
+	// ⛔ Prevent form submit while popup is visible
+	document.querySelector('form')?.addEventListener('submit', (e) => {
+		if (document.querySelector('.email-notify-up')) {
+			console.log('🚫 Prevented form submission due to popup');
+			e.preventDefault();
+		}
+	});
+
 	const createMessage = (status, content, buttons = []) => {
+		console.log('🛠 createMessage:', status, buttons);
+
 		const msg = document.createElement('div');
 		msg.className = `email-notify-up ${status}`;
-		msg.style.cssText = 'margin-top:6px; font-size:0.9rem; display:flex; flex-direction:column; gap:10px; position:relative; padding:12px; background:#cb3d3b;position:absolute;right:24px;';
+		msg.style.cssText = `
+			margin-top:6px;
+			font-size:0.9rem;
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+			position:absolute;
+			right:24px;
+			padding:12px;
+			background:#cb3d3b;
+			z-index:9999;
+			pointer-events:auto;
+		`;
 
 		const text = document.createElement('div');
 		text.innerHTML = content;
@@ -542,13 +564,30 @@ function checkEmail() {
 		btnContainer.style.cssText = 'display:flex; gap:10px;';
 
 		buttons.forEach(({ label, callback }) => {
+			console.log(`🔧 Attaching click for ${label}`);
 			const btn = document.createElement('button');
 			btn.textContent = label;
-			btn.style.cssText = 'padding:6px 12px; background:#000; color:#fff; border:none; border-radius:4px; cursor:pointer;';
-			btn.addEventListener('click', () => {
-				callback();
-				msg.remove();
+			btn.setAttribute('type', 'button'); // ✅ Safe
+			btn.style.cssText = `
+				padding:6px 12px;
+				background:#000;
+				color:#fff;
+				border:none;
+				border-radius:4px;
+				cursor:pointer;
+				z-index:10000;
+			`;
+
+			btn.addEventListener('click', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				console.warn(`🖱 ${label} clicked`);
+				requestAnimationFrame(() => {
+					callback();
+					msg.remove();
+				});
 			});
+
 			btnContainer.appendChild(btn);
 		});
 
@@ -557,11 +596,19 @@ function checkEmail() {
 		const closeBtn = document.createElement('span');
 		closeBtn.classList.add('close-btn');
 		closeBtn.innerHTML = '&times;';
-		closeBtn.style.cssText = 'cursor:pointer;font-weight:bold;font-size:24px;position:absolute;top:8px;right:12px;';
+		closeBtn.style.cssText = `
+			cursor:pointer;
+			font-weight:bold;
+			font-size:24px;
+			position:absolute;
+			top:8px;
+			right:12px;
+		`;
 		closeBtn.addEventListener('click', () => {
 			msg.remove();
 			emailInput.classList.remove(status);
 		});
+
 		msg.appendChild(closeBtn);
 		return msg;
 	};
@@ -576,7 +623,6 @@ function checkEmail() {
 		const wrapper = emailInput.closest('.input-wrapper');
 		const label = wrapper.querySelector('label');
 		const submitBtn = document.getElementById('PostPaymentMethod');
-
 		if ((!email && !phone) || isChecking) return;
 		isChecking = true;
 
@@ -617,6 +663,7 @@ function checkEmail() {
 			const member = members?.[0] || {};
 
 			let msgElement;
+			console.log('💡 Status check:', statuses, '→ chosen:', status);
 
 			if (status === 'current') {
 				msgElement = createMessage(status, `
@@ -630,29 +677,34 @@ function checkEmail() {
 					`There is an ended membership with this email address. Are you <strong>${member.firstName}</strong>?`,
 					[
 						{
+							label: 'NO',
+							callback: () => {
+								console.log('❌ NO clicked — keeping email, clearing other fields');
+								document.getElementById('existing-member-id').value = '';
+								document.getElementById('old-member-id').value = member.memberId || '';
+								document.getElementById('email').value = '';
+								document.getElementById('firstName').value = '';
+								document.getElementById('lastName').value = '';
+								document.getElementById('gender').value = '';
+								const dobInput = document.getElementById('dateOfBirth');
+								if (dobInput) dobInput.value = '';
+							}
+						},
+						{
 							label: 'YES',
 							callback: () => {
+								console.log('✅ YES clicked — pre-filling details');
 								document.getElementById('existing-member-id').value = member.memberId || '';
 								document.getElementById('old-member-id').value = '';
 								document.getElementById('firstName').value = member.firstName || '';
 								document.getElementById('lastName').value = member.lastName || '';
 								document.getElementById('gender').value = member.gender || '';
-								document.getElementById('email').value = member.email || '';
-
-								if (member?.dateOfBirth) {
+								const dobInput = document.getElementById('dateOfBirth');
+								if (dobInput && member.dateOfBirth) {
 									const birth = new Date(member.dateOfBirth);
 									const formatted = `${String(birth.getDate()).padStart(2, '0')}/${String(birth.getMonth() + 1).padStart(2, '0')}/${birth.getFullYear()}`;
-									const dobInput = document.getElementById('dateOfBirth');
-									if (dobInput) dobInput.value = formatted;
+									dobInput.value = formatted;
 								}
-							}
-						},
-						{
-							label: 'NO',
-							callback: () => {
-								// Remove the memberId so it triggers a new member creation
-								document.getElementById('existing-member-id').value = '';
-								document.getElementById('old-member-id').value = member.memberId || '';
 							}
 						}
 					]
@@ -677,6 +729,13 @@ function checkEmail() {
 				const hide = ['current', 'notstarted', 'freezed'].includes(status);
 				submitBtn.style.opacity = hide ? 0 : 1;
 				submitBtn.style.zIndex = status === 'ended' ? 2 : -1;
+			}
+
+			if (emailInput.value.trim() === '') {
+				console.log('🔁 Autofilling email with member.email');
+				emailInput.value = member.email;
+			} else {
+				console.log('🚫 Email input already filled — skipping autofill');
 			}
 		} catch (err) {
 			console.error('🔥 Error during membership check:', err);
