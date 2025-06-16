@@ -682,6 +682,7 @@ function checkEmail() {
 								console.log('❌ NO clicked — keeping email, clearing other fields');
 								document.getElementById('existing-member-id').value = '';
 								document.getElementById('old-member-id').value = member.memberId || '';
+								document.getElementById('old-member-email').value = document.getElementById('email').value || '';
 								document.getElementById('email').value = '';
 								document.getElementById('firstName').value = '';
 								document.getElementById('lastName').value = '';
