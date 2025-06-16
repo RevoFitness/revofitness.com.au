@@ -85,6 +85,65 @@ class PerfectGymClient
     }
 
     /**
+     * Sends a PATCH API request to the specified URL.
+     *
+     * @param string $apiUrl The URL to send the API request to.
+     * @param array|string $data The data to include in the API request body.
+     * @param array|null $newHeaders The headers to include in the API request. (Optional)
+     * @param int $maxRetries Number of retry attempts on failure.
+     * @return string|false The response body if successful, or false on failure.
+     */
+    public function patchApiRequest(string $apiUrl, array|string $data, ?array $newHeaders = null, int $maxRetries = 0): string|false
+    {
+        $client = new \GuzzleHttp\Client(['timeout' => 60]);
+
+        $defaultHeaders = [
+            'X-Client-Id' => $this->key->id,
+            'X-Client-Secret' => $this->key->secret,
+            'Cache-Control' => 'no-cache',
+            'Content-Type' => 'application/json',
+        ];
+
+        $headers = $defaultHeaders;
+        if ($newHeaders !== null) {
+            foreach ($newHeaders as $key => $value) {
+                $headers[$key] = $value;
+            }
+        }
+
+        $attempt = 0;
+        while ($attempt <= $maxRetries) {
+            try {
+                $response = $client->request('PATCH', $apiUrl, [
+                    'headers' => $headers,
+                    'body' => is_string($data) ? $data : json_encode($data),
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    write_log("PATCH REQUEST to $apiUrl successful");
+                    return (string) $response->getBody();
+                }
+
+                $attempt++;
+                sleep(1);
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                write_log(["$apiUrl PATCH RequestException", $e->getMessage()]);
+                if ($e->getResponse() !== null) {
+                    $errors = json_decode($e->getResponse()->getBody(), true);
+                    write_log(['PATCH REQUEST Errors', $errors]);
+                }
+                $attempt++;
+            } catch (\GuzzleHttp\Exception\ConnectException $e) {
+                write_log("🔌 Connection error during PATCH request: " . $e->getMessage());
+                $attempt++;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
      * Sends a GET API request to the specified URL.
      *
      * @param string $apiUrl The URL to send the API request to.

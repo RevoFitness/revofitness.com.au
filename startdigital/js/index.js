@@ -537,6 +537,13 @@ function checkEmail() {
 		}
 	});
 
+	const bgColors = {
+		current: '#09b663',    // Green
+		notstarted: '#e36a20', // Orange
+		freezed: '#0d82bc',    // Blue
+		ended: '#cb3d3b'       // Red
+	};
+
 	const createMessage = (status, content, buttons = []) => {
 		console.log('🛠 createMessage:', status, buttons);
 
@@ -551,9 +558,13 @@ function checkEmail() {
 			position:absolute;
 			right:24px;
 			padding:12px;
-			background:#cb3d3b;
+			background:${bgColors[status] || '#cb3d3b'};
+			border-radius: 8px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 			z-index:9999;
 			pointer-events:auto;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) -2px 2px 0px 1px;
+			padding-right:40px;
 		`;
 
 		const text = document.createElement('div');
@@ -567,7 +578,7 @@ function checkEmail() {
 			console.log(`🔧 Attaching click for ${label}`);
 			const btn = document.createElement('button');
 			btn.textContent = label;
-			btn.setAttribute('type', 'button'); // ✅ Safe
+			btn.setAttribute('type', 'button');
 			btn.style.cssText = `
 				padding:6px 12px;
 				background:#000;
@@ -576,6 +587,8 @@ function checkEmail() {
 				border-radius:4px;
 				cursor:pointer;
 				z-index:10000;
+				padding-top:10px;
+				font-weight:bold;
 			`;
 
 			btn.addEventListener('click', (e) => {
@@ -630,6 +643,7 @@ function checkEmail() {
 			.split(' ')
 			.filter(c => !['current', 'ended', 'notstarted', 'freezed'].includes(c.toLowerCase()))
 			.join(' ');
+
 		const oldMsg = wrapper.querySelector('.email-notify-up');
 		if (oldMsg) oldMsg.remove();
 
@@ -662,9 +676,9 @@ function checkEmail() {
 			emailInput.classList.add(status);
 			const member = members?.[0] || {};
 
-			let msgElement;
 			console.log('💡 Status check:', statuses, '→ chosen:', status);
 
+			let msgElement;
 			if (status === 'current') {
 				msgElement = createMessage(status, `
 					There is an existing active membership using this email.<br/><br/>
@@ -679,7 +693,7 @@ function checkEmail() {
 						{
 							label: 'NO',
 							callback: () => {
-								console.log('❌ NO clicked — keeping email, clearing other fields');
+								console.log('❌ NO clicked — clearing fields');
 								document.getElementById('existing-member-id').value = '';
 								document.getElementById('old-member-id').value = member.memberId || '';
 								document.getElementById('old-member-email').value = document.getElementById('email').value || '';
@@ -747,7 +761,8 @@ function checkEmail() {
 	};
 
 	emailInput.addEventListener('blur', runCheck('email'));
-	phoneInput.addEventListener('blur', runCheck('phone'));
+	// enable if you want to check member phone number aswell
+	//phoneInput.addEventListener('blur', runCheck('phone'));
 }
 
 if (!document.querySelector('#email-spinner-style')) {

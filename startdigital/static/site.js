@@ -16827,6 +16827,16 @@
         e.preventDefault();
       }
     });
+    const bgColors = {
+      current: "#09b663",
+      // Green
+      notstarted: "#e36a20",
+      // Orange
+      freezed: "#0d82bc",
+      // Blue
+      ended: "#cb3d3b"
+      // Red
+    };
     const createMessage = (status, content, buttons = []) => {
       console.log("\u{1F6E0} createMessage:", status, buttons);
       const msg = document.createElement("div");
@@ -16840,9 +16850,13 @@
 			position:absolute;
 			right:24px;
 			padding:12px;
-			background:#cb3d3b;
+			background:${bgColors[status] || "#cb3d3b"};
+			border-radius: 8px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 			z-index:9999;
 			pointer-events:auto;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) -2px 2px 0px 1px;
+			padding-right:40px;
 		`;
       const text = document.createElement("div");
       text.innerHTML = content;
@@ -16862,6 +16876,8 @@
 				border-radius:4px;
 				cursor:pointer;
 				z-index:10000;
+				padding-top:10px;
+				font-weight:bold;
 			`;
         btn.addEventListener("click", (e) => {
           e.preventDefault();
@@ -16933,8 +16949,8 @@
         const status = priority.find((s) => statuses.includes(s)) || "current";
         emailInput.classList.add(status);
         const member = members?.[0] || {};
-        let msgElement;
         console.log("\u{1F4A1} Status check:", statuses, "\u2192 chosen:", status);
+        let msgElement;
         if (status === "current") {
           msgElement = createMessage(status, `
 					There is an existing active membership using this email.<br/><br/>
@@ -16949,7 +16965,7 @@
               {
                 label: "NO",
                 callback: () => {
-                  console.log("\u274C NO clicked \u2014 keeping email, clearing other fields");
+                  console.log("\u274C NO clicked \u2014 clearing fields");
                   document.getElementById("existing-member-id").value = "";
                   document.getElementById("old-member-id").value = member.memberId || "";
                   document.getElementById("old-member-email").value = document.getElementById("email").value || "";
@@ -17016,7 +17032,6 @@
       }
     };
     emailInput.addEventListener("blur", runCheck("email"));
-    phoneInput.addEventListener("blur", runCheck("phone"));
   }
   if (!document.querySelector("#email-spinner-style")) {
     const style = document.createElement("style");
