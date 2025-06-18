@@ -152,3 +152,12 @@ input.paymentRadio:checked {
 		}
 	}
 }
+
+@media(max-width:769px) {
+	html body .email-notify-up {
+		    margin: auto;
+	    left: 0;
+	    right: 0;
+	    top: calc(0% - -79px) !important;
+	}
+}

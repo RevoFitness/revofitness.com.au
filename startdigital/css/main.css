@@ -68,6 +68,57 @@
 	top:0;
 
 }
+/* 
+.open layers map css overrides after compilation
+*/
+html body #open-layers-map-wrapper #column-one {
+  border-top-left-radius:35px;
+}
+html body #open-layers-map-wrapper a.\!text-sm.underline.max-w-\[290px\] {
+    max-width: 250px;
+}
+html body #open-layers-map-wrapper  div#gym-list {
+    padding: 0 26px;
+}
+html body  #open-layers-map-wrapper .is-button {
+  width:100%;
+}
+html body #open-layers-map-wrapper .mapboxgl-ctrl-geocoder--input {
+        height: 36px !important;
+        padding: 6px 35px !important;
+        width: calc(100% - 25px) !important;
+        margin: auto;
+    }
+html body #open-layers-map-wrapper a.is-button-outline.after\:\!hidden.text-sm.px-4.py-2.w-full.justify-center {
+    max-width: 100%;
+    width: 100%;
+}
+html body #open-layers-map-wrapper .p-2\.5.pt-0.flex.flex-col.gap-4.max-w-\[350px\].bg-white {
+    padding: 15px;
+    padding-right: 25px;
+}
+
+@media(max-width:1081px) {
+  html body #open-layers-map-wrapper #column-one {
+    padding:0;
+  }
+  html body div#gym-list .max-lg\:w-full {
+    min-height:295px;
+  }
+  html body #open-layers-map-wrapper #column-one {
+    min-height:500px !important;
+  }
+  html body #open-layers-map-wrapper div#gym-list {
+    margin: 0;
+    padding-left:0;
+    padding-right:0;
+  }
+}
+@media(max-width:1024px) {
+  html body div#column-wrapper {
+    flex-wrap:wrap;
+  }
+}
 @keyframes notifyIn {
 	0%{
 		opacity:0;
