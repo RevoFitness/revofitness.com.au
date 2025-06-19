@@ -948,8 +948,6 @@
 	overflow: scroll;
 }.overflow-x-hidden{
 	overflow-x: hidden;
-}.overflow-y-scroll{
-	overflow-y: scroll;
 }.\!rounded-full{
 	border-radius: 9999px !important;
 }.\!rounded-none{
@@ -2811,8 +2809,6 @@ h6{
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}.lg\:grid-cols-3{
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}.lg\:flex-row{
-		flex-direction: row;
 	}.lg\:flex-col{
 		flex-direction: column;
 	}.lg\:items-center{

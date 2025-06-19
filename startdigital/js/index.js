@@ -527,6 +527,7 @@ let isChecking = false;
 function checkEmail() {
 	const emailInput = document.getElementById('email');
 	const phoneInput = document.getElementById('phoneNumber');
+	const form = document.getElementById('sign-up-form');
 	if (!emailInput || !phoneInput) return;
 
 	// ⛔ Prevent form submit while popup is visible
@@ -560,10 +561,9 @@ function checkEmail() {
 			padding:12px;
 			background:${bgColors[status] || '#cb3d3b'};
 			border-radius: 8px;
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) -2px 2px 0px 1px;
 			z-index:9999;
 			pointer-events:auto;
-			box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) -2px 2px 0px 1px;
 			padding-right:40px;
 		`;
 
@@ -639,11 +639,13 @@ function checkEmail() {
 		if ((!email && !phone) || isChecking) return;
 		isChecking = true;
 
+		// strip old status classes
 		emailInput.className = emailInput.className
 			.split(' ')
 			.filter(c => !['current', 'ended', 'notstarted', 'freezed'].includes(c.toLowerCase()))
 			.join(' ');
 
+		// remove any old message
 		const oldMsg = wrapper.querySelector('.email-notify-up');
 		if (oldMsg) oldMsg.remove();
 
@@ -663,27 +665,43 @@ function checkEmail() {
 			});
 
 			const result = await response.json();
-			if (!result.success || !result.data?.exists) return;
+			console.log(result);
+			// — if check failed or no existing membership, *show* the submit button again and exit —
+			if (!result.success || !result.data?.exists) {
+				if (submitBtn) {
+					submitBtn.style.opacity = 1;
+					submitBtn.style.zIndex  = ''; // reset to whatever your default is
+				}
+				return;
+			}
 
 			const members = result.data.members || [];
 			const statuses = members
 				.flatMap(m => m.statuses || [])
-				.map(s => s.toLowerCase());
+				.filter(s => typeof s === 'string' || (s && typeof s.status === 'string'))
+				.map(s => typeof s === 'string' ? s.toLowerCase() : s.status.toLowerCase());
 
 			const priority = ['current', 'notstarted', 'freezed', 'ended'];
 			const status = priority.find(s => statuses.includes(s)) || 'current';
 
 			emailInput.classList.add(status);
-			const member = members?.[0] || {};
+			const member = members[0] || {};
 
 			console.log('💡 Status check:', statuses, '→ chosen:', status);
-
+			if(form.hasAttribute('data-guest-sign-up')){
+				console.log('is guest form!');
+				if(result.data.all[0].memberType === "Guest") {
+					document.getElementById('existing-member-id').value = result.data.all[0].id;
+					document.getElementById('old-member-email').value = document.getElementById('email').value;
+					 return;
+					
+				}
+			}
 			let msgElement;
 			if (status === 'current') {
 				msgElement = createMessage(status, `
-					There is an existing active membership using this email.<br/><br/>
-					Please use a different email address or check you are not already a member.<br/><br/>
-					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> for assistance.
+					There is an existing active membership using this email. <br/><br/>
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
 				`);
 			} else if (status === 'ended') {
 				msgElement = createMessage(
@@ -695,12 +713,12 @@ function checkEmail() {
 							callback: () => {
 								console.log('❌ NO clicked — clearing fields');
 								document.getElementById('existing-member-id').value = '';
-								document.getElementById('old-member-id').value = member.memberId || '';
-								document.getElementById('old-member-email').value = document.getElementById('email').value || '';
-								document.getElementById('email').value = '';
-								document.getElementById('firstName').value = '';
-								document.getElementById('lastName').value = '';
-								document.getElementById('gender').value = '';
+								document.getElementById('old-member-id').value      = member.memberId || '';
+								document.getElementById('old-member-email').value = emailInput.value || '';
+								emailInput.value = '';
+								document.getElementById('firstName').value  = '';
+								document.getElementById('lastName').value   = '';
+								document.getElementById('gender').value     = '';
 								const dobInput = document.getElementById('dateOfBirth');
 								if (dobInput) dobInput.value = '';
 							}
@@ -710,14 +728,14 @@ function checkEmail() {
 							callback: () => {
 								console.log('✅ YES clicked — pre-filling details');
 								document.getElementById('existing-member-id').value = member.memberId || '';
-								document.getElementById('old-member-id').value = '';
-								document.getElementById('firstName').value = member.firstName || '';
-								document.getElementById('lastName').value = member.lastName || '';
-								document.getElementById('gender').value = member.gender || '';
+								document.getElementById('old-member-id').value      = '';
+								document.getElementById('firstName').value          = member.firstName || '';
+								document.getElementById('lastName').value           = member.lastName  || '';
+								document.getElementById('gender').value             = member.gender    || '';
 								const dobInput = document.getElementById('dateOfBirth');
 								if (dobInput && member.dateOfBirth) {
 									const birth = new Date(member.dateOfBirth);
-									const formatted = `${String(birth.getDate()).padStart(2, '0')}/${String(birth.getMonth() + 1).padStart(2, '0')}/${birth.getFullYear()}`;
+									const formatted = `${String(birth.getDate()).padStart(2, '0')}/${String(birth.getMonth()+1).padStart(2, '0')}/${birth.getFullYear()}`;
 									dobInput.value = formatted;
 								}
 							}
@@ -726,26 +744,26 @@ function checkEmail() {
 				);
 			} else if (status === 'notstarted') {
 				msgElement = createMessage(status, `
-					There is an existing membership using this email already.<br/><br/>
-					Please use a different email address or check you have not already signed up.<br/><br/>
-					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> for assistance.
+					There is an existing membership using this email already. <br/><br/>
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
 				`);
 			} else if (status === 'freezed') {
 				msgElement = createMessage(status, `
 					There is an existing frozen membership using this email already.<br/><br/>
-					Please use a different email address or check your membership is not currently frozen.<br/><br/>
-					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> for assistance.
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
 				`);
 			}
 
 			if (msgElement) wrapper.appendChild(msgElement);
 
+			// For all “exists” statuses except ‘ended’, we hide the submit button
 			if (submitBtn) {
 				const hide = ['current', 'notstarted', 'freezed'].includes(status);
 				submitBtn.style.opacity = hide ? 0 : 1;
-				submitBtn.style.zIndex = status === 'ended' ? 2 : -1;
+				submitBtn.style.zIndex  = status === 'ended' ? 2 : -1;
 			}
 
+			// Autofill if needed
 			if (emailInput.value.trim() === '') {
 				console.log('🔁 Autofilling email with member.email');
 				emailInput.value = member.email;
@@ -754,6 +772,11 @@ function checkEmail() {
 			}
 		} catch (err) {
 			console.error('🔥 Error during membership check:', err);
+			// On network/error, restore the button so user can retry
+			if (submitBtn) {
+				submitBtn.style.opacity = 1;
+				submitBtn.style.zIndex  = '';
+			}
 		} finally {
 			if (label) label.textContent = 'Email';
 			isChecking = false;
@@ -761,8 +784,7 @@ function checkEmail() {
 	};
 
 	emailInput.addEventListener('blur', runCheck('email'));
-	// enable if you want to check member phone number aswell
-	//phoneInput.addEventListener('blur', runCheck('phone'));
+	// phoneInput.addEventListener('blur', runCheck('phone'));
 }
 
 if (!document.querySelector('#email-spinner-style')) {

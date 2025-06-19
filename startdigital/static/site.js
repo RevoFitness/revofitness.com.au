@@ -16819,6 +16819,7 @@
   function checkEmail() {
     const emailInput = document.getElementById("email");
     const phoneInput = document.getElementById("phoneNumber");
+    const form = document.getElementById("sign-up-form");
     if (!emailInput || !phoneInput)
       return;
     document.querySelector("form")?.addEventListener("submit", (e) => {
@@ -16852,10 +16853,9 @@
 			padding:12px;
 			background:${bgColors[status] || "#cb3d3b"};
 			border-radius: 8px;
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) -2px 2px 0px 1px;
 			z-index:9999;
 			pointer-events:auto;
-			box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) -2px 2px 0px 1px;
 			padding-right:40px;
 		`;
       const text = document.createElement("div");
@@ -16941,21 +16941,34 @@
           })
         });
         const result = await response.json();
-        if (!result.success || !result.data?.exists)
+        console.log(result);
+        if (!result.success || !result.data?.exists) {
+          if (submitBtn) {
+            submitBtn.style.opacity = 1;
+            submitBtn.style.zIndex = "";
+          }
           return;
+        }
         const members = result.data.members || [];
-        const statuses = members.flatMap((m) => m.statuses || []).map((s) => s.toLowerCase());
+        const statuses = members.flatMap((m) => m.statuses || []).filter((s) => typeof s === "string" || s && typeof s.status === "string").map((s) => typeof s === "string" ? s.toLowerCase() : s.status.toLowerCase());
         const priority = ["current", "notstarted", "freezed", "ended"];
         const status = priority.find((s) => statuses.includes(s)) || "current";
         emailInput.classList.add(status);
-        const member = members?.[0] || {};
+        const member = members[0] || {};
         console.log("\u{1F4A1} Status check:", statuses, "\u2192 chosen:", status);
+        if (form.hasAttribute("data-guest-sign-up")) {
+          console.log("is guest form!");
+          if (result.data.all[0].memberType === "Guest") {
+            document.getElementById("existing-member-id").value = result.data.all[0].id;
+            document.getElementById("old-member-email").value = document.getElementById("email").value;
+            return;
+          }
+        }
         let msgElement;
         if (status === "current") {
           msgElement = createMessage(status, `
-					There is an existing active membership using this email.<br/><br/>
-					Please use a different email address or check you are not already a member.<br/><br/>
-					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> for assistance.
+					There is an existing active membership using this email. <br/><br/>
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
 				`);
         } else if (status === "ended") {
           msgElement = createMessage(
@@ -16968,8 +16981,8 @@
                   console.log("\u274C NO clicked \u2014 clearing fields");
                   document.getElementById("existing-member-id").value = "";
                   document.getElementById("old-member-id").value = member.memberId || "";
-                  document.getElementById("old-member-email").value = document.getElementById("email").value || "";
-                  document.getElementById("email").value = "";
+                  document.getElementById("old-member-email").value = emailInput.value || "";
+                  emailInput.value = "";
                   document.getElementById("firstName").value = "";
                   document.getElementById("lastName").value = "";
                   document.getElementById("gender").value = "";
@@ -16999,15 +17012,13 @@
           );
         } else if (status === "notstarted") {
           msgElement = createMessage(status, `
-					There is an existing membership using this email already.<br/><br/>
-					Please use a different email address or check you have not already signed up.<br/><br/>
-					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> for assistance.
+					There is an existing membership using this email already. <br/><br/>
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
 				`);
         } else if (status === "freezed") {
           msgElement = createMessage(status, `
 					There is an existing frozen membership using this email already.<br/><br/>
-					Please use a different email address or check your membership is not currently frozen.<br/><br/>
-					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> for assistance.
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
 				`);
         }
         if (msgElement)
@@ -17025,6 +17036,10 @@
         }
       } catch (err) {
         console.error("\u{1F525} Error during membership check:", err);
+        if (submitBtn) {
+          submitBtn.style.opacity = 1;
+          submitBtn.style.zIndex = "";
+        }
       } finally {
         if (label)
           label.textContent = "Email";

@@ -17,7 +17,7 @@ class User extends PerfectGymClient
     {
         $self = new self();
         write_log("📌 Entered create() method");
-        write_log("Checking for existing member ID: " . json_encode($data['memberId'] ?? 'null'));
+        write_log("Checking for existing member ID: " . $_POST['memberId']);
         write_log("🧪 paymentIdLevel1: " . var_export($paymentIdLevel1, true));
 
         $sexValue = match (strtolower($data['gender'] ?? '')) {
@@ -57,11 +57,11 @@ class User extends PerfectGymClient
 
 
         // ✅ EXISTING MEMBER FLOW
-        if (!empty($data['memberId'])) {
+        if (!empty($_POST['memberId'])) {
             // 🔐 Attach billing method
             if (!empty($data['cardNumber']) && !empty($data['expiryMonth']) && !empty($data['expiryYear']) && !empty($data['cvc'])) {
                 $ccArgs = [
-                    "memberId" => $data['memberId'],
+                    "memberId" => $_POST['memberId'],
                     "creditCard" => [
                         "cardNumber" => $data['cardNumber'],
                         "expiryMonth" => $data['expiryMonth'],
@@ -74,7 +74,7 @@ class User extends PerfectGymClient
                 $paymentSourceId = json_decode($res)->paymentSourceId ?? null;
             } elseif (!empty($data['bsb']) && !empty($data['accountNumber']) && !empty($data['accountHolderName'])) {
                 $ddArgs = [
-                    "memberId" => $data['memberId'],
+                    "memberId" => $_POST['memberId'],
                     "directDebit" => [
                         "bsb" => $data['bsb'],
                         "accountNumber" => $data['accountNumber'],
@@ -90,7 +90,7 @@ class User extends PerfectGymClient
             // 📝 Update member details
             $updateUrl = "$self->baseURL/v2.2/Members/updateMemberDetails";
             $updateArgs = [
-                "memberId" => $data['memberId'],
+                "memberId" => $_POST['memberId'],
                 "personalData" => [
                     'firstName' => $data['firstName'] ?? '',
                     'lastName' => $data['lastName'] ?? '',
@@ -125,7 +125,7 @@ class User extends PerfectGymClient
 
             // ➕ Add contract
             $contractArgs = [
-                "memberId" => $data['memberId'],
+                "memberId" => $_POST['memberId'],
                 "clubId" => $data['gymId'],
                 "paymentSourceId" => $paymentSourceId,
                 "contractData" => [
@@ -225,45 +225,79 @@ class User extends PerfectGymClient
      * @param array $data The user data.
      * @return mixed The created user object.
      */
-    public static function createAsGuest($data)
-    {
-        $self = new self();
-        $apiUrl = "$self->baseURL/v2.1/Members/AddGuestMember";
-        $data = array(
-            'homeClubId' => $data['gymId'],
-            "personalData" => array(
-                'firstName' => $data['firstName'],
-                'lastName' => $data['lastName'],
-                'birthDate' => $data['dateOfBirth'],
-                'sex' => $data['gender'],
-                'phoneNumber' => $data['phoneNumber'],
-                'email' => $data['email'],
-            ),
-            'addressData' => array(
-                'line1' => $data['address'],
-                'city' => $data['suburb'],
-                'postalCode' => $data['postCode'],
-                'country' => 'AU'
-            ),
-            "agreements" => array(
-                array('agreementId' => 1, 'agreementAnswer' => true),
-                array('agreementId' => 2, 'agreementAnswer' => true),
-                array('agreementId' => 4, 'agreementAnswer' => true),
-                array('agreementId' => 6, 'agreementAnswer' => true),
-                array('agreementId' => 7, 'agreementAnswer' => true),
-                array('agreementId' => 8, 'agreementAnswer' => true),
-                array('agreementId' => 9, 'agreementAnswer' => true),
-            )
-        );
+public static function createAsGuest($data)
+{
+    $self = new self();
 
-        $response = $self->postApiRequest($apiUrl, $data);
+    // If an existing memberId is provided, rename that member’s email first
+    if (!empty($_POST['memberId']) && is_numeric($_POST['memberId'])) {
+        $memberId      = (int) $_POST['memberId'];
+        $oldMemberEmail = $_POST['oldMemberEmail'] ?? null;
 
-        if (!$response) {
-            return new \WP_Error("cannot-add-user", "No response for adding user.");
+        if ($oldMemberEmail) {
+            write_log("📌 Renaming email for existing member ID {$memberId}");
+
+            $updateUrl = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$memberId}";
+            $newEmail  = 'old-' . time() . '-' . $oldMemberEmail;
+
+            $patchArgs = [
+                [
+                    'op'    => 'replace',
+                    'path'  => 'PersonalData/Email',
+                    'value' => $newEmail,
+                ],
+            ];
+
+            $patchRes = $self->patchApiRequest(
+                $updateUrl,
+                $patchArgs,
+                ['Content-Type' => 'application/json-patch+json']
+            );
+
+            write_log("🔄 Patched member {$memberId} email to {$newEmail}");
+            write_log("↪️ PG response (email patch): {$patchRes}");
         }
-
-        return json_decode($response);
     }
+
+    // Now create a brand-new guest member
+    write_log("📌 Creating new guest member");
+
+    $apiUrl = "{$self->baseURL}/v2.1/Members/AddGuestMember";
+    $payload = [
+        'homeClubId'   => $data['gymId'],
+        'personalData' => [
+            'firstName'   => $data['firstName'],
+            'lastName'    => $data['lastName'],
+            'birthDate'   => $data['dateOfBirth'],
+            'sex'         => $data['gender'],
+            'phoneNumber' => $data['phoneNumber'],
+            'email'       => $data['email'],
+        ],
+        'addressData'  => [
+            'line1'      => $data['address'],
+            'city'       => $data['suburb'],
+            'postalCode' => $data['postCode'],
+            'country'    => 'AU',
+        ],
+        'agreements'   => [
+            ['agreementId' => 1, 'agreementAnswer' => true],
+            ['agreementId' => 2, 'agreementAnswer' => true],
+            ['agreementId' => 4, 'agreementAnswer' => true],
+            ['agreementId' => 6, 'agreementAnswer' => true],
+            ['agreementId' => 7, 'agreementAnswer' => true],
+            ['agreementId' => 8, 'agreementAnswer' => true],
+            ['agreementId' => 9, 'agreementAnswer' => true],
+        ],
+    ];
+
+    $response = $self->postApiRequest($apiUrl, $payload);
+    if (!$response) {
+        return new \WP_Error("cannot-add-guest", "No response for creating guest member.");
+    }
+
+    return json_decode($response);
+}
+
 
     /**
      * Add the emergency contact details
