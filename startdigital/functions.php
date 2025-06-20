@@ -881,26 +881,34 @@ function confirm_cancel_member_callback()
     ]);
 
     // Add member note
+    // Add a cancellation note to a member via PG v2.2 RPC
     $noteData = [
-        'memberId'   => $memberId,
-        'note'       => 'Member has requested to cancel membership',
-        'blockAccess'=> false,
-        'isPinned'   => true,
+        'memberId' => $memberId,
+        'note'     => 'Member has requested to cancel membership',
     ];
 
-    $noteRes = wp_remote_post("https://revofitness.perfectgym.com.au/API/v2.2/odata/AddMemberNote", [
-        'headers' => [
-            'X-Client-Id'     => $clientId,
-            'X-Client-Secret' => $clientSecret,
-            'Content-Type'    => 'application/json',
-            'Accept'          => 'application/json',
-        ],
-        'body' => json_encode($noteData),
-    ]);
+    $noteRes = wp_remote_post(
+        "https://revofitness.perfectgym.com.au/API/v2.2/Members/AddMemberNote",
+        [
+            'headers' => [
+                'X-Client-Id'     => $clientId,
+                'X-Client-Secret' => $clientSecret,
+                'Content-Type'    => 'application/json',
+                'Accept'          => 'application/json',
+            ],
+            'body'    => wp_json_encode($noteData),
+            'timeout' => 15,
+        ]
+    );
 
-    if (is_wp_error($noteRes) || wp_remote_retrieve_response_code($noteRes) !== 200) {
-        
-        wp_send_json_error(['message' => 'Failed to add member note.']);
+    // PG will return status 200 on success
+    $code = wp_remote_retrieve_response_code($noteRes);
+    if (is_wp_error($noteRes) || $code !== 200) {
+        error_log("PG AddMemberNote failed: " . print_r($noteRes, true));
+        wp_send_json_error([
+            'message' => 'Failed to add member note.',
+            'code'    => $code,
+        ]);
     }
 
     wp_send_json_success(['message' => 'Cancellation request submitted.']);
