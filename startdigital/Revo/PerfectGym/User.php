@@ -51,11 +51,11 @@ class User extends PerfectGymClient
                 'value' => 'old-' . time() . '-' . $memberId
             ]];
             $res = $self->patchApiRequest($url, $patch, ['Content-Type' => 'application/json-patch+json']);
-            write_log("↪️ PATCH updated email for member {$oldMemberId}, response: {$res}");
+            write_log("↪️ PATCH updated email for member {$memberId}, response: {$res}");
         }
 
         // ─── EXISTING MEMBER FLOW ─────────────────────────────────────────────────
-        if (!empty($_POST['memberId'])) {
+        if (!empty($_POST['memberId']) && empty($oldMemberEmail)) {
             // attach billing method if present
             if (!empty($data['cardNumber'])) {
                 $ccArgs = [
