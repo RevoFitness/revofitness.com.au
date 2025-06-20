@@ -16956,13 +16956,10 @@
         emailInput.classList.add(status);
         const member = members[0] || {};
         console.log("\u{1F4A1} Status check:", statuses, "\u2192 chosen:", status);
-        if (form.hasAttribute("data-guest-sign-up")) {
-          console.log("is guest form!");
-          if (result.data.all[0].memberType === "Guest") {
-            document.getElementById("existing-member-id").value = result.data.all[0].id;
-            document.getElementById("old-member-email").value = document.getElementById("email").value;
-            return;
-          }
+        if (result.data.all[0].memberType === "Guest") {
+          document.getElementById("existing-member-id").value = result.data.all[0].id;
+          document.getElementById("old-member-email").value = document.getElementById("email").value;
+          return;
         }
         let msgElement;
         if (status === "current") {

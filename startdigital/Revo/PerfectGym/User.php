@@ -29,6 +29,7 @@ class User extends PerfectGymClient
 
         $paymentSourceId = null;
         $oldMemberId    = isset($_POST['oldMemberId']) && is_numeric($_POST['oldMemberId']) ? (int) $_POST['oldMemberId'] : null;
+        $memberId    = isset($_POST['memberId']) && is_numeric($_POST['memberId']) ? (int) $_POST['memberId'] : null;
         $oldMemberEmail = $_POST['oldMemberEmail'] ?? null;
 
         // ─── UPDATE OLD MEMBER EMAIL ──────────────────────────────────────────────
@@ -38,6 +39,16 @@ class User extends PerfectGymClient
                 'op'    => 'replace',
                 'path'  => 'PersonalData/Email',
                 'value' => 'old-' . time() . '-' . $oldMemberEmail
+            ]];
+            $res = $self->patchApiRequest($url, $patch, ['Content-Type' => 'application/json-patch+json']);
+            write_log("↪️ PATCH updated email for member {$oldMemberId}, response: {$res}");
+        }
+        if ($memberId && $oldMemberEmail) {
+            $url   = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$memberId}";
+            $patch = [[
+                'op'    => 'replace',
+                'path'  => 'PersonalData/Email',
+                'value' => 'old-' . time() . '-' . $memberId
             ]];
             $res = $self->patchApiRequest($url, $patch, ['Content-Type' => 'application/json-patch+json']);
             write_log("↪️ PATCH updated email for member {$oldMemberId}, response: {$res}");
@@ -138,6 +149,7 @@ class User extends PerfectGymClient
 
             return json_decode($cRes);
         }
+        
 
         // ─── CREATE NEW MEMBER ─────────────────────────────────────────────────────
         $contractData = [
