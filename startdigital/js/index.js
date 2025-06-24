@@ -529,7 +529,7 @@ function checkEmail() {
 	const phoneInput = document.getElementById('phoneNumber');
 	const form = document.getElementById('sign-up-form');
 	if (!emailInput || !phoneInput) return;
-
+	
 	// ⛔ Prevent form submit while popup is visible
 	document.querySelector('form')?.addEventListener('submit', (e) => {
 		if (document.querySelector('.email-notify-up')) {

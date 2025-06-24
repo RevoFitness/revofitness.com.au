@@ -27,7 +27,31 @@
 .page-win-a-jimny-–-confirmation .text_with_image {
 	@apply bg-white;
 }
+form#sign-up-form[data-guest-sign-up] #customer-details h3.text-brandBlack::after {
+    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    font-size: 12px;
+    margin-left: 15px;
+    background: rgb(139 198 193 / var(--tw-bg-opacity));
+    padding: 10px 10px;
+    color: #333;
+    position: relative;
+    top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
 
+}
+@media(max-width:769px) {
+    form[data-guest-sign-up] #customer-details h3.text-brandBlack::after {
+      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      font-size: 12px;
+      margin-left: 15px;
+      background: rgb(139 198 193 / var(--tw-bg-opacity));
+      padding: 10px 10px;
+      color: #333;
+      position: relative;
+      top: -6px;
+  }
+}
 #the-studio {
 	scroll-margin-top: 5rem;
 }

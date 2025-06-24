@@ -12,184 +12,204 @@ class User extends PerfectGymClient
      * @return mixed The created user object.
      */
 
-    public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
-    {
-        $self = new self();
-        write_log("📌 Entered create() method");
-        write_log("Checking for existing member ID: " . ($_POST['memberId'] ?? ''));  
-        write_log("🧪 paymentIdLevel1: " . var_export($paymentIdLevel1, true));
 
-        // map gender to PG enum strings
-        $sexString = match (strtolower($data['gender'] ?? '')) {
-            'm', 'male'   => 'Male',
-            'f', 'female' => 'Female',
-            'o', 'other'  => 'Other',
-            default       => null,
-        };
 
-        $paymentSourceId = null;
-        $oldMemberId    = isset($_POST['oldMemberId']) && is_numeric($_POST['oldMemberId']) ? (int) $_POST['oldMemberId'] : null;
-        $memberId    = isset($_POST['memberId']) && is_numeric($_POST['memberId']) ? (int) $_POST['memberId'] : null;
-        $oldMemberEmail = $_POST['oldMemberEmail'] ?? null;
+public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
+{
+    $self = new self();
+    write_log("📌 Entered create() method");
 
-        // ─── UPDATE OLD MEMBER EMAIL ──────────────────────────────────────────────
-        if ($oldMemberId && $oldMemberEmail) {
-            $url   = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$oldMemberId}";
-            $patch = [[
-                'op'    => 'replace',
-                'path'  => 'PersonalData/Email',
-                'value' => 'old-' . time() . '-' . $oldMemberEmail
-            ]];
-            $res = $self->patchApiRequest($url, $patch, ['Content-Type' => 'application/json-patch+json']);
-            write_log("↪️ PATCH updated email for member {$oldMemberId}, response: {$res}");
-        }
-        if ($memberId && $oldMemberEmail) {
-            $url   = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$memberId}";
-            $patch = [[
-                'op'    => 'replace',
-                'path'  => 'PersonalData/Email',
-                'value' => 'old-' . time() . '-' . $memberId
-            ]];
-            $res = $self->patchApiRequest($url, $patch, ['Content-Type' => 'application/json-patch+json']);
-            write_log("↪️ PATCH updated email for member {$memberId}, response: {$res}");
-        }
+    // Capture and log membershipType for debugging
+    $membershipType = $data['membershipType'] ?? '';
+    write_log("🔖 membershipType: {$membershipType}");
 
-        // ─── EXISTING MEMBER FLOW ─────────────────────────────────────────────────
-        if (!empty($_POST['memberId']) && empty($oldMemberEmail)) {
-            // attach billing method if present
-            if (!empty($data['cardNumber'])) {
-                $ccArgs = [
-                    'memberId'   => $_POST['memberId'],
-                    'creditCard' => [
-                        'cardNumber'  => $data['cardNumber'],
-                        'expiryMonth' => $data['expiryMonth'],
-                        'expiryYear'  => $data['expiryYear'],
-                        'cvc'         => $data['cvc'],
-                    ],
-                ];
-                $r = $self->postApiRequest("{$self->baseURL}/v2.2/PaymentSources/AddCreditCardPaymentSource", $ccArgs, null, 16);
-                write_log("💳 AddCreditCardPaymentSource result: {$r}");
-                $paymentSourceId = json_decode($r)->paymentSourceId ?? null;
-            } elseif (!empty($data['bsb'])) {
-                $ddArgs = [
-                    'memberId'   => $_POST['memberId'],
-                    'directDebit'=> [
-                        'bsb'               => $data['bsb'],
-                        'accountNumber'     => $data['accountNumber'],
-                        'accountHolderName' => $data['accountHolderName'],
-                        'accountType'       => $data['accountType'] ?? 1,
-                    ],
-                ];
-                $r = $self->postApiRequest("{$self->baseURL}/v2.2/PaymentSources/AddDirectDebitPaymentSource", $ddArgs, null, 16);
-                write_log("🏦 AddDirectDebitPaymentSource result: {$r}");
-                $paymentSourceId = json_decode($r)->paymentSourceId ?? null;
-            }
+    // Determine memberId from JSON payload or traditional POST
+    $memberId = isset($data['memberId'])
+        ? (int) $data['memberId']
+        : (int) ($_POST['memberId'] ?? 0);
+    write_log("Checking for existing member ID: {$memberId}");
 
-            // update personal & address
-            $updateArgs = [
-                'memberId'    => $_POST['memberId'],
-                'personalData'=> [
-                    'firstName'               => $data['firstName'] ?? '',
-                    'lastName'                => $data['lastName'] ?? '',
-                    'birthDate'               => $data['dateOfBirth'] ?? '',
-                    'sex'                     => $sexString,
-                    'phoneNumber'             => $data['phoneNumber'] ?? '',
-                    'email'                   => $data['email'] ?? '',
-                    'citizenshipCountrySymbol'=> 'AU',
-                ],
-                'addressData' => [
-                    'street'        => $data['address'] ?? '',
-                    'cityName'      => 'Perth',
-                    'postalCode'    => $data['postCode'] ?? '',
-                    'countrySymbol' => 'AU',
+    // Map gender to PG enum strings
+    $sexString = match (strtolower($data['gender'] ?? '')) {
+        'm', 'male'   => 'Male',
+        'f', 'female' => 'Female',
+        'o', 'other'  => 'Other',
+        default       => null,
+    };
+
+    $paymentSourceId = null;
+    $oldMemberId     = isset($_POST['oldMemberId']) && is_numeric($_POST['oldMemberId'])
+        ? (int) $_POST['oldMemberId']
+        : null;
+    $oldMemberEmail  = $_POST['oldMemberEmail'] ?? null;
+
+    // ─── UPDATE OLD MEMBER EMAIL ──────────────────────────────────────────────
+    if ($oldMemberId && $oldMemberEmail) {
+        $url   = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$oldMemberId}";
+        $patch = [[
+            'op'    => 'replace',
+            'path'  => '/PersonalData/Email',      // leading slash required
+            'value' => 'old-' . time() . '-' . $oldMemberEmail
+        ]];
+        $res = $self->patchApiRequest(
+            $url,
+            $patch,
+            ['Content-Type' => 'application/json-patch+json']
+        );
+        write_log("↪️ PATCH updated email for member {$oldMemberId}, response: {$res}");
+        $oldMemberEmail = null;
+    }
+
+    // ─── EXISTING MEMBER FLOW ─────────────────────────────────────────────────
+    if ($memberId) {
+        write_log("👤 Running existing-member flow for {$memberId}");
+
+        // Attach billing method if present
+        if (!empty($data['cardNumber'])) {
+            $ccArgs = [
+                'memberId'   => $memberId,
+                'creditCard' => [
+                    'cardNumber'  => $data['cardNumber'],
+                    'expiryMonth' => $data['expiryMonth'],
+                    'expiryYear'  => $data['expiryYear'],
+                    'cvc'         => $data['cvc'],
                 ],
             ];
-            $upRes = $self->postApiRequest("{$self->baseURL}/v2.2/Members/updateMemberDetails", $updateArgs, null, 16);
-            write_log("✏️ updateMemberDetails response: {$upRes}");
+            $r = $self->postApiRequest("{$self->baseURL}/v2.2/PaymentSources/AddCreditCardPaymentSource", $ccArgs, null, 16);
+            write_log("💳 AddCreditCardPaymentSource result: {$r}");
+            $paymentSourceId = json_decode($r)->paymentSourceId ?? null;
 
-            // add primary contract (v2.2)
-            $contractArgs = [
-                'memberId'        => $_POST['memberId'],
-                'clubId'          => $data['gymId'],
-                'paymentSourceId' => $paymentSourceId,
-                'contractData'    => [
-                    'paymentPlanId' => $paymentIdLevel1,
-                    'signUpDate'    => $data['signUpDate'],
-                    'startDate'     => $data['startDate'],
+        } elseif (!empty($data['bsb'])) {
+            $ddArgs = [
+                'memberId'    => $memberId,
+                'directDebit' => [
+                    'bsb'               => $data['bsb'],
+                    'accountNumber'     => $data['accountNumber'],
+                    'accountHolderName' => $data['accountHolderName'],
+                    'accountType'       => $data['accountType'] ?? 1,
                 ],
             ];
-            if (!empty($data['discountId'])) {
-                $contractArgs['contractData']['contractDiscountsData'] = [[
-                    'contractDiscountDefinitionId' => $data['discountId']
-                ]];
-            }
-            write_log("🔧 AddContract (v2.2) payload: " . json_encode($contractArgs));
-            $cRes = $self->postApiRequest("{$self->baseURL}/v2.2/Contracts/AddContract", $contractArgs, null, 16);
-            write_log("📄 AddContract response: {$cRes}");
-
-            // set agreements
-            foreach ([1,2,4,6,7,8,9] as $agrId) {
-                $agr = ['memberId'=>$_POST['memberId'], 'agreementId'=>$agrId, 'agreementAnswer'=>true];
-                $r = $self->postApiRequest("{$self->baseURL}/v2.2/Members/SetAgreementAnswer", $agr, null, 16);
-                write_log("📝 Agreement {$agrId} response: {$r}");
-            }
-
-            // optional level-2
-            if (($data['membershipType'] ?? '')==='level-2' && $paymentIdLevel2) {
-                $lh = new ContractHandler();
-                $lvl1 = json_decode($cRes)->contractId ?? null;
-                if ($lvl1) {
-                    if (!empty($data['discountId'])) {
-                        $lh->addSecondaryContractWithDiscount($data, $paymentIdLevel2, (int)$_POST['memberId'], $lvl1);
-                    } else {
-                        $lh->addSecondaryContract($data, $paymentIdLevel2, (int)$_POST['memberId'], $lvl1);
-                    }
-                }
-            }
-
-            return json_decode($cRes);
+            $r = $self->postApiRequest("{$self->baseURL}/v2.2/PaymentSources/AddDirectDebitPaymentSource", $ddArgs, null, 16);
+            write_log("🏦 AddDirectDebitPaymentSource result: {$r}");
+            $paymentSourceId = json_decode($r)->paymentSourceId ?? null;
         }
-        
 
-        // ─── CREATE NEW MEMBER ─────────────────────────────────────────────────────
-        $contractData = [
-            'paymentPlanId' => $paymentIdLevel1,
-            'signUpDate'    => $data['signUpDate'],
-            'startDate'     => $data['startDate'],
+        // Update personal & address details
+        $updateArgs = [
+            'memberId'    => $memberId,
+            'personalData'=> [
+                'firstName'               => $data['firstName']   ?? '',
+                'lastName'                => $data['lastName']    ?? '',
+                'birthDate'               => $data['dateOfBirth'] ?? '',
+                'sex'                     => $sexString,
+                'phoneNumber'             => $data['phoneNumber'] ?? '',
+                'email'                   => $data['email']       ?? '',
+                'citizenshipCountrySymbol'=> 'AU',
+            ],
+            'addressData' => [
+                'street'        => $data['address']  ?? '',
+                'cityName'      => 'Perth',
+                'postalCode'    => $data['postCode'] ?? '',
+                'countrySymbol' => 'AU',
+            ],
+        ];
+        $upRes = $self->postApiRequest("{$self->baseURL}/v2.2/Members/updateMemberDetails", $updateArgs, null, 16);
+        write_log("✏️ updateMemberDetails response: {$upRes}");
+
+        // Add primary contract (v2.2)
+        $contractArgs = [
+            'memberId'        => $memberId,
+            'clubId'          => $data['gymId'],
+            'paymentSourceId' => $paymentSourceId,
+            'contractData'    => [
+                'paymentPlanId' => $paymentIdLevel1,
+                'signUpDate'    => $data['signUpDate'],
+                'startDate'     => $data['startDate'],
+            ],
+            'homeClubId'      => $data['gymId'],
         ];
         if (!empty($data['discountId'])) {
-            $contractData['contractDiscountsData'] = [[
+            $contractArgs['contractData']['contractDiscountsData'] = [[
                 'contractDiscountDefinitionId' => $data['discountId']
             ]];
         }
+        write_log("🔧 AddContract (v2.2) payload: " . json_encode($contractArgs));
+        $cRes = $self->postApiRequest("{$self->baseURL}/v2.2/Contracts/AddContract", $contractArgs, null, 16);
+        write_log("📄 AddContract response: {$cRes}");
 
-        $createArgs = [
-            'contractData'    => $contractData,
-            'homeClubId'      => $data['gymId'],
-            'paymentSourceId' => $data['paymentSourceId'] ?? null,
-            'personalData'    => [
-                'firstName'               => $data['firstName'],
-                'lastName'                => $data['lastName'],
-                'birthDate'               => $data['dateOfBirth'],
-                'sex'                     => $sexString,
-                'phoneNumber'             => $data['phoneNumber'],
-                'email'                   => $data['email'],
-                'citizenshipCountrySymbol'=> 'AU',
-            ],
-            'addressData'     => [
-                'street'     => $data['address'],
-                'cityName'   => $data['suburb'],
-                'postalCode' => $data['postCode'],
-                'countrySymbol'=> 'AU',
-            ],
-            'agreements'      => array_map(fn($i) => ['agreementId'=>$i,'agreementAnswer'=>true],[1,2,4,6,7,8,9]),
-        ];
-        write_log("🔧 AddContractMember (v2.1) payload: " . json_encode($createArgs));
-        $createRes = $self->postApiRequest("{$self->baseURL}/v2.1/Members/AddContractMember", $createArgs, null, 16);
-        write_log("📥 AddContractMember response: {$createRes}");
+        // Decode and guard against invalid JSON before accessing contractId
+        $cResObj = json_decode($cRes);
+        $lvl1    = (is_object($cResObj) && isset($cResObj->contractId))
+                  ? $cResObj->contractId
+                  : null;
 
-        return $createRes ? json_decode($createRes) : false;
+        // Set agreements
+        foreach ([1,2,4,6,7,8,9] as $agrId) {
+            $agr = ['memberId'=>$memberId, 'agreementId'=>$agrId, 'agreementAnswer'=>true];
+            $r   = $self->postApiRequest("{$self->baseURL}/v2.2/Members/SetAgreementAnswer", $agr, null, 16);
+            write_log("📝 Agreement {$agrId} response: {$r}");
+        }
+
+        // Optional level-2 secondary contract
+        if ($membershipType === 'level-2' && $paymentIdLevel2 && $lvl1) {
+            $lh = new ContractHandler();
+            if (!empty($data['discountId'])) {
+                $lh->addSecondaryContractWithDiscount($data, $paymentIdLevel2, $memberId, $lvl1);
+            } else {
+                $lh->addSecondaryContract($data, $paymentIdLevel2, $memberId, $lvl1);
+            }
+        }
+
+        // Transfer member to new home club
+        $transferUrl  = "{$self->baseURL}/v2.2/Members/HomeClubTransfer";
+        $transferArgs = ['memberId'=>$memberId,'targetClubId'=>$data['gymId'],'clubTransferType'=>'Force'];
+        write_log("▶️ HomeClubTransfer payload: " . json_encode($transferArgs));
+        $res = $self->postApiRequest($transferUrl, $transferArgs, ['Content-Type'=>'application/json'], 16);
+        write_log("↪️ HomeClubTransfer response: " . var_export($res, true));
+
+        return $cResObj;
     }
+
+    // ─── CREATE NEW MEMBER ─────────────────────────────────────────────────────
+    write_log("🆕 No memberId provided; creating new member");
+    $contractData = [
+        'paymentPlanId' => $paymentIdLevel1,
+        'signUpDate'    => $data['signUpDate'],
+        'startDate'     => $data['startDate'],
+    ];
+    if (!empty($data['discountId'])) {
+        $contractData['contractDiscountsData'] = [[
+            'contractDiscountDefinitionId' => $data['discountId']
+        ]];
+    }
+    $createArgs = [
+        'contractData'    => $contractData,
+        'homeClubId'      => $data['gymId'],
+        'paymentSourceId' => $data['paymentSourceId'] ?? null,
+        'personalData'    => [
+            'firstName'               => $data['firstName'],
+            'lastName'                => $data['lastName'],
+            'birthDate'               => $data['dateOfBirth'],
+            'sex'                     => $sexString,
+            'phoneNumber'             => $data['phoneNumber'],
+            'email'                   => $data['email'],
+            'citizenshipCountrySymbol'=> 'AU',
+        ],
+        'addressData'     => [
+            'street'     => $data['address'],
+            'cityName'   => $data['suburb'],
+            'postalCode' => $data['postCode'],
+            'countrySymbol'=> 'AU',
+        ],
+        'agreements'      => array_map(fn($i)=>['agreementId'=>$i,'agreementAnswer'=>true],[1,2,4,6,7,8,9]),
+    ];
+    write_log("🔧 AddContractMember (v2.1) payload: " . json_encode($createArgs));
+    $createRes = $self->postApiRequest("{$self->baseURL}/v2.1/Members/AddContractMember", $createArgs, null, 16);
+    write_log("📥 AddContractMember response: {$createRes}");
+
+    $createObj = json_decode($createRes);
+    return $createObj ?: false;
+}
 
 
 
@@ -207,78 +227,78 @@ class User extends PerfectGymClient
      * @param array $data The user data.
      * @return mixed The created user object.
      */
-public static function createAsGuest($data)
-{
-    $self = new self();
+    public static function createAsGuest($data)
+    {
+        $self = new self();
 
-    // If an existing memberId is provided, rename that member’s email first
-    if (!empty($_POST['memberId']) && is_numeric($_POST['memberId'])) {
-        $memberId      = (int) $_POST['memberId'];
-        $oldMemberEmail = $_POST['oldMemberEmail'] ?? null;
+        // If an existing memberId is provided, rename that member’s email first
+        if (!empty($_POST['memberId']) && is_numeric($_POST['memberId'])) {
+            $memberId      = (int) $_POST['memberId'];
+            $oldMemberEmail = $_POST['oldMemberEmail'] ?? null;
 
-        if ($oldMemberEmail) {
-            write_log("📌 Renaming email for existing member ID {$memberId}");
+            if ($oldMemberEmail) {
+                write_log("📌 Renaming email for existing member ID {$memberId}");
 
-            $updateUrl = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$memberId}";
-            $newEmail  = 'old-' . time() . '-' . $oldMemberEmail;
+                $updateUrl = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$memberId}";
+                $newEmail  = 'old-' . time() . '-' . $oldMemberEmail;
 
-            $patchArgs = [
-                [
-                    'op'    => 'replace',
-                    'path'  => 'PersonalData/Email',
-                    'value' => $newEmail,
-                ],
-            ];
+                $patchArgs = [
+                    [
+                        'op'    => 'replace',
+                        'path'  => 'PersonalData/Email',
+                        'value' => $newEmail,
+                    ],
+                ];
 
-            $patchRes = $self->patchApiRequest(
-                $updateUrl,
-                $patchArgs,
-                ['Content-Type' => 'application/json-patch+json']
-            );
+                $patchRes = $self->patchApiRequest(
+                    $updateUrl,
+                    $patchArgs,
+                    ['Content-Type' => 'application/json-patch+json']
+                );
 
-            write_log("🔄 Patched member {$memberId} email to {$newEmail}");
-            write_log("↪️ PG response (email patch): {$patchRes}");
+                write_log("🔄 Patched member {$memberId} email to {$newEmail}");
+                write_log("↪️ PG response (email patch): {$patchRes}");
+            }
         }
+
+        // Now create a brand-new guest member
+        write_log("📌 Creating new guest member");
+
+        $apiUrl = "{$self->baseURL}/v2.1/Members/AddGuestMember";
+        $payload = [
+            'homeClubId'   => $data['gymId'],
+            'personalData' => [
+                'firstName'   => $data['firstName'],
+                'lastName'    => $data['lastName'],
+                'birthDate'   => $data['dateOfBirth'],
+                'sex'         => $data['gender'],
+                'phoneNumber' => $data['phoneNumber'],
+                'email'       => $data['email'],
+            ],
+            'addressData'  => [
+                'line1'      => $data['address'],
+                'city'       => $data['suburb'],
+                'postalCode' => $data['postCode'],
+                'country'    => 'AU',
+            ],
+            'agreements'   => [
+                ['agreementId' => 1, 'agreementAnswer' => true],
+                ['agreementId' => 2, 'agreementAnswer' => true],
+                ['agreementId' => 4, 'agreementAnswer' => true],
+                ['agreementId' => 6, 'agreementAnswer' => true],
+                ['agreementId' => 7, 'agreementAnswer' => true],
+                ['agreementId' => 8, 'agreementAnswer' => true],
+                ['agreementId' => 9, 'agreementAnswer' => true],
+            ],
+        ];
+
+        $response = $self->postApiRequest($apiUrl, $payload);
+        if (!$response) {
+            return new \WP_Error("cannot-add-guest", "No response for creating guest member.");
+        }
+
+        return json_decode($response);
     }
-
-    // Now create a brand-new guest member
-    write_log("📌 Creating new guest member");
-
-    $apiUrl = "{$self->baseURL}/v2.1/Members/AddGuestMember";
-    $payload = [
-        'homeClubId'   => $data['gymId'],
-        'personalData' => [
-            'firstName'   => $data['firstName'],
-            'lastName'    => $data['lastName'],
-            'birthDate'   => $data['dateOfBirth'],
-            'sex'         => $data['gender'],
-            'phoneNumber' => $data['phoneNumber'],
-            'email'       => $data['email'],
-        ],
-        'addressData'  => [
-            'line1'      => $data['address'],
-            'city'       => $data['suburb'],
-            'postalCode' => $data['postCode'],
-            'country'    => 'AU',
-        ],
-        'agreements'   => [
-            ['agreementId' => 1, 'agreementAnswer' => true],
-            ['agreementId' => 2, 'agreementAnswer' => true],
-            ['agreementId' => 4, 'agreementAnswer' => true],
-            ['agreementId' => 6, 'agreementAnswer' => true],
-            ['agreementId' => 7, 'agreementAnswer' => true],
-            ['agreementId' => 8, 'agreementAnswer' => true],
-            ['agreementId' => 9, 'agreementAnswer' => true],
-        ],
-    ];
-
-    $response = $self->postApiRequest($apiUrl, $payload);
-    if (!$response) {
-        return new \WP_Error("cannot-add-guest", "No response for creating guest member.");
-    }
-
-    return json_decode($response);
-}
 
 
     /**

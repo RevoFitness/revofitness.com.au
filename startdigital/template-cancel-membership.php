@@ -42,35 +42,29 @@ $email = '';
     <div class="row pt-10 pb-10">
         <div class="col-md-12">
             <h4 class="mb-5">We’re sad to see you go!</h4>
-            <h5 class="mb-10">You know you can freeze your membership at no cost to you? Just ask our team member how!</h5>
-                    <p>You may only cancel your Membership in accordance with clause 3.10(a) of your Membership Agreement.</p>
+                    <p>Freezing is FREE! Chat to our friendly team about our freezing options. Otherwise, you’ll have one final payment to make if freeze isn’t an option for you right now. </p>
 
-                <p>Use this form to:</p><br />
+                <p>If you're sure you’d like to cancel, you can use this form too:</p><br />
                 <ul class="list-none">
-                    <li style="list-style:none"><strong>(a)</strong> cancel your Membership by 30 days’ written notice;</li>
-                    <li style="list-style:none"><strong>(b)</strong> request an immediate cancellation of your Membership where you have a medical certificate stating that<br />
-                        you cannot use your Revo Fitness Membership because of a permanent illness or physical incapacity; or</li>
-                    <li style="list-style:none"><strong>(c)</strong> cancel your Membership immediately within the Cooling-Off Period (WA Members only).</li>
+                    <li style="list-style:outside"><strong>Give your 30 days’ written notice</strong></li>
+                    <li style="list-style:outside"><strong>Cancel immediately if you are a WA member within the Cooling-off period</strong></li>
+
                 </ul>
 
-                <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (a) above, your Membership will remain active and you will be entitled to full use of the Revo Fitness Facilities until your Membership Agreement is cancelled, being:</p><br />
+                <p class="mt-10">If you're giving notice to cancel, you’ll still have access to the gym during your notice period. Your last day will depend on your location::</p><br />
 
                 <ul class="list-none" style="list-style:none">
-                    <li style="list-style:none"><strong>(a)</strong> if you are not a SA Member, 30 days after the Cancellation Notice Date; and</li>
-                    <li style="list-style:none"><strong>(b)</strong> if you are a SA Member:</li><br />
-                    <ul>
-                        <li style="list-style:none"><strong>(i)</strong> where you do not have a Direct Debit Date fall within 14 days after the Cancellation Notice Date, 11:59pm on the<br />
-                            day immediately before your next Direct Debit Date; or</li>
-                        <li style="list-style:none"><strong>(ii)</strong> where you do have a Direct Debit Date fall within 14 days after the Notice Date, 11:59pm on the day that is 14 days after the Cancellation Notice Date.</li>
-                    </ul>
-                </ul>
-                <p class="mt-10">If you are cancelling your Membership in the circumstances listed in (b) or (c) above (and in the case of (b), Revo Fitness grants your request), your Membership will end immediately, and you will no longer be entitled to use the Revo Fitness Facilities.</p>
+                    <li style="list-style:outside"><strong>In WA, NSW or VIC? </strong> Your membership will end 30 days after you submit your cancellation.</li>
+                    <li style="list-style:outside"><strong>In SA? </strong> Your membership will end either 14 days after your cancellation request, or just before your next direct debit (whichever comes first).</li>
 
-                <p>To the extent of any inconsistency between the terms of your Membership Agreement and the contents of this form, the terms of your Membership Agreement prevail.</p>
+                </ul>
+                <p class="mt-10">If you’re cancelling within the cooling-off period (WA only) and we approve it, your membership will end straight away.</p>
+
+                <p>Need more info? Your Membership Agreement has the full terms (<a href="https://revofitness.com.au/terms/">https://revofitness.com.au/terms/</a>), but we’re here to help if you have questions.</p>
                 <br />
 
 
-                <h5 class="mb-2 mt-5">Confirm your email to request cancellation of membership</h5>
+                <h5 class="mb-2 mt-5">Confirm your email to request your cancellation:</h5>
 
                 <?php if ($error): ?>
                     <p style="color:red;"><?= esc_html($error) ?></p>
@@ -199,7 +193,7 @@ $email = '';
                     form.outerHTML = `
                         <div class="bg-brandPink text-black rounded-xl mt-5 p-6 border border-green-500 shadow-md">
                             <h3 class="text-xl font-bold mb-2">Request Submitted</h3>
-                            <p>Our team will be in touch soon to chat about your cancellation request, confirm your final debit and final day of access to the gym..</p>
+                            <p>Our team will be in touch soon to chat through your cancellation, confirm your final debit, and let you know your last day of access to the gym.</p>
                         </div>`;
                 } else {
                     form.innerHTML = `

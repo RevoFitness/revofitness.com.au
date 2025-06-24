@@ -686,13 +686,20 @@ function sendCancellationEmail(array $data): void
                         </tr>
                         <tr>
                           <td valign="top" style="padding: 32px 0; color: #333333; font-size: 15px; line-height: 24px; border-top: 1px solid #eeeeee;">
-                            <p><strong>Cancellation Request:</strong></p>
+                            <p>Hi ' . htmlspecialchars($firstName) . '</p>
+                            <p>We’ve received your cancellation request for your Revo Fitness membership.></p>
+                            <p>Here’s a quick summary:</p>
                             <p><strong>Member ID:</strong> ' . htmlspecialchars($data['memberId'] ?? 'Unknown') . '</p>
                             <p><strong>Member Name:</strong> ' . htmlspecialchars($firstName) . ' ' . htmlspecialchars($lastName) . '</p>
                             <p><strong>Member Email:</strong> ' . htmlspecialchars($email) . '</p>
                             <p><strong>Member Home Club:</strong> ' . htmlspecialchars($clubName) . '</p>
-                            <p><strong>Date & Time Requested:</strong> ' . htmlspecialchars($cancelDate) . '</p>
-                          </td>
+                            <p><strong>Requested on:</strong> ' . htmlspecialchars($cancelDate) . '</p>
+                            <p><strong>What happens next?</strong></p>
+                            <p>Our team will be in touch soon to chat through your cancellation, confirm your final debit, and let you know your last day of access to the gym.</p>
+                            <p>Need anything else or changed your mind? Just reach out! We’re here to help.</p>
+                            <br/><br/>
+                            <p>Team Revo</p>
+                            </td>
                         </tr>
                         <tr>
                           <td align="center" valign="top" style="padding: 16px 0; font-size: 10px; line-height: 16px;">
@@ -1055,7 +1062,7 @@ function check_pg_membership()
 /*
 ** Enables ACF fields to be available via rest API
 */
-
+/*
 add_filter('acf/update_value/name=latitude', function($value, $post_id, $field) {
     update_post_meta($post_id, 'latitude', $value);
     return $value;
@@ -1079,7 +1086,7 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 });
-/*
+
 run this after removing disabled attribute from lat and long + update each gym page after running then remove 
 add_action('init', function () {
     write_log("🔥 Forced backfill running...");
