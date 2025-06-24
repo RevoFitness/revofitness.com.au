@@ -44,7 +44,7 @@ $email = '';
             <h4 class="mb-5">We’re sad to see you go!</h4>
                     <p>Freezing is FREE! Chat to our friendly team about our freezing options. Otherwise, you’ll have one final payment to make if freeze isn’t an option for you right now. </p>
 
-                <p>If you're sure you’d like to cancel, you can use this form too:</p><br />
+                <p>If you're sure you’d like to cancel, you can use this form to:</p><br />
                 <ul class="list-none">
                     <li style="list-style:outside"><strong>Give your 30 days’ written notice</strong></li>
                     <li style="list-style:outside"><strong>Cancel immediately if you are a WA member within the Cooling-off period</strong></li>

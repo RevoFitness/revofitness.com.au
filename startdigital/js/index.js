@@ -522,6 +522,24 @@ function isDateInPast(dateStr) {
 	const today = new Date()
 	return date < today
 }
+
+// Call this function with your array of member objects, e.g. result.data.all
+function populateOldMemberEmails(members) {
+  // Only proceed if there’s more than one entry
+  if (!Array.isArray(members) || members.length <= 1) return;
+
+  // Extract id:email pairs from all entries after the first
+  const oldPairs = members
+    .slice(1)
+    .map(({ id, email }) => `${id}:${email}`);
+
+  // Find the hidden input and set its value to a comma-separated string
+  const input = document.getElementById('old-member-emails');
+  if (input) {
+    input.value = oldPairs.join(',');
+  }
+}
+
 let isChecking = false;
 
 function checkEmail() {
@@ -675,6 +693,9 @@ function checkEmail() {
 				return;
 			}
 
+			if(result.data.all)
+			// if result data all has more then one entry store all other entries into a hidden field so we can rename them in PG
+			populateOldMemberEmails(result.data.all);
 			const members = result.data.members || [];
 			const statuses = members
 				.flatMap(m => m.statuses || [])

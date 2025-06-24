@@ -16815,6 +16815,15 @@
     const today = /* @__PURE__ */ new Date();
     return date < today;
   }
+  function populateOldMemberEmails(members) {
+    if (!Array.isArray(members) || members.length <= 1)
+      return;
+    const oldPairs = members.slice(1).map(({ id, email }) => `${id}:${email}`);
+    const input = document.getElementById("old-member-emails");
+    if (input) {
+      input.value = oldPairs.join(",");
+    }
+  }
   var isChecking = false;
   function checkEmail() {
     const emailInput = document.getElementById("email");
@@ -16949,6 +16958,8 @@
           }
           return;
         }
+        if (result.data.all)
+          populateOldMemberEmails(result.data.all);
         const members = result.data.members || [];
         const statuses = members.flatMap((m) => m.statuses || []).filter((s) => typeof s === "string" || s && typeof s.status === "string").map((s) => typeof s === "string" ? s.toLowerCase() : s.status.toLowerCase());
         const priority = ["current", "notstarted", "freezed", "ended"];

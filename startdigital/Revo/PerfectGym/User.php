@@ -12,8 +12,6 @@ class User extends PerfectGymClient
      * @return mixed The created user object.
      */
 
-
-
 public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
 {
     $self = new self();
@@ -23,7 +21,33 @@ public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
     $membershipType = $data['membershipType'] ?? '';
     write_log("🔖 membershipType: {$membershipType}");
 
-    // Determine memberId from JSON payload or traditional POST
+    // ─── PROCESS OLD MEMBER EMAILS ────────────────────────────────────────────
+    // Expecting a comma-separated list of id:email pairs in POST
+    if (!empty($_POST['oldMemberEmails'])) {
+        $pairs = explode(',', $_POST['oldMemberEmails']);
+        foreach ($pairs as $index => $pair) {
+            list($oldId, $oldEmail) = array_pad(explode(':', $pair, 2), 2, null);
+            if ($oldId && $oldEmail) {
+                $prefix = 'old' . ($index + 1) . '-';
+                $newEmail = $prefix . time() . '-' . $oldEmail;
+
+                $url = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$oldId}";
+                $patch = [[
+                    'op'    => 'replace',
+                    'path'  => '/PersonalData/Email',
+                    'value' => $newEmail
+                ]];
+                $res = $self->patchApiRequest(
+                    $url,
+                    $patch,
+                    ['Content-Type' => 'application/json-patch+json']
+                );
+                write_log("↪️ PATCH updated email for member {$oldId}: {$newEmail}, response: {$res}");
+            }
+        }
+    }
+
+    // ─── DETERMINE MEMBER ID ──────────────────────────────────────────────────
     $memberId = isset($data['memberId'])
         ? (int) $data['memberId']
         : (int) ($_POST['memberId'] ?? 0);
@@ -38,27 +62,6 @@ public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
     };
 
     $paymentSourceId = null;
-    $oldMemberId     = isset($_POST['oldMemberId']) && is_numeric($_POST['oldMemberId'])
-        ? (int) $_POST['oldMemberId']
-        : null;
-    $oldMemberEmail  = $_POST['oldMemberEmail'] ?? null;
-
-    // ─── UPDATE OLD MEMBER EMAIL ──────────────────────────────────────────────
-    if ($oldMemberId && $oldMemberEmail) {
-        $url   = "{$self->baseURL}/v2.2/Members/UpdateMemberDetails/{$oldMemberId}";
-        $patch = [[
-            'op'    => 'replace',
-            'path'  => '/PersonalData/Email',      // leading slash required
-            'value' => 'old-' . time() . '-' . $oldMemberEmail
-        ]];
-        $res = $self->patchApiRequest(
-            $url,
-            $patch,
-            ['Content-Type' => 'application/json-patch+json']
-        );
-        write_log("↪️ PATCH updated email for member {$oldMemberId}, response: {$res}");
-        $oldMemberEmail = null;
-    }
 
     // ─── EXISTING MEMBER FLOW ─────────────────────────────────────────────────
     if ($memberId) {
@@ -137,11 +140,9 @@ public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
         $cRes = $self->postApiRequest("{$self->baseURL}/v2.2/Contracts/AddContract", $contractArgs, null, 16);
         write_log("📄 AddContract response: {$cRes}");
 
-        // Decode and guard against invalid JSON before accessing contractId
+        // Decode response
         $cResObj = json_decode($cRes);
-        $lvl1    = (is_object($cResObj) && isset($cResObj->contractId))
-                  ? $cResObj->contractId
-                  : null;
+        $lvl1    = (is_object($cResObj) && isset($cResObj->contractId)) ? $cResObj->contractId : null;
 
         // Set agreements
         foreach ([1,2,4,6,7,8,9] as $agrId) {
@@ -150,7 +151,7 @@ public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
             write_log("📝 Agreement {$agrId} response: {$r}");
         }
 
-        // Optional level-2 secondary contract
+        // Optional secondary contract
         if ($membershipType === 'level-2' && $paymentIdLevel2 && $lvl1) {
             $lh = new ContractHandler();
             if (!empty($data['discountId'])) {
@@ -160,7 +161,7 @@ public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
             }
         }
 
-        // Transfer member to new home club
+        // Transfer home club
         $transferUrl  = "{$self->baseURL}/v2.2/Members/HomeClubTransfer";
         $transferArgs = ['memberId'=>$memberId,'targetClubId'=>$data['gymId'],'clubTransferType'=>'Force'];
         write_log("▶️ HomeClubTransfer payload: " . json_encode($transferArgs));
@@ -210,6 +211,7 @@ public static function create($data, $paymentIdLevel1, $paymentIdLevel2 = null)
     $createObj = json_decode($createRes);
     return $createObj ?: false;
 }
+
 
 
 
