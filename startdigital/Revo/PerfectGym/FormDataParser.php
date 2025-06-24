@@ -89,6 +89,7 @@ class FormDataParser
             "memberId" => $formData['memberId'] ?? '',
             "oldMemberId" => $formData['oldMemberId'] ?? '',
             "oldMemberEmail" => $formData['oldMemberEmail'] ?? '',
+            "oldMemberEmails" => $formData['oldMemberEmails'] ?? '',
             "phoneNumber" => str_replace(' ', '', $formData['phoneNumber']),
             "dateOfBirth" => date('Y-m-d', strtotime(str_replace('/', '-', $dateOfBirth))),
             "gender" => $formData['gender'] ?: 'Other',
