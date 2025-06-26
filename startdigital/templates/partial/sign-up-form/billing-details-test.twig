@@ -1,0 +1,94 @@
+<div id="billing-details-test" class="flex flex-col gap-4 md:gap-6 pb-4 pt-8 pb-10">
+	<h3 class="text-brandRed">Payment details</h3>
+	<strong class="is-h5 flex flex-wrap items-center gap-2">
+		Preferred Payment Method
+		{% if not disabledCardPayments %}
+			<span class="text-sm text-brandRed">(We do not accept AMEX)</span>
+		{% endif %}
+	</strong>
+
+	{% if not isFiveWeekMembership %}
+		<div data-surcharge-wrapper class="md:-mt-5 text-sm h-16 md:h-6">
+			<div class="hidden">
+				<span data-monthly-surcharge>
+					You will be charged an additional either $2.00 or 1.80% + 35c ex gst, whichever is greater, monthly charge for Visa or MasterCard payments
+				</span>
+				<span data-fortnightly-surcharge class="hidden">
+					You will be charged an additional $0.61 fortnightly charge for visa or mastercard payments
+				</span>
+				<span data-level-three-surcharge class="hidden">
+					You will be charged an additional either $2.00 or 1.80% + 35c ex gst, whichever is greater, monthly charge for Visa or MasterCard payments
+				</span>
+			</div>
+		</div>
+	{% endif %}
+
+	<div class="flex flex-wrap items-center gap-3 mb-6">
+		{% if not disabledCardPayments %}
+			<button data-payment-type="card" type="button" class="is-button px-6 after:content-none button-outline isActive">Card</button>
+		{% endif %}
+	</div>
+
+	<div data-payment-container class="relative bg-pureWhite p-6 lg:p-16 rounded-3xl">
+		{% if not disabledCardPayments %}
+			<div data-ezypay-loader style="display: none;" class="absolute top-0 left-0 w-full h-full z-50 flex items-center justify-center">
+				<svg aria-hidden="true" role="status" class="inline w-8 h-8 mr-3 text-gray-200 animate-spin dark:text-gray-600" viewbox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="..." fill="currentColor"/>
+					<path d="..." fill="#CB333B"/>
+				</svg>
+				<span class="is-h5">Loading...</span>
+			</div>
+		{% endif %}
+
+		<div data-hosted-page-container class="block">
+			{% if not isPresale %}
+				<div class="flex is-h4 text-brandRed mb-10">Please select a gym above prior to entering your payment details</div>
+			{% endif %}
+		</div>
+
+		<div data-bank-form class="hidden grid md:grid-cols-2 gap-8 md:gap-12 hidden">
+			<div class="flex flex-col">
+				<label for="BSB" style="font-family: Karla;" class="font-bold text-[13px] text-[rgba(0,0,0,0.87)] mb-1">BSB<sup class="text-sm text-[#db2828] -mt-1 ml-1">*</sup></label>
+				<input required class="leading-[1.21em] py-[0.67] text-base" type="text" id="BSB" name="BSB" placeholder="BSB">
+			</div>
+			<div class="flex flex-col">
+				<label for="bankAccountNumber" style="font-family: Karla;" class="font-bold text-[13px] text-[rgba(0,0,0,0.87)] mb-1">Account Number<sup class="text-sm text-[#db2828] -mt-1 ml-1">*</sup></label>
+				<input required class="leading-[1.21em] py-[0.67] text-base" type="text" id="bankAccountNumber" name="bankAccountNumber" placeholder="Account Number">
+			</div>
+			<div class="flex flex-col">
+				<label for="bankAccountHolder" style="font-family: Karla;" class="font-bold text-[13px] text-[rgba(0,0,0,0.87)] mb-1">Account Name<sup class="text-sm text-[#db2828] -mt-1 ml-1">*</sup></label>
+				<input required class="leading-[1.21em] py-[0.67] text-base" type="text" id="bankAccountHolder" name="bankAccountHolder" placeholder="Account Name">
+			</div>
+			{% if errors.bank %}
+				<p class="text-sm col-span-full text-brandRed">{{ errors.bank }}</p>
+			{% endif %}
+		</div>
+	</div>
+	<div class="relative">
+		<button data-payment-type="bank" type="button" class="is-button px-6 after:content-none button-outline">Bank</button>
+		{% include "icons/bank-no-fees.twig" with { class: 'bank-fee-svg hidden pointer-events-none w-72 absolute bottom-0 left-0 translate-y-[60%] md:translate-y-2/3 -translate-x-5 md:-translate-x-6 opacity-0' } %}
+		<img src="/wp-content/uploads/2025/05/bank-messaging-revo-1.png" alt="Bank Messaging" style="max-width:300px;"/>
+		
+
+	</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	setTimeout(() => {
+		const bank = document.querySelector('#billing-details-test [data-bank-form]');
+		const bankButton = document.querySelector('#billing-details-test [data-payment-type="bank"]');
+
+		if (bank && bankButton) {
+			bank.classList.add('hidden');
+			bankButton.classList.remove('isActive');
+		}
+		bankButton.addEventListener('click', () => {
+			 $('html, body').animate({
+				scrollTop: $('[data-payment-container]').offset().top - 200
+			}, 300);
+		});
+	}, 300); // Delay by 300ms (adjust if needed)
+});
+
+
+</script>

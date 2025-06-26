@@ -1,0 +1,115 @@
+/* FONT IMPORTS */
+@import url('https://use.typekit.net/fsa7rfk.css');
+
+html,
+body {
+	@apply font-primary overflow-x-hidden;
+}
+
+body {
+	@apply leading-relaxed text-base 2xl:text-lg;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	@apply font-primary;
+}
+
+h1,
+.is-h1 {
+	@apply !leading-[1.1] font-black text-[2.75rem] md:text-6xl lg:text-7xl xl:text-[5.5rem] 2xl:text-8xl;
+}
+
+@media screen and (max-width: 350px) {
+	h1,
+	.is-h1 {
+		font-size: 2.25rem !important;
+	}
+}
+
+h2,
+.is-h2 {
+	@apply font-extrabold !leading-[1.1] text-4xl md:text-[2.75rem] lg:text-[3.25rem] xl:text-[3.75rem] 2xl:text-[4.25rem];
+}
+
+h3,
+.is-h3 {
+	@apply font-extrabold leading-tight text-2xl md:text-3xl xl:text-4xl xl:leading-tight;
+}
+
+h4,
+.is-h4 {
+	@apply font-extrabold !leading-tight text-2xl xl:text-3xl 2xl:text-4xl;
+}
+
+h5,
+.is-h5 {
+	@apply font-extrabold !leading-tight text-xl md:text-xl;
+}
+h6, .is-h6 {
+	@apply !leading-tight text-lg font-extrabold;
+}
+
+.supertitle,
+.is-supertitle {
+	@apply font-bold text-base md:text-xl text-brandRed;
+}
+
+[data-white-content] {
+	.supertitle,
+	.is-supertitle {
+		@apply text-white;
+	}
+}
+
+.numbered_grid .is-supertitle {
+	@apply !text-white;
+}
+
+.content-white * {
+	@apply !text-white;
+}
+
+.block-content {
+	@apply flex flex-col gap-4;
+}
+
+.block-content :is(ol, ul) {
+	@apply ml-4;
+}
+
+.block-content ul li {
+	@apply list-disc;
+}
+
+.block-content ol li {
+	@apply list-decimal;
+}
+
+section {
+	@apply bg-pureWhite;
+}
+
+section:not(.internal-banner) .block-content a:not(.button, .is-button) {
+	@apply font-bold;
+}
+
+.membership-icon-text > p > a {
+	@apply !font-medium;
+}
+
+.home-banner-heading > h1 {
+	@apply max-md:text-[3.25rem] max-lg:text-[3.85rem] max-xl:text-[5rem] max-2xl:text-[5.75rem] !leading-none;
+}
+
+.single-post {
+	.post-content {
+		img {
+			@apply rounded-3xl;
+		}
+	}
+}

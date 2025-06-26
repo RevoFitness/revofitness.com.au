@@ -1,0 +1,34 @@
+name: CI - Test & Validate
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - staging
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout PR code
+        uses: actions/checkout@v3
+
+      - name: 🧪 Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: 🧪 Install npm packages
+        run: npm install
+        working-directory: startdigital
+
+      - name: ✅ Run Lint & Tests
+        run: |
+          echo "🔍 Running tests and lint checks..."
+          # Example: Replace with your actual test/lint commands
+          npm run lint
+          npm run test
+        working-directory: startdigital
+
+      - name: ✅ CI Passed
+        run: echo "✅ All checks passed"

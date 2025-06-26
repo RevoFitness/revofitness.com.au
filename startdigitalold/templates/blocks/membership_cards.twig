@@ -1,0 +1,10 @@
+<section class="membership_cards bg-pureWhite">
+	<div class="container block-content md:gap-6 w-full">
+		<div class="block-content items-center text-center">
+			{{ block.content }}
+		</div>
+		{% include 'partial/membership-cards.twig' %}
+		{% include 'partial/membership-cards-slider.twig' %}
+	</div>
+	{% include 'partial/already-a-member.twig' %}
+</section>

@@ -163,13 +163,26 @@ function setInputValues(data) {
 	const { paymentMethodToken, card } = data
 
 	document.querySelector('#paymentMethodToken').value = paymentMethodToken
-	document.querySelector('#accountHolderName').value =
-		card !== null ? card.accountHolderName : null
-	document.querySelector('#firstSix').value = card !== null ? card.first6 : null
-	document.querySelector('#lastFour').value = card !== null ? card.last4 : null
-	document.querySelector('#cardExpiry').value =
-		card !== null ? `20${card.expiryYear}-${card.expiryMonth}` : null
-	document.querySelector('#cardType').value = card !== null ? card.type : null
+	document.querySelector('#accountHolderName').value = card ? card.accountHolderName : ''
+	document.querySelector('#firstSix').value = card ? card.first6 : ''
+	document.querySelector('#lastFour').value = card ? card.last4 : ''
+	document.querySelector('#cardExpiry').value = card ? `20${card.expiryYear}-${card.expiryMonth}` : ''
+	document.querySelector('#cardType').value = card ? card.type : ''
+
+	// ✅ Inject memberId before submit
+	const existingMemberId = document.getElementById('existing-member-id')?.value
+	if (existingMemberId) {
+		console.log('✅ Adding existing memberId to form before submit:', existingMemberId)
+
+		let hiddenInput = document.querySelector('input[name="memberId"]')
+		if (!hiddenInput) {
+			hiddenInput = document.createElement('input')
+			hiddenInput.type = 'hidden'
+			hiddenInput.name = 'memberId'
+			document.getElementById('sign-up-form').appendChild(hiddenInput)
+		}
+		hiddenInput.value = existingMemberId
+	}
 
 	submit()
 }
@@ -267,6 +280,38 @@ function checkIfGymAcceptsCardPayment(gymSelect) {
 		?.classList.add('isActive')
 	document.querySelector('[data-bank-form]')?.classList.remove('hidden')
 }
+
+function setupCardAsDefaultInTestBilling(gymSelect) {
+	const selected = gymSelect.options[gymSelect.selectedIndex];
+	const acceptsCardPayment = selected.hasAttribute('data-accepts-card-payment');
+
+	const billingSection = document.querySelector('#billing-details-test');
+	const cardBtn = billingSection.querySelector('[data-payment-type="card"]');
+	const bankBtn = billingSection.querySelector('[data-payment-type="bank"]');
+	const hostedPage = billingSection.querySelector('[data-hosted-page-container]');
+	const bankForm = billingSection.querySelector('[data-bank-form]');
+	const svg = billingSection.querySelector('.bank-fee-svg');
+
+	if (acceptsCardPayment) {
+		cardBtn?.classList.remove('hidden');
+		cardBtn?.classList.add('isActive');
+		bankBtn?.classList.remove('isActive');
+
+		hostedPage?.classList.remove('hidden');
+		bankForm?.classList.add('hidden');
+
+		svg?.classList.remove('hidden');
+	} else {
+		cardBtn?.classList.add('hidden');
+		bankBtn?.classList.add('isActive');
+
+		bankForm?.classList.remove('hidden');
+		hostedPage?.classList.add('hidden');
+
+		svg?.classList.add('hidden');
+	}
+}
+
 
 function fetchAuthToken(gym) {
 	const container = document.querySelector('[data-hosted-page-container]')

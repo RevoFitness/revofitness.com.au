@@ -1,0 +1,38 @@
+{% extends "page.twig" %}
+
+{% block content %}
+	{# Getting started category by default #}
+	{% set articles_data = revo.zendesk.getArticles %}
+
+	<section class="bg-pureWhite">
+		<div data-zendesk class="container my-7">
+			<div class="grid pb-6 justify-between gap-3 text-lg font-bold grid-cols-1 md:grid-cols-2 md:items-center max-md:flex-col">
+				<div class="relative flex items-center gap-3">
+					<span class="text-base">Filter:</span>
+					<select data-categories class="bg-white w-full py-2 pl-3 text-base pr-16 appearance-none cursor-pointer" name="categories" id="categories">
+						{% for item in revo.zendesk.getCategories %}
+							<option {{ item.name == 'Getting Started' ? 'selected' }} value="{{ item.id }}">{{ item.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<form data-search-articles class="relative">
+					<input type="text" name="search" placeholder="Search..." class="!bg-white w-full py-2 pl-0 text-base font-normal placeholder:text-black"/>
+					<input type="reset" value="X" class="absolute -translate-y-1/2 right-4 top-1/2"/>
+				</form>
+			</div>
+
+			<div class="relative">
+				<div data-articles-container data-accordion-container class="flex flex-col gap-3 divide-y divide-brandBlack">
+					{{ articles_data.html }}
+				</div>
+			</div>
+		</div>
+	</section>
+	{% if page_builder %}
+		{% for block in page_builder %}
+			<div data-block="{{ block.acf_fc_layout }}">
+				{{ include('blocks/' ~ block.acf_fc_layout ~ '.twig', ignore_missing = true) }}
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}

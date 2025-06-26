@@ -1,0 +1,80 @@
+{% block cards %}
+	<div class="membership-cards-slider lg:hidden">
+		<div class="swiper-wrapper">
+			{% for item in options.levels %}
+				<div class="swiper-slide membership-card bg-white">
+					{% block card %}
+						{% if item.is_active %}
+							<div class="relative flex flex-col">
+								{% if loop.first %}
+									<div class="absolute top-6 md:top-0 left-0 -translate-x-1/4 -translate-y-1/2 -rotate-[25deg]">
+										{% include 'icons/most-popular.twig' with {
+											class: 'animate-shake !w-28 md:w-44'
+										} %}
+									</div>
+								{% endif %}
+								<div class="is-h4 text-center rounded-t-[38px] bg-white px-14 py-5">
+									{{ item.title }}
+								</div>
+								<div class="bg-white flex flex-col h-full rounded-b-[40px] px-6">
+									<div class="membership-price border-[3px] p-4 border-brandBlack rounded-full w-full mx-auto flex flex-col items-center justify-center gap-2">
+										<div class="text-5xl font-extrabold">
+											{{ item.price_title }}
+										</div>
+										<span class="italic font-semibold lowercase">
+											per week
+											{{ item.payment_frequency ?: '' }}
+										</span>
+									</div>
+									<h5 class="font-bold mt-6">
+										{{ item.top_content }}
+									</h5>
+									{% for section in item.sections %}
+										<div class="py-4 {{ loop.first ? 'card-first-section' }} {{
+											not loop.first
+												? 'card-section-expand hidden border-t-[0.5px] border-t-[#C1BFBF]'
+											}}">
+											<div class="w-full mx-auto flex flex-col gap-2">
+												{% if section.content %}
+													<p class="font-bold">
+														{{ section.content }}
+													</p>
+												{% endif %}
+												{% for feature in section.features %}
+													<div class="flex items-center gap-6 justify-start">
+														<div class="aspect-square w-8 h-8 p-[6px] rounded-full border border-brandBlack flex items-center justify-center">
+															{% if feature.icon %}
+																<img src="{{ get_image(feature.icon).src }}"
+																	alt="{{ feature.icon.alt }}"
+																	class="object-contain w-8 aspect-square svg-style" />
+															{% else %}
+																{% include 'icons/tick.twig' with {
+																	class: 'w-6'
+																} %}
+															{% endif %}
+														</div>
+														<span class="font-medium membership-icon-text">{{ feature.text }}</span>
+													</div>
+												{% endfor %}
+											</div>
+										</div>
+									{% endfor %}
+									<div class="mt-auto w-full flex flex-col gap-3 pt-4 pb-8">
+										<a href="/join-now" class="is-button-large">{{ item.link_text }}</a>
+										{% if fn('get_the_ID') != 9 %}
+											<a href="/memberships"
+												class="mt-2 w-fit mx-auto border-b-2 border-b-black text-center font-bold cursor-pointer">
+												More info
+											</a>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+						{% endif %}
+					{% endblock %}
+				</div>
+			{% endfor %}
+		</div>
+		<div class="swiper-pagination !relative !mt-6"></div>
+	</div>
+{% endblock %}

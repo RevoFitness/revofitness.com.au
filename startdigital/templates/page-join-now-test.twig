@@ -1,0 +1,29 @@
+{% extends "base.twig" %}
+
+{% block styles %}
+  {{ parent() }}
+{% endblock %}
+
+{% set errors = session.get('errors') %}
+{% set old = session.get('old') %}
+
+{% block content %}
+
+  <div class="container pt-10 space-y-10 bg-lightPink rounded-top pb-60 -mb-60 mt-10">
+    {# Full form content on one page #}
+    {% include "partial/sign-up-form-test.twig" %}
+    
+ 
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ parent() }}
+  <script>
+    // Optional: Add basic validation or interactivity here if needed
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("Page loaded. All form sections are visible.");
+    });
+  </script>
+{% endblock %}

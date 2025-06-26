@@ -1,0 +1,37 @@
+<section class="text_with_image">
+	<div class="container grid md:grid-cols-2 items-center gap-16 md:gap-8">
+		<div class="flex flex-col gap-4 md:gap-8 w-full">
+			{% if block.content %}
+				<div data-animate-left class="block-content">
+					{{ block.content }}
+				</div>
+			{% endif %}
+			{% if block.button %}
+				<a href="{{ block.button.url }}" class="button">{{ block.button.title }}</a>
+			{% endif %}
+		</div>
+		<div class="w-full md:w-4/5 mx-auto relative">
+			{% include 'partial/image.twig' with {
+				image: get_image(block.image.background).src,
+				alt: block.image.image.background.alt,
+				class: 'clip-blob aspect-1/1 md:aspect-5/7 lg:aspect-[5/6] w-full object-cover pointer-events-none'
+			} %}
+			{% include 'icons/clip-blob.twig' %}
+
+			{% set page = post.slug %}
+			{% if page != 'bring-a-friend-thanks' %}
+				{% include 'icons/globe.twig' with {
+				class: 'absolute -top-[5vw] sm:top-[2vw] left-4 2xl:-left-10 w-[25vw] md:w-[10vw]',
+				attributes: 'data-animate-spin'
+			} %}
+			{% endif %}
+
+			{% if page != 'bring-a-friend-thanks' %}
+				{% include 'icons/dice.twig' with {
+				class: 'absolute -bottom-10 sm:bottom-0 right-0 2xl:-right-10 w-[25vw] md:w-[10vw]',
+				attributes: 'data-animate-spin'
+			} %}
+			{% endif %}
+		</div>
+	</div>
+</section>

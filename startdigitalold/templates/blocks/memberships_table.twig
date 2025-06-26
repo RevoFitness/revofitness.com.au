@@ -1,0 +1,14 @@
+<section class="memberships_table !pb-0 bg-pureWhite">
+	<div class="flex flex-col gap-6">
+		<div class="container">
+			{% if block.content %}
+				<div data-animate-left class="block-content">
+					{{ block.content }}
+				</div>
+			{% endif %}
+		</div>
+		<div class="py-8 lg:container !max-w-[1150px]">
+            {{ function('do_shortcode', '[table id=1 /]') }}
+        </div>
+	</div>
+</section>

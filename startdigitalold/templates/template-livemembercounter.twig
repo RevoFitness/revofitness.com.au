@@ -1,0 +1,8 @@
+{% extends "base.twig" %}
+
+{% block content %}
+	<div data-live-counter-page>
+		{% include "partial/live-counter.twig" with { standaloneComponent: true, default: defaultGym } %}
+	</div>
+	{% include "blocks/download_app.twig" %}
+{% endblock %}

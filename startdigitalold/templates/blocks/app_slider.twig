@@ -1,0 +1,25 @@
+<section class="app_slider bg-purewhite">
+	<div class="container flex flex-col gap-6">
+		<div class="flex justify-between items-end mb-4">
+			<div class="block-content">
+				<span class="supertitle">Follow our lead</span>
+				<h2>Download the Revo App</h2>
+			</div>
+			<div class="max-lg:hidden flex items-center gap-10">
+				<div class="swiper-button-prev !relative"></div>
+				<div class="swiper-button-next !relative"></div>
+			</div>
+		</div>
+		<div class="app-slider">
+			<div data-animate-left class="swiper-wrapper">
+				{% for item in block.slides %}
+					<div class="swiper-slide overflow-hidden duration-300 w-full h-full aspect-3/4 rounded-3xl">
+						<img src="{{ item.url }}" class="w-full h-full object-center object-contain pointer-events-none mx-auto" alt="{{ item.alt }}">
+					</div>
+				{% endfor %}
+
+			</div>
+			<div class="swiper-scrollbar !relative mt-6 md:mt-12"></div>
+		</div>
+	</div>
+</section>

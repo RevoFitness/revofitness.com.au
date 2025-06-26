@@ -1,0 +1,14 @@
+<div data-zendesk-article data-categoryid="{{ article.section_id }}" class="w-full accordion pt-2">
+	<span data-article-title class="accordion-header !text-base">
+		{{ article.title }}
+	</span>
+	<div class="accordion-content">
+		<div data-article-body class="accordion-inner">
+			{{ article.body|remove_empty_tags|raw }}
+
+			<button data-ask-a-question class="mt-4 button" onclick="zE.activate()">
+				Ask a question
+			</button>
+		</div>
+	</div>
+</div>

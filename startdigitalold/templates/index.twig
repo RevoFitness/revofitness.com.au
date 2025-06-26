@@ -1,0 +1,51 @@
+{% extends 'page.twig' %}
+
+{% block content %}
+	<section class="news_posts">
+		<div class="container flex flex-col gap-8">
+			<div data-animate-stagger class="news-page-tiles grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-6 sm:gap-y-12">
+				{% for item in posts %}
+					{% if loop.index == 1 %}
+						<div class="tease tease-post flex flex-col gap-2 h-fit sm:col-span-2 md:col-span-3 overflow-hidden rounded-3xl md:rounded-[50px]">
+							<div class="flex max-lg:flex-col-reverse lg:h-[450px]">
+								<div class="tease-content block-content justify-center bg-brandRed p-6 sm:p-10">
+									<h3 class="text-white line-clamp-4">
+										{{ item.title }}
+									</h3>
+									<p class="font-bold text-white">
+										{{ item.post_date|date('M d Y') }}
+									</p>
+									<p class="line-clamp-4 text-white">
+										{{ item.excerpt.read_more('') }}
+									</p>
+									<a href="{{ item.link }}" class="button !bg-white !text-brandBlack">Read More</a>
+								</div>
+								<div class="thumbnail-wrapper w-full h-full">
+									{% if item.thumbnail %}
+										{% include 'partial/image.twig' with {
+											image: get_image(item.thumbnail).src,
+											alt: item.thumbnail.alt,
+											class: 'object-center object-cover lg:rounded-r-3xl w-full h-full aspect-16/9'
+										} %}
+									{% else %}
+										<div class="overflow-hidden h-full w-full rounded-r-3xl bg-lightPink"></div>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					{% elseif loop.index > 1 %}
+						{% include 'tease-post.twig' %}
+					{% endif %}
+				{% endfor %}
+			</div>
+			{% include "partial/pagination.twig" %}
+		</div>
+	</section>
+	{% if page_builder %}
+		{% for block in page_builder %}
+			<div data-block="{{ block.acf_fc_layout }}">
+				{{ include('blocks/' ~ block.acf_fc_layout ~ '.twig', ignore_missing = true) }}
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}

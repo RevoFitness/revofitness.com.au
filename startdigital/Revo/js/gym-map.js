@@ -146,12 +146,16 @@ async function addGymsToMap() {
 
 	const markers = []
 	gyms.forEach((gym) => {
-		const { latitude, longitude } = gym.fields
+		let { latitude, longitude } = gym.fields
 
-		// We need to set the Lat/Long in Perfect Gym
-		if (!latitude && !longitude) {
-			return
+		// Override lat/lng for Modbury
+		if (gym.post_title.toLowerCase().includes('modbury')) {
+			latitude = -34.82960547422781
+			longitude = 138.69172072516687
 		}
+
+		// Skip if no coordinates
+		if (!latitude || !longitude) return
 
 		const marker = new google.maps.Marker({
 			position: {
@@ -161,17 +165,17 @@ async function addGymsToMap() {
 			map: window.map,
 			title: gym.post_title,
 			icon: {
-				anchor: new google.maps.Point(14, 36), // Change anchor to center the icon at the location
+				anchor: new google.maps.Point(14, 36),
 				url: 'data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="27.67" height="36.893" viewBox="0 0 27.67 36.893"><g><path fill="%23cb333b" d="M13.835 0A13.853 13.853 0 0 0 0 13.835c0 9.932 12.89 22.372 13.437 22.9a.571.571 0 0 0 .8 0c.548-.525 13.437-12.964 13.437-22.9A13.853 13.853 0 0 0 13.835 0Z" data-name="Path 5042"/><path fill="%23fff" d="M19.281 18.447h-3.913l-2.392-3.571h-1.27v3.572H8.391v-2.312l3.142-4.289h2.23c.923 0 1.452-.419 1.452-1.149v-.032c0-.688-.384-1.063-1.176-1.148l-.742-.079 2.1-2.863.288.084a3.806 3.806 0 0 1 2.877 3.88v.036a3.856 3.856 0 0 1-2.171 3.642Z" data-name="Path 5043"/></g></svg>',
 			},
 		})
 
-		// We want to return all the markers as well
 		markers.push(marker)
 	})
 
 	return { gyms, markers }
 }
+
 
 /**
  * Setup all the infoWindows

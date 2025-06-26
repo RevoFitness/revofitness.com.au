@@ -1,0 +1,43 @@
+<section class="icons_text_with_image">
+	<div class="container flex items-center max-lg:flex-col gap-14 lg:gap-20">
+		<div class="flex flex-col gap-6 w-full">
+			<div class="block-content">
+				{{ block.content_top }}
+			</div>
+			{% if block.icons_with_text %}
+				<div class="block-content">
+					{% for item in block.icons_with_text %}
+						<div class="flex gap-3">
+							<div class="bg-white h-7 w-7 p-1 rounded-full flex items-center justify-center flex-shrink-0">
+								<img src="{{ get_image(item.icon).src }}" alt="{{ item.icon.alt }}" class="h-full">
+							</div>
+							<p>{{ item.text }}</p>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+			<div class="block-content">
+				{{ block.content_bottom }}
+			</div>
+		</div>
+		<div class="lg:w-4/5">
+			<div class="w-full md:w-3/4 mx-auto relative">
+				{% if block.image %}
+					{% include 'partial/image.twig' with {
+						image: get_image(block.image).src,
+						alt: block.image.alt,
+						class: 'aspect-16/9 lg:aspect-5/7 w-full object-cover pointer-events-none rounded-full'
+					} %}
+					{% include 'icons/boxing-gloves.twig' with {
+						class: 'absolute -top-14 md:top-0 -left-4 lg:-left-20 max-lg:w-[150px]',
+						attributes: "data-animate-spin"
+					} %}
+					{% include 'icons/long-weight.twig' with {
+						class: 'absolute -bottom-10 right-0 lg:-right-10 max-lg:w-[120px] w-[200px]',
+						attributes: "data-animate-spin"
+					} %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</section>

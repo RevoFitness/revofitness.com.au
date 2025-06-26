@@ -1,0 +1,33 @@
+<section class="tabs">
+	<div class="container relative z-10">
+		<div class="flex flex-col gap-8">
+			<h2 class="mx-auto">Find your nearest Studio</h2>
+			<div class="tab-toggles grid max-md:grid-cols-2 md:flex justify-center gap-3">
+				{% for item in fn('getAllStates') %}
+					<div data-state="{{ item.name }}" class="tab-toggle bg-[#FBEEE7] border-brandBlack relative revo-shadow is-button button-outline after:!hidden !px-5 min-w-[100px] max-md:w-full cursor-pointer flex justify-center">
+						{{ item.title }}
+					</div>
+				{% endfor %}
+			</div>
+			<div class="tab-content block-content items-center">
+				{% for item in fn('getAllGyms') %}
+					{% if item.meta('studio_available') == true %}
+						{% set state = item.terms({ taxonomy: 'state' })[0].name  %}
+						<a href="{{ item.link }}" data-state="{{ state }}" class="tab border-4 border-transparent p-4 revo-shadow bg-white rounded-3xl text-brandRed flex flex-col gap-2 h-full md:gap-4 duration-150 hover:bg-brandCream">
+							<div class="state max-md:text-sm bg-brandRed text-white rounded-full font-bold px-3 py-1 w-fit">
+								{{ state }}
+							</div>
+
+							<h4 class="text-lg md:text-3xl text-brandBlack mt-auto font-bold">
+								{% if item.name == 'Mount Hawthorn' %}
+									<span class="text-xs flex mt-auto text-brandRed">No Reformer Pilates</span>
+								{% endif %}
+								{{ item.name }}
+							</h4>
+						</a>
+					{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</section>

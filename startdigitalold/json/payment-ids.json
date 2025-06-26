@@ -1,0 +1,106 @@
+{
+	"levelOne": {
+		"fiveWeek": {
+			"wa": 7,
+			"nsw": 121,
+			"vic": 121,
+			"sa": 328,
+			"glenelg": 327
+		},
+		"monthly": {
+			"wa": 336,
+			"sa": 358,
+			"nsw": 359,
+			"vic": 360
+		},
+		"fortnightly": {
+			"nsw": 362,
+			"vic": 361
+		},
+		"glenelg": 125
+	},
+	"levelTwo": {
+		"fiveWeek": {
+			"wa": 340,
+			"vic": 374,
+			"nsw": 374,
+			"sa": 375,
+			"glenelg": 376
+		},
+		"monthly": {
+			"wa": {
+				"signUp": 342,
+				"addOn": 337
+			},
+			"sa": {
+				"signUp": 363,
+				"addOn": 337
+			},
+			"nsw": {
+				"signUp": 364,
+				"addOn": 337
+			},
+			"vic": {
+				"signUp": 365,
+				"addOn": 337
+			}
+		},
+		"fortnightly": {
+			"wa": {
+				"signUp": null,
+				"addOn": 357
+			},
+			"sa": {
+				"signUp": null,
+				"addOn": 357
+			},
+			"nsw": {
+				"signUp": 367,
+				"addOn": 357
+			},
+			"vic": {
+				"signUp": 366,
+				"addOn": 357
+			}
+		},
+		"glenelg": {
+			"signUp": 378,
+			"addOn": 337
+		}
+	},
+	"levelThree": {
+		"fiveWeek": {
+			"wa": 380,
+			"sa": 380,
+			"nsw": 380,
+			"vic": 380
+		},
+		"monthly": {
+			"wa": {
+				"signUp": 381,
+				"addOn": 377
+			},
+			"sa": {
+				"signUp": 381,
+				"addOn": 377
+			},
+			"nsw": {
+				"signUp": 381,
+				"addOn": 377
+			},
+			"vic": {
+				"signUp": 390,
+				"addOn": 377
+			}
+		}
+	},
+	"specialCircumstances": {
+		"monthly": {
+			"wa": 10,
+			"sa": 388,
+			"nsw": 350,
+			"vic": 351
+		}
+	},
+	"HIITFIT": 109
+}

@@ -1,0 +1,56 @@
+{% set stateRaw = revo.mapHandler.getUserLocation.state %}
+{% set state = revo.mapHandler.convertStateName(stateRaw) %}
+{% set gymsAlphabetised = revo.gymManager.getGymsByState(state)|sort((a, b) => a.title <=> b.title) %}
+
+<section id="liveCounter" class="{{ standaloneComponent ? 'flex justify-center' : 'lg:absolute lg:pl-32 2xl:pl-48 lg:pr-20 right-0 lg:w-[140%] rounded-l-full lg:bg-pureWhite lg:py-16 2xl:py-32 ' }}">
+    <div class="container">
+        <div class="mx-auto flex flex-col gap-8 max-lg:mx-auto w-full sm:max-w-[700px] bg-brandEucalyptus p-7 sm:p-14 rounded-3xl sm:rounded-[50px]">
+            <div class="flex flex-col gap-4">
+                <span class="is-h4">Choose your gym</span>
+                <div class="gym-select-container rounded-full revo-shadow">
+                    <select name="gymSelect" id="gymSelect" class="relative !border-none rounded-full h-16 cursor-pointer bg-white text-white pr-3 pl-5 flex items-center gap-4 justify-between">
+                        {% for key, item in gymsAlphabetised %}
+                            <option disabled>{{ key }}</option>
+                            {% for gym in item %}
+                                {% if fn('isGymOpen', gym.id) %}
+                                    <option {{ defaultGym is defined and fn('preg_replace', '/[^a-zA-Z ]/', '', gym.title) == defaultGym ? 'selected'  }} value="{{ gym.title }}">{{ gym.title }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                    <div class="selected-gym is-h3 absolute top-0 left-0 w-full h-full pointer-events-none text-brandBlack z-10 rounded-full p-2 pr-3 pl-5 flex items-center gap-4 justify-between"></div>
+                </div>
+            </div>
+
+            <div class="flex flex-col-reverse max-md:items-center sm:grid sm:grid-cols-3 gap-6">
+                <div data-gym-card-container class="contents">
+                    {% for key, item in gymsAlphabetised %}
+                        {% for gym in item %}
+                            {% include "partial/live-counter-card.twig" %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+
+                <div data-animate-spin class="w-fit p-4 flex relative mx-auto">
+                    <a href="/revo-app" class="flex flex-col w-[142px] md:w-[115px] h-[142px] md:h-[115px] gap-1 items-center justify-center">
+                        <div class="rotate aspect-square origin-center absolute inset-0">
+                            {% include 'icons/live-counter-spinner.twig' with { class: 'w-[175px] md:w-[150px] h-[175px] md:h-[150px]' } %}
+                        </div>
+                        {% if standaloneComponent %}
+                            {% set visits = revo.api.getMemberVisits %}
+                            {% for key, item in visits %}
+                                {% if defaultGym %}
+                                    <span data-live-count="{{ fn('preg_replace', '/[^a-zA-Z ]/', '', visits[key].gym) }}" class="{{ defaultGym != fn('preg_replace', '/[^a-zA-Z ]/', '', item.gym) ? 'hidden' }} relative text-4xl text-black font-bold">{{ visits[key].count }}</span>
+                                {% else %}
+                                    <span data-live-count="{{ fn('preg_replace', '/[^a-zA-Z ]/', '', visits[key].gym) }}" class="{{ not loop.first ? 'hidden' }} relative text-4xl text-black font-bold">{{ visits[key].count }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span class="relative text-[0.55rem] text-center text-white font-semibold max-w-[100px] !leading-[1rem]">Download the Revo App to check the live member counter</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

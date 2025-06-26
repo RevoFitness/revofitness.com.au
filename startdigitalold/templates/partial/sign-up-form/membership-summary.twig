@@ -1,0 +1,51 @@
+<div id="membership-summary" class="flex flex-col gap-4 md:gap-6 pt-8 md:pb-12">
+	<h3 class="text-brandBlack">Membership summary</h3>
+	<div class="grid md:grid-cols-2 gap-4">
+		<div class="flex flex-col gap-6">
+			<div class="flex flex-col gap-3">
+				<span class="font-medium text-lg text-brandBlack">Billing Frequency</span>
+				{% if isFiveWeekMembership %}
+					<input type="text" name="paymentFrequency" class="focus:outline-none capitalize text-3xl font-bold text-brandBlack !pl-0 !border-transparent !bg-transparent" readonly value="One-off"/>
+				{% else %}
+					<input type="text" id="paymentFrequency" name="paymentFrequency" class="focus:outline-none capitalize text-3xl font-bold text-brandBlack !pl-0 !border-transparent !bg-transparent" readonly value="Monthly"/>
+				{% endif %}
+
+			</div>
+
+			<div class="flex flex-col gap-3">
+				<span class="font-medium text-lg text-brandBlack">Payment Start Date</span>
+				<span data-start-date-placeholder class="text-3xl font-bold text-brandBlack"></span>
+			</div>
+		</div>
+
+		<div class="grid gap-3">
+			<div class="bg-pureWhite p-5 rounded-xl grid self-start grid-cols-5">
+				<div class="col-span-4 flex flex-col gap-2">
+					<strong class="text-xl">First &amp; Recurring Payments</strong>
+					<p style="display: none;" class="text-brandBlack" data-first-payment>First Payment</p>
+					<p>Regular Payment</p>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p>Total</p>
+					<strong style="display: none;" class="text-brandRed">$<span data-first-price></span>
+					</strong>
+					<strong>$<span data-price>57.00</span>
+					</strong>
+				</div>
+			</div>
+			<div data-discount-summary style="{{ promoCode or old.discountCode ? '' : 'display: none;' }}" class="bg-pureWhite px-5 py-6 rounded-xl flex items-center gap-4">
+				<svg xmlns="http://www.w3.org/2000/svg" class="aspect-square w-16" viewbox="0 0 54.344 54.344">
+					<g data-name="Group 1749" transform="translate(-747.5 -2245.578)"><circle cx="27.172" cy="27.172" r="27.172" fill="#29a513" data-name="Ellipse 355" transform="translate(747.5 2245.578)"/><path fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m763.055 2273.854 8.84 8.84 13.26-19.89" data-name="Path 6611"/></g>
+				</svg>
+				<div class="flex flex-col">
+					<strong class="text-2xl text-[#29A513]">Promo added!</strong>
+					{% if promoDescription %}
+						<span data-discount-detail>{{ promoDescription }}</span>
+					{% else %}
+						<span data-discount-detail>{{ old.discountCode ?? '' }}</span>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

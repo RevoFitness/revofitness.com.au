@@ -1,0 +1,11 @@
+{% if topbar %}
+    <ul class="relative z-10 items-center hidden lg:flex gap-12 mt-4 mr-8">
+		{% for item in items %}
+			<li class="{{ item.classes|join(' ') }} relative flex items-center group">
+				<a target="{{ item.target }}" href="{{ item.link }}" class="text-brandBlack text-sm transition-all duration-200 ease-in-out font-bold">
+					{{ item.title }}
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% endif %}

@@ -1,0 +1,7 @@
+<ul class="shadow-md flex flex-col bg-white border-t-[7px] border-t-brandBlack h-fit overflow-hidden absolute bottom-0 left-0 w-[160%] z-10 rounded-b-xl text-black translate-y-full opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200">
+	{% for item in items %}
+		<li>
+			<a href="{{ item.url }}" target="{{ item.target }}" class="flex text-base font-medium items-center px-5 py-3 hover:bg-brandRed hover:text-white duration-100 ease-in-out">{{ item.title }}</a>
+		</li>
+	{% endfor %}
+</ul>

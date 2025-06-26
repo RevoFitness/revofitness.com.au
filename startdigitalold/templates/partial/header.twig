@@ -1,0 +1,23 @@
+<header class="border-2 border-t-0 border-transparent transition-all bg-transparent rounded-bottom max-lg:border-b-brandBlack max-lg:border-x-brandBlack max-lg:bg-white duration-300 fixed w-[calc(100vw+4px)] lg:w-screen top-0 -left-0.5 lg:left-0 z-[1000000]">
+	<div class="flex flex-col container max-md:!pr-0 max-lg:!pr-3 lg:!pl-14">
+		<div data-topbar class="w-full">
+			<div class="flex items-center justify-end">
+				{% include 'topbar.twig' with {
+					items: topbar.get_items
+				} %}
+			</div>
+		</div>
+		<div data-navigation class="lg:py-4 z-20 w-full flex items-center justify-between transition-all duration-300">
+			<a href="{{ site.url }}" rel="home">
+				{% include 'icons/logo.twig' with {
+					class: 'w-52 sm:w-72 lg:w-[300px] xl:w-[400px] h-full'
+				} %}
+			</a>
+			<nav id="nav-main" role="navigation" class="flex">
+				{% include 'menu.twig' with {
+					items: menu.get_items
+				} %}
+			</nav>
+		</div>
+	</div>
+</header>

@@ -1,0 +1,17 @@
+<section class="attachments">
+	<div class="container flex flex-col gap-6">
+		{% for section in block.sections %}
+			<div class="block-content mb-3">
+				{{ section.content }}
+			</div>
+			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+				{% for item in section.attachments_grid %}
+					<a href="{{ item.attachment.url }}" target="_blank" class="duration-200 hover:bg-white px-3 py-1 flex items-center gap-3 rounded-xl bg-white border border-greyBackground">
+						{% include "icons/download.twig" with { class: "w-6" } %}
+						{{ item.attachment.title }}
+					</a>
+				{% endfor %}
+			</div>
+		{% endfor %}
+	</div>
+</section>

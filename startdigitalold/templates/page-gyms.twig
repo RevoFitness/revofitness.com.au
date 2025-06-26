@@ -1,0 +1,82 @@
+{% extends 'page.twig' %}
+
+{% block content %}
+	<div class="bg-pureWhite">
+		{% include 'partial/gym-map.twig' %}
+		{% include 'partial/live-counter-banner.twig' %}
+		<section class="coming-soon bg-brandRed rounded-top !pb-80 mt-12">
+			<div class="md:container">
+				<div class="max-md:container block-content">
+					<div class="block-content mb-4 items-center text-white text-center">
+						<h3>
+							Coming Soon!
+						</h3>
+						<p>
+							Have a gym opening near you soon? Select the location below to stay in the loop.
+						</p>
+					</div>
+					<div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+						{% for item in gyms_coming_soon %}
+							<label data-selected="false"
+								class="coming-soon-gym border-4 border-transparent hover:bg-lightPink duration-200 cursor-pointer p-4 revo-shadow bg-white rounded-3xl text-brandRed flex flex-col gap-2 md:gap-4">
+								<div class="flex items-center gap-2 md:gap-4">
+									<div class="state max-md:text-sm bg-brandRed text-white rounded-full font-bold px-3 py-1">
+										{{ item.state }}
+									</div>
+									<span class="text-sm md:text-xl text-brandBlack">{{ item.opening_year }}</span>
+								</div>
+								<h4 class="coming-soon-gym-name text-lg md:text-3xl text-brandRed font-bold">
+									{{ item.name }}
+								</h4>
+								<input type="radio" name="gymRadio" class="radio-input coming-soon-gym-input !hidden" />
+							</label>
+						{% endfor %}
+					</div>
+				</div>
+				<div data-coming-soon-form
+					class="fixed bg-lightPink border-t-[3px] border-x-[3px] border-brandBlack rounded-t-3xl -bottom-full max-sm:pb-14 duration-500 ease-in-out max-w-[800px] z-50 w-full left-1/2 -translate-x-1/2">
+					<div class="close-modal absolute top-0 right-0 z-[51] cursor-pointer p-4">
+						{% include 'icons/cross.twig' with {
+							stroke: '#333132'
+						} %}
+					</div>
+					<div class="text-brandBlack col-span-2 p-6 top-0 left-0 flex flex-col gap-3">
+						<h5 class="text-2xl font-bold">
+							Sign up for updates
+						</h5>
+						<div class="py-2">
+							<span class="text-base font-semibold">Gym selected:</span>
+							&nbsp;
+							<span class="selected-state text-base">Please select a gym from the coming soon list.</span>
+						</div>
+						{{ function('do_shortcode', '[gravityform id="3" title="false" description="false" ajax="true"]') }}
+					</div>
+				</div>
+			</div>
+			{% include "icons/curved-top.twig" with { class: 'absolute bottom-0 left-0', fill: '#FFFFFF' } %}
+		</section>
+	</div>
+	<section class="relative">
+		<div class="container -mt-80">
+			<div class="form-container flex flex-col gap-10 bg-lightPink rounded-[50px] px-6 py-10 relative">
+				<div class="block-content">
+					<h3 class="mx-auto text-center">
+						Where should we open next?
+					</h3>
+					<p class="mx-auto text-center">
+						Fill out the form below and let us know where you would love to see the next Revo Fitness.
+					</p>
+				</div>
+				{{ function('do_shortcode', '[gravityform id="2" title="false" description="false" ajax="true"]') }}
+			</div>
+		</div>
+	</section>
+
+	{% if page_builder %}
+		{% for block in page_builder %}
+			<div data-block="{{ block.acf_fc_layout }}">
+				{{ include('blocks/' ~ block.acf_fc_layout ~ '.twig', ignore_missing = true) }}
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}

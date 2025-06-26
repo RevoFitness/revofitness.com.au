@@ -1,0 +1,85 @@
+<div class="internal-banner md:pt-12 lg:pt-28 md:pb-20 bg-pureWhite bg-opacity-60 relative flex max-md:flex-col gap-5 md:gap-10 md:items-center">
+	<div class="container w-full relative flex lg:items-center max-lg:flex-col max-lg:gap-10 max-lg:pt-16">
+		<div class="lg:w-2/5 block-content max-lg:mt-10 mb-6 mt-32">
+			{% if fields.temporarily_closed == true %}
+				<span class="supertitle">Temporarily Closed</span>
+			{% elseif fn('isInPresale', post) == true %}
+				<span class="supertitle">Presale</span>
+			{% else %}
+				<span class="supertitle">Your new local</span>
+			{% endif %}
+			<h1 data-animate-left class="text-[2.75rem] md:text-[3.75rem] 2xl:text-7xl w-full mb-6">
+				{{ post.title }}
+				Gym
+			</h1>
+			<div class="block-content">
+				{% if post.meta('has_free_parking') == true %}
+					<div class="flex items-center gap-6 w-fit">
+						<div class="flex items-center justify-center bg-brandRed rounded-full w-7 h-7 flex-shrink-0">
+							{% include 'icons/parking.twig' %}
+						</div>
+						<span class="font-medium rounded-full bg-brandRed text-white py-[3px] px-2.5">
+							FREE parking for members!
+						</span>
+					</div>
+				{% endif %}
+				{% if post.address or post.meta('override_address') %}
+					<div class="flex items-center gap-6">
+						<div class="flex items-center justify-center bg-brandRed rounded-full w-7 h-7 flex-shrink-0">
+							{% include 'icons/house-light-outline.twig' %}
+						</div>
+						<span class="font-medium">
+							{{ post.meta('override_address') ? post.meta('custom_address') : post.address }}
+						</span>
+					</div>
+				{% endif %}
+
+				{% if post.size %}
+					<div class="flex items-center gap-6">
+						<div class="flex items-center justify-center bg-brandRed rounded-full w-7 h-7 flex-shrink-0">
+							{% include 'icons/dimensions-light-outline.twig' %}
+						</div>
+						<span class="font-medium">
+							{{ post.size }}
+							sq/m
+						</span>
+					</div>
+				{% endif %}
+				{% if post.phone %}
+					<div class="flex items-center gap-6">
+						<div class="flex items-center justify-center bg-brandRed rounded-full w-7 h-7 flex-shrink-0">
+							{% include 'icons/phone-light-outline.twig' %}
+						</div>
+						<a href="tel:{{ post.phone }}" class="font-medium animated-underline">{{ post.phone }}</a>
+					</div>
+				{% endif %}
+				{% if post.email %}
+					<div class="flex items-center gap-6">
+						<div class="flex items-center justify-center bg-brandRed rounded-full w-7 h-7 flex-shrink-0">
+							{% include 'icons/email-light-outline.twig' %}
+						</div>
+						<a href="mailto:{{ post.email }}" class="font-medium animated-underline">{{ post.email }}</a>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="md:absolute w-full right-0 md:w-2/5 lg:w-1/2 max-md:ml-10 md:mt-28 mb-10">
+		{% include 'icons/peace-yellow.twig' with {
+			class: 'absolute max-md:bottom-8 md:top-0 left-5 md:-left-8 z-10 w-24 md:w-32', attributes: 'data-animate-spin'
+		} %}
+		<div class="single-gym-slider overflow-hidden bg-brandPink h-[250px] md:h-[400px] rounded-l-full">
+			<div class="swiper-wrapper">
+				{% for item in fields.gallery %}
+					<div class="swiper-slide">
+						{% include 'partial/image.twig' with {
+							image: get_image(item).src,
+							alt: item.alt,
+							class: 'object-cover object-center max-h-[650px] h-full 2xl:aspect-16/9 pointer-events-none'
+						} %}
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,21 @@
+<section class="text_with_map">
+	<div class="container grid lg:grid-cols-2 gap-8 lg:gap-16">
+		<div class="flex flex-col gap-4 md:gap-8 w-full {{ block.reverse_order ? 'lg:order-2' }}">
+			{% if block.content %}
+				<div data-animate-left class="block-content">
+					{{ block.content }}
+				</div>
+			{% endif %}
+			{% if block.button %}
+				<a href="{{ block.button.url }}" class="button">{{ block.button.title }}</a>
+			{% endif %}
+		</div>
+		<div class="w-full mb-auto">
+			{% if block.map_address %}
+				<iframe class="aspect-4/3 lg:aspect-1/1 rounded-3xl" width="100%" style="border:0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="{{ 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDx-UgnRBYai8V2xInXE9fy2juKGz-VFhI&q=' ~ block.map_address|url_encode ~ '&zoom=18' }}"></iframe>
+			{% else %}
+				<iframe class="aspect-4/3 lg:aspect-1/1 rounded-3xl" width="100%" style="border:0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="{{ 'https://www.google.com/maps/embed/v1/search?key=AIzaSyDx-UgnRBYai8V2xInXE9fy2juKGz-VFhI&q=Revo+Fitness+' ~ post.title ~ '&zoom=18' }}"></iframe>
+			{% endif %}
+		</div>
+	</div>
+</section>

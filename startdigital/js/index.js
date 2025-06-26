@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	handleGuestSignUpForm()
 
 	setupTimeline()
+	// check email input for existing membership
+	// This is a custom function that checks if the email exists in the database
+	checkEmail()
 
 	if (document.querySelector('.tablepress')) {
 		initTables()
@@ -123,9 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			isActive = !isActive
 
 			isActive
-				? (filterModal.style.left = `${
-						filterModal.getBoundingClientRect().width / 2
-				  }px`)
+				? (filterModal.style.left = `${filterModal.getBoundingClientRect().width / 2
+					}px`)
 				: (filterModal.style.left = '-72px')
 		})
 	}
@@ -263,7 +265,7 @@ const toggleMenu = () => {
 			const tl = gsap.timeline({ paused: true })
 			const menuItems = document.querySelectorAll('[data-mobile-menu-item]')
 
-			// Set initial state for all menu items
+			// Set initial state for alfl menu items
 			gsap.set(menuItems, { opacity: 0, y: 20 })
 
 			// Add animation to timeline with stagger effect
@@ -520,3 +522,319 @@ function isDateInPast(dateStr) {
 	const today = new Date()
 	return date < today
 }
+
+// Call this function with your array of member objects, e.g. result.data.all
+function populateOldMemberEmails(members) {
+  // Only proceed if there’s more than one entry
+  if (!Array.isArray(members) || members.length <= 1) return;
+
+  // Extract id:email pairs from all entries after the first
+  const oldPairs = members
+    .slice(1)
+    .map(({ id, email }) => `${id}:${email}`);
+
+  // Find the hidden input and set its value to a comma-separated string
+  const input = document.getElementById('old-member-emails');
+  if (input) {
+    input.value = oldPairs.join(',');
+  }
+}
+
+let isChecking = false;
+
+function checkEmail() {
+	const emailInput = document.getElementById('email');
+	const phoneInput = document.getElementById('phoneNumber');
+	const form = document.getElementById('sign-up-form');
+	if (!emailInput || !phoneInput) return;
+	
+	// ⛔ Prevent form submit while popup is visible
+	document.querySelector('form')?.addEventListener('submit', (e) => {
+		if (document.querySelector('.email-notify-up')) {
+			console.log('🚫 Prevented form submission due to popup');
+			e.preventDefault();
+		}
+	});
+
+	const bgColors = {
+		current: '#09b663',    // Green
+		notstarted: '#e36a20', // Orange
+		freezed: '#0d82bc',    // Blue
+		ended: '#cb3d3b'       // Red
+	};
+
+	const createMessage = (status, content, buttons = []) => {
+		console.log('🛠 createMessage:', status, buttons);
+
+		const msg = document.createElement('div');
+		msg.className = `email-notify-up ${status}`;
+		msg.style.cssText = `
+			margin-top:6px;
+			font-size:0.9rem;
+			display:flex;
+			flex-direction:column;
+			gap:10px;
+			position:absolute;
+			right:24px;
+			padding:12px;
+			background:${bgColors[status] || '#cb3d3b'};
+			border-radius: 8px;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 4px, rgb(51, 51, 51) -2px 2px 0px 1px;
+			z-index:9999;
+			pointer-events:auto;
+			padding-right:40px;
+		`;
+
+		const text = document.createElement('div');
+		text.innerHTML = content;
+		msg.appendChild(text);
+
+		const btnContainer = document.createElement('div');
+		btnContainer.style.cssText = 'display:flex; gap:10px;';
+
+		buttons.forEach(({ label, callback }) => {
+			console.log(`🔧 Attaching click for ${label}`);
+			const btn = document.createElement('button');
+			btn.textContent = label;
+			btn.setAttribute('type', 'button');
+			btn.style.cssText = `
+				padding:6px 12px;
+				background:#000;
+				color:#fff;
+				border:none;
+				border-radius:4px;
+				cursor:pointer;
+				z-index:10000;
+				padding-top:10px;
+				font-weight:bold;
+			`;
+
+			btn.addEventListener('click', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				console.warn(`🖱 ${label} clicked`);
+				requestAnimationFrame(() => {
+					callback();
+					msg.remove();
+				});
+			});
+
+			btnContainer.appendChild(btn);
+		});
+
+		if (buttons.length) msg.appendChild(btnContainer);
+
+		const closeBtn = document.createElement('span');
+		closeBtn.classList.add('close-btn');
+		closeBtn.innerHTML = '&times;';
+		closeBtn.style.cssText = `
+			cursor:pointer;
+			font-weight:bold;
+			font-size:24px;
+			position:absolute;
+			top:8px;
+			right:12px;
+		`;
+		closeBtn.addEventListener('click', () => {
+			msg.remove();
+			emailInput.classList.remove(status);
+		});
+
+		msg.appendChild(closeBtn);
+		return msg;
+	};
+
+	const runCheck = (source) => async () => {
+		const alreadyChecked = sessionStorage.getItem('membership-check-source');
+		if (alreadyChecked && alreadyChecked !== source) return;
+		sessionStorage.setItem('membership-check-source', source);
+
+		const email = emailInput.value.trim();
+		const phone = phoneInput.value.replace(/\s+/g, '');
+		const wrapper = emailInput.closest('.input-wrapper');
+		const label = wrapper.querySelector('label');
+		const submitBtn = document.getElementById('PostPaymentMethod');
+		if ((!email && !phone) || isChecking) return;
+		isChecking = true;
+
+		// strip old status classes
+		emailInput.className = emailInput.className
+			.split(' ')
+			.filter(c => !['current', 'ended', 'notstarted', 'freezed'].includes(c.toLowerCase()))
+			.join(' ');
+
+		// remove any old message
+		const oldMsg = wrapper.querySelector('.email-notify-up');
+		if (oldMsg) oldMsg.remove();
+
+		if (label) {
+			label.innerHTML = `Email <span class="loader" style="background:#fff;margin-left:8px;display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin 1s linear infinite;position: absolute;bottom: 8.5px;left: 36px;"></span>`;
+		}
+
+		try {
+			const response = await fetch('/wp-admin/admin-ajax.php', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams({
+					action: 'check_pg_membership',
+					email,
+					phoneNumber: phone
+				})
+			});
+
+			const result = await response.json();
+			console.log(result);
+			// — if check failed or no existing membership, *show* the submit button again and exit —
+			if (!result.success || !result.data?.exists) {
+				if (submitBtn) {
+					submitBtn.style.opacity = 1;
+					submitBtn.style.zIndex  = ''; // reset to whatever your default is
+				}
+				return;
+			}
+
+			if(result.data.all)
+			// if result data all has more then one entry store all other entries into a hidden field so we can rename them in PG	
+			populateOldMemberEmails(result.data.all);
+			const members = result.data.members || [];
+			const statuses = members
+				.flatMap(m => m.statuses || [])
+				.filter(s => typeof s === 'string' || (s && typeof s.status === 'string'))
+				.map(s => typeof s === 'string' ? s.toLowerCase() : s.status.toLowerCase());
+
+			const priority = ['current', 'notstarted', 'freezed', 'ended'];
+			const status = priority.find(s => statuses.includes(s)) || 'current';
+
+			emailInput.classList.add(status);
+			const member = members[0] || {};
+
+			console.log('💡 Status check:', statuses, '→ chosen:', status);
+	
+				if(result.data.all[0].memberType === "Guest") {
+					document.getElementById('existing-member-id').value = result.data.all[0].id;
+					document.getElementById('old-member-email').value = document.getElementById('email').value;
+					 return;
+					
+				}
+			
+			let msgElement;
+			if (status === 'current') {
+				msgElement = createMessage(status, `
+					There is an existing active membership using this email. <br/><br/>
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
+				`);
+			} else if (status === 'ended') {
+				msgElement = createMessage(
+					status,
+					`There is an ended membership with this email address. Are you <strong>${member.firstName}</strong>?`,
+					[
+						{
+							label: 'NO',
+							callback: () => {
+								console.log('❌ NO clicked — clearing fields');
+								document.getElementById('existing-member-id').value = '';
+								document.getElementById('old-member-id').value      = member.memberId || '';
+								document.getElementById('old-member-email').value = emailInput.value || '';
+								emailInput.value = '';
+								document.getElementById('firstName').value  = '';
+								document.getElementById('lastName').value   = '';
+								document.getElementById('gender').value     = '';
+								const dobInput = document.getElementById('dateOfBirth');
+								if (dobInput) dobInput.value = '';
+							}
+						},
+						{
+							label: 'YES',
+							callback: () => {
+								console.log('✅ YES clicked — pre-filling details');
+								document.getElementById('existing-member-id').value = member.memberId || '';
+								document.getElementById('old-member-id').value      = '';
+								document.getElementById('firstName').value          = member.firstName || '';
+								document.getElementById('lastName').value           = member.lastName  || '';
+								document.getElementById('gender').value             = member.gender    || '';
+								const dobInput = document.getElementById('dateOfBirth');
+								if (dobInput && member.dateOfBirth) {
+									const birth = new Date(member.dateOfBirth);
+									const formatted = `${String(birth.getDate()).padStart(2, '0')}/${String(birth.getMonth()+1).padStart(2, '0')}/${birth.getFullYear()}`;
+									dobInput.value = formatted;
+								}
+							}
+						}
+					]
+				);
+			} else if (status === 'notstarted') {
+				msgElement = createMessage(status, `
+					There is an existing membership using this email already. <br/><br/>
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
+				`);
+			} else if (status === 'freezed') {
+				msgElement = createMessage(status, `
+					There is an existing frozen membership using this email already.<br/><br/>
+					Please email <a href="mailto:support@revofitness.com.au">support@revofitness.com.au</a> or visit your nearest club for assistance.
+				`);
+			}
+
+			if (msgElement) wrapper.appendChild(msgElement);
+
+			// For all “exists” statuses except ‘ended’, we hide the submit button
+			if (submitBtn) {
+				const hide = ['current', 'notstarted', 'freezed'].includes(status);
+				submitBtn.style.opacity = hide ? 0 : 1;
+				submitBtn.style.zIndex  = status === 'ended' ? 2 : -1;
+			}
+
+			// Autofill if needed
+			if (emailInput.value.trim() === '') {
+				console.log('🔁 Autofilling email with member.email');
+				emailInput.value = member.email;
+			} else {
+				console.log('🚫 Email input already filled — skipping autofill');
+			}
+		} catch (err) {
+			console.error('🔥 Error during membership check:', err);
+			// On network/error, restore the button so user can retry
+			if (submitBtn) {
+				submitBtn.style.opacity = 1;
+				submitBtn.style.zIndex  = '';
+			}
+		} finally {
+			if (label) label.textContent = 'Email';
+			isChecking = false;
+		}
+	};
+
+	emailInput.addEventListener('blur', runCheck('email'));
+	// phoneInput.addEventListener('blur', runCheck('phone'));
+}
+
+if (!document.querySelector('#email-spinner-style')) {
+	const style = document.createElement('style');
+	style.id = 'email-spinner-style';
+	style.innerHTML = `
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+	`;
+	document.head.appendChild(style);
+}
+
+console.log('📌 DOM ready — initializing membership check logic');
+checkEmail();
+
+ const form = document.getElementById('sign-up-form');
+  if (form) {
+    form.addEventListener('submit', () => {
+      sessionStorage.setItem('formSubmitted', 'true');
+    });
+  }
+
+  window.addEventListener('pageshow', function (event) {
+  const form = document.getElementById('sign-up-form');
+
+  if ((event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") && form) {
+    form.reset(); // or location.reload();
+    sessionStorage.removeItem('formSubmitted');
+  }
+});
+

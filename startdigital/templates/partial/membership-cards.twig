@@ -58,9 +58,10 @@
 								</div>
 							{% endfor %}
 							<div class="mt-auto w-full flex flex-col pt-4 pb-8">
-								<a href="/join-now" class="is-button-large">{{ item.link_text }}</a>
+								<a href="/join-now" class="is-button-large" aria-label="{{item.link_text}}">{{ item.link_text }}</a>
 								{% if fn('get_the_ID') != 9 %}
 									<a href="/memberships"
+										aria-label="More information about memberships"
 										class="w-fit mx-auto border-b-2 border-b-black text-xl text-center font-bold cursor-pointer mt-5">
 										More info
 									</a>

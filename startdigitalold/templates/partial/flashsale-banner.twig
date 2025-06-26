@@ -1,0 +1,20 @@
+{% if options.flash_sale.ending_date >= "now"|date("d/m/Y") %}
+
+	<div style="opacity: 0; pointer-events: none;" class="z-[9999999] fixed top-0 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center w-full h-full duration-300">
+		<aside data-flashsale-banner class="shadow-md aspect-4/3 max-md:my-auto md:aspect-[5/3] bg-brandRed w-full max-w-xl rounded-2xl relative max-md:pr-10 pl-10 pt-10 pb-6">
+			<button data-action="close" class="absolute z-10 bg-white top-0 right-0 p-2 aspect-square rounded-bl-xl">{% include "icons/cross.twig" with { stroke: "black", class: "w-6" } %}</button>
+
+			<div class="md:w-2/3 flex flex-col gap-4 text-white h-full">
+				<span class="text-4xl xl:text-6xl font-bold font-primary !leading-[1.125] uppercase">{{ options.flash_sale.heading }}</span>
+				<a data-link href="/join-now?code={{ options.flash_sale.discount_code }}" class="is-button button-outline outline-inverted !w-fit md:!w-[55%]">Join Now</a>
+			</div>
+
+			<div class="h-full absolute top-0 right-0 overflow-hidden pointer-events-none">
+				<svg class="h-full w-auto translate-x-8" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 340.332 371"><path fill="#f4f3f4" d="M340.332 371H218.044l-74.749-111.622h-39.723V371H0v-72.215l98.2-134.014h69.7c28.846 0 45.388-13.093 45.388-35.917v-.991c0-21.5-12.027-33.227-36.764-35.87l-23.175-2.471L218.945 0l9.008 2.611c57.133 16.549 89.9 60.748 89.9 121.261v1c0 52.03-23.965 91.931-67.923 113.967Z" data-name="Path 6764" opacity=".099"/></svg>
+			</div>
+
+			{% include "icons/weight.twig" with { class: "max-md:hidden absolute z-20 -bottom-12 -right-12", lineColor: "white" } %}
+		</aside>
+	</div>
+
+{% endif %}

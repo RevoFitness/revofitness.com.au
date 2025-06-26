@@ -1,0 +1,902 @@
+{
+    "1": {
+        "daily": "K8cH13AYl54",
+        "glossary": {
+            "1": {
+                "name": "Hand Release Pushups",
+                "id": "uQkdCBmmsjw"
+            },
+            "2": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "3": {
+                "name": "Kneeling Clap Pushups",
+                "id": "MdHROqDXG98"
+            },
+            "4": {
+                "name": "Glute Raises (Up and Down)",
+                "id": "R-Vmv6sQ9eQ"
+            },
+            "5": {
+                "name": "Skater Lateral Lunges",
+                "id": "o_kumkygC3Y"
+            },
+            "6": {
+                "name": "Half Hindus",
+                "id": "q9Q_7P4K998"
+            },
+            "7": {
+                "name": "V Sit with Hand Pulses",
+                "id": "Ue1MoDC0BNE"
+            },
+            "8": {
+                "name": "Frogs",
+                "id": "AL3HJEH-_ao"
+            },
+            "9": {
+                "name": "Burpees",
+                "id": "NFUArje4chc"
+            },
+            "10": {
+                "name": "Bridge",
+                "id": "8dH7J2f_wpM"
+            }
+        }
+    },
+    "2": {
+        "daily": "DP83ZknQwxA",
+        "glossary": {
+            "1": {
+                "name": "Inch Worms",
+                "id": "DZPOV1wde9A"
+            },
+            "2": {
+                "name": "Tuck Jumps",
+                "id": "LfvI5PPY7ZU"
+            },
+            "3": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "4": {
+                "name": "Glute Raise Hold (Alternate Leg Lift)",
+                "id": "ngrWNn10NCE"
+            },
+            "5": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "6": {
+                "name": "Kicksits",
+                "id": "ppdnHsG1bSo"
+            },
+            "7": {
+                "name": "Crunches",
+                "id": "e4iYb5_SiPg"
+            },
+            "8": {
+                "name": "Jumping Lunges",
+                "id": "te3BKU1Hz3w"
+            },
+            "9": {
+                "name": "Double Pump Pushup",
+                "id": "pVL9Odut62I"
+            },
+            "10": {
+                "name": "Sit Ups",
+                "id": "H50hAvQ9Dxs"
+            }
+        }
+    },
+    "3": {
+        "daily": "wPabM97JzZI",
+        "glossary": {
+            "1": {
+                "name": "Straddles",
+                "id": "vUnWqXTaaoA"
+            },
+            "2": {
+                "name": "Lateral Squat",
+                "id": "s_Q-ZWuG1YU"
+            },
+            "3": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "4": {
+                "name": "Frogs",
+                "id": "AL3HJEH-_ao"
+            },
+            "5": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "6": {
+                "name": "Cobra Pushups",
+                "id": "es24tSsjK0E"
+            },
+            "7": {
+                "name": "Bicycle Crunches",
+                "id": "EFcmLz0p-Fs"
+            },
+            "8": {
+                "name": "Burpees",
+                "id": "NFUArje4chc"
+            },
+            "9": {
+                "name": "Plank Pushups",
+                "id": "-kcbkHr64Tk"
+            },
+            "10": {
+                "name": "V Sit with Hand Pulses",
+                "id": "Ue1MoDC0BNE"
+            }
+        }
+    },
+    "4": {
+        "daily": "4n5Z_x6tnLw",
+        "glossary": {
+            "1": {
+                "name": "Half Hindus",
+                "id": "q9Q_7P4K998"
+            },
+            "2": {
+                "name": "Skater Lateral Lunges",
+                "id": "o_kumkygC3Y"
+            },
+            "3": {
+                "name": "Plyo Pushups",
+                "id": "Ph2LrFlGQMU"
+            },
+            "4": {
+                "name": "Squats",
+                "id": "dtHYK88uiyk"
+            },
+            "5": {
+                "name": "Tuck Jumps",
+                "id": "LfvI5PPY7ZU"
+            },
+            "6": {
+                "name": "Body Drop",
+                "id": "708Qeh9vIDE"
+            },
+            "7": {
+                "name": "Superman Alternate Plank",
+                "id": "HP5tC_hoeNI"
+            },
+            "8": {
+                "name": "Jumping Lunges",
+                "id": "te3BKU1Hz3w"
+            },
+            "9": {
+                "name": "Inch Worm with Pushup",
+                "id": "ZV5z4t1CNaM"
+            },
+            "10": {
+                "name": "Crunches",
+                "id": "e4iYb5_SiPg"
+            }
+        }
+    },
+    "5": {
+        "daily": "nEHnb1Yv3l4",
+        "glossary": {
+            "1": {
+                "name": "Side Straddles",
+                "id": "bsF88H-_AIY"
+            },
+            "2": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "3": {
+                "name": "Half Hindus",
+                "id": "q9Q_7P4K998"
+            },
+            "4": {
+                "name": "Back Step Lunges",
+                "id": "IorGpe5ojmg"
+            },
+            "5": {
+                "name": "Burpees",
+                "id": "NFUArje4chc"
+            },
+            "6": {
+                "name": "Kicksits",
+                "id": "ppdnHsG1bSo"
+            },
+            "7": {
+                "name": "Leg Raises",
+                "id": "7ALphkG_TOk"
+            },
+            "8": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "9": {
+                "name": "Kneeling Clap Pushups",
+                "id": "MdHROqDXG98"
+            },
+            "10": {
+                "name": "Plank Leg Raises",
+                "id": "AJ4RswvO1Ew"
+            }
+        }
+    },
+    "6": {
+        "daily": "bOSDVgLDFOE",
+        "glossary": {
+            "1": {
+                "name": "Alternate Needle Threads",
+                "id": "kgNb4uaGNuo"
+            },
+            "2": {
+                "name": "Sumo Double Split Step",
+                "id": "oLPA4w35F5c"
+            },
+            "3": {
+                "name": "Straddles",
+                "id": "vUnWqXTaaoA"
+            },
+            "4": {
+                "name": "Glute Raise Hold (Alternate Leg Lift)",
+                "id": "ngrWNn10NCE"
+            },
+            "5": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "6": {
+                "name": "Cobra Pushups",
+                "id": "es24tSsjK0E"
+            },
+            "7": {
+                "name": "Bicycle Crunches",
+                "id": "EFcmLz0p-Fs"
+            },
+            "8": {
+                "name": "Frogs",
+                "id": "AL3HJEH-_ao"
+            },
+            "9": {
+                "name": "Double Pump Pushup",
+                "id": "pVL9Odut62I"
+            },
+            "10": {
+                "name": "Sit Ups",
+                "id": "H50hAvQ9Dxs"
+            }
+        }
+    },
+    "7": {
+        "daily": "MyD5jcxxbVc",
+        "glossary": {
+            "1": {
+                "name": "Alternate Lateral Squats",
+                "id": "mOSO1ivxJZA"
+            },
+            "2": {
+                "name": "Tuck Jumps",
+                "id": "LfvI5PPY7ZU"
+            },
+            "3": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "4": {
+                "name": "Glute Raise Hold (Alternate Leg Lift)",
+                "id": "ngrWNn10NCE"
+            },
+            "5": {
+                "name": "Skater Lateral Lunges",
+                "id": "o_kumkygC3Y"
+            },
+            "6": {
+                "name": "Inch Worm with Pushup",
+                "id": "ZV5z4t1CNaM"
+            },
+            "7": {
+                "name": "Crunches",
+                "id": "e4iYb5_SiPg"
+            },
+            "8": {
+                "name": "Burpees",
+                "id": "NFUArje4chc"
+            },
+            "9": {
+                "name": "Kneeling Clap Pushups",
+                "id": "MdHROqDXG98"
+            },
+            "10": {
+                "name": "Mountain Climbers (fast)",
+                "id": "Lue59yagsTU"
+            }
+        }
+    },
+    "8": {
+        "daily": "tIKdiA_fSkA",
+        "glossary": {
+            "1": {
+                "name": "Plank Shoulder Taps",
+                "id": "f_kaZ5E-3uI"
+            },
+            "2": {
+                "name": "Sumo Double Split Step",
+                "id": "oLPA4w35F5c"
+            },
+            "3": {
+                "name": "Half Hindus",
+                "id": "q9Q_7P4K998"
+            },
+            "4": {
+                "name": "Glute Raises (Up and Down)",
+                "id": "R-Vmv6sQ9eQ"
+            },
+            "5": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "6": {
+                "name": "Kicksits",
+                "id": "ppdnHsG1bSo"
+            },
+            "7": {
+                "name": "Plank Hand Raise",
+                "id": "vco3LCOpnXg"
+            },
+            "8": {
+                "name": "Jumping Lunges",
+                "id": "te3BKU1Hz3w"
+            },
+            "9": {
+                "name": "Pushups",
+                "id": "SwO2_oiBAIs"
+            },
+            "10": {
+                "name": "Mountain Climbers (fast)",
+                "id": "Lue59yagsTU"
+            }
+        }
+    },
+    "9": {
+        "daily": "M1kdwIrS1dY",
+        "glossary": {
+            "1": {
+                "name": "Inch Worms",
+                "id": "DZPOV1wde9A"
+            },
+            "2": {
+                "name": "Tuck Jumps",
+                "id": "LfvI5PPY7ZU"
+            },
+            "3": {
+                "name": "Plank Pushups",
+                "id": "-kcbkHr64Tk"
+            },
+            "4": {
+                "name": "Frogs",
+                "id": "AL3HJEH-_ao"
+            },
+            "5": {
+                "name": "Body Drop",
+                "id": "708Qeh9vIDE"
+            },
+            "6": {
+                "name": "Half Hindus",
+                "id": "q9Q_7P4K998"
+            },
+            "7": {
+                "name": "Bicycle Crunches",
+                "id": "EFcmLz0p-Fs"
+            },
+            "8": {
+                "name": "Skater Lateral Lunges",
+                "id": "o_kumkygC3Y"
+            },
+            "9": {
+                "name": "Kneeling Clap Pushups",
+                "id": "MdHROqDXG98"
+            },
+            "10": {
+                "name": "Bridge",
+                "id": "8dH7J2f_wpM"
+            }
+        }
+    },
+    "10": {
+        "daily": "AhWgGPnK5OQ",
+        "glossary": {
+            "1": {
+                "name": "Straddles",
+                "id": "vUnWqXTaaoA"
+            },
+            "2": {
+                "name": "Alternate Lateral Squats",
+                "id": "mOSO1ivxJZA"
+            },
+            "3": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "4": {
+                "name": "Back Step Lunges",
+                "id": "IorGpe5ojmg"
+            },
+            "5": {
+                "name": "Burpees",
+                "id": "NFUArje4chc"
+            },
+            "6": {
+                "name": "Double Pump Pushup",
+                "id": "pVL9Odut62I"
+            },
+            "7": {
+                "name": "Mountain Climbers (fast)",
+                "id": "Lue59yagsTU"
+            },
+            "8": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "9": {
+                "name": "Cobra Pushups",
+                "id": "es24tSsjK0E"
+            },
+            "10": {
+                "name": "Sit Ups",
+                "id": "H50hAvQ9Dxs"
+            }
+        }
+    },
+    "11": {
+        "daily": "_y-SKtWBC74",
+        "glossary": {
+            "1": {
+                "name": "Hand Release Pushups",
+                "id": "uQkdCBmmsjw"
+            },
+            "2": {
+                "name": "Jumping Jacks",
+                "id": "k9_NF0dGVn4"
+            },
+            "3": {
+                "name": "Pushups to Knee Tap",
+                "id": "tnvDtJ5-FbU"
+            },
+            "4": {
+                "name": "Double Pump Squat",
+                "id": "KXf3MurGj8U"
+            },
+            "5": {
+                "name": "Half Burpee",
+                "id": "Li7aHkdsIE8"
+            },
+            "6": {
+                "name": "Superman Holds",
+                "id": "HMYa1ZSMdtM"
+            },
+            "7": {
+                "name": "Flutter Kicks",
+                "id": "yEP0BbmZQcw"
+            },
+            "8": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "9": {
+                "name": "Pike Pushups",
+                "id": "bN8PB8Rk6ug"
+            },
+            "10": {
+                "name": "Seated In and Outs",
+                "id": "r9oNkbfnnkI"
+            }
+        }
+    },
+    "12": {
+        "daily": "U8XVthhzQu0",
+        "glossary": {
+            "1": {
+                "name": "Alternate Lateral Squats",
+                "id": "mOSO1ivxJZA"
+            },
+            "2": {
+                "name": "Butt Kicks",
+                "id": "oRenpMZ8MT4"
+            },
+            "3": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "4": {
+                "name": "90 Degree Hold",
+                "id": "iXnfdsE2Zrw"
+            },
+            "5": {
+                "name": "Jumping Lunges",
+                "id": "te3BKU1Hz3w"
+            },
+            "6": {
+                "name": "Kicksits",
+                "id": "ppdnHsG1bSo"
+            },
+            "7": {
+                "name": "Russian Twists",
+                "id": "vxEJn2g9oJg"
+            },
+            "8": {
+                "name": "Predator Jacks",
+                "id": "EkgJ0BADdlA"
+            },
+            "9": {
+                "name": "Alternate Plyometric Pushup",
+                "id": "ff75jKJTHL0"
+            },
+            "10": {
+                "name": "Twisting Plank",
+                "id": "zu8AYgLXfAQ"
+            }
+        }
+    },
+    "13": {
+        "daily": "Ak7shrF-Wvk",
+        "glossary": {
+            "1": {
+                "name": "Superman Holds",
+                "id": "HMYa1ZSMdtM"
+            },
+            "2": {
+                "name": "High Knees",
+                "id": "53tQiYAGVAk"
+            },
+            "3": {
+                "name": "Pushup to Ankle Tap",
+                "id": "Am1d7oKlgf8"
+            },
+            "4": {
+                "name": "Alternating Stance Squat",
+                "id": "lB8FQYtqfzw"
+            },
+            "5": {
+                "name": "Boxing Straight Punches",
+                "id": "1SoRLvyTMKU"
+            },
+            "6": {
+                "name": "Inch Worm with Pushup",
+                "id": "ZV5z4t1CNaM"
+            },
+            "7": {
+                "name": "Plank with Alternating Toe Taps",
+                "id": "tGhEbT8u5p8"
+            },
+            "8": {
+                "name": "Pogo Jump",
+                "id": "l3i9zDaCbCg"
+            },
+            "9": {
+                "name": "Burpees",
+                "id": "NFUArje4chc"
+            },
+            "10": {
+                "name": "Scissor Kicks",
+                "id": "jjTRUCT92Gg"
+            }
+        }
+    },
+    "14": {
+        "daily": "lxUmb5otSPI",
+        "glossary": {
+            "1": {
+                "name": "Half Hindus",
+                "id": "q9Q_7P4K998"
+            },
+            "2": {
+                "name": "Skater Lateral Lunges",
+                "id": "o_kumkygC3Y"
+            },
+            "3": {
+                "name": "Pushup Jacks",
+                "id": "tatnA9CRyPY"
+            },
+            "4": {
+                "name": "Standing Calf Raises",
+                "id": "d9e8OkqdGhw"
+            },
+            "5": {
+                "name": "Half Burpee",
+                "id": "Li7aHkdsIE8"
+            },
+            "6": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "7": {
+                "name": "Plank Jacks",
+                "id": "-BQFW5hXTjk"
+            },
+            "8": {
+                "name": "90 Degree Hold",
+                "id": "iXnfdsE2Zrw"
+            },
+            "9": {
+                "name": "Seal Jacks",
+                "id": "s2dh2f6F-rE"
+            },
+            "10": {
+                "name": "Toe Taps",
+                "id": "6Vowrs1Qu_M"
+            }
+        }
+    },
+    "15": {
+        "daily": "cTNyH7flA_M",
+        "glossary": {
+            "1": {
+                "name": "Inch Worm with Pushup",
+                "id": "ZV5z4t1CNaM"
+            },
+            "2": {
+                "name": "Jumping Jacks",
+                "id": "k9_NF0dGVn4"
+            },
+            "3": {
+                "name": "Double Pump Pushup",
+                "id": "pVL9Odut62I"
+            },
+            "4": {
+                "name": "Alternating Stance Squat",
+                "id": "lB8FQYtqfzw"
+            },
+            "5": {
+                "name": "Butt Kicks",
+                "id": "oRenpMZ8MT4"
+            },
+            "6": {
+                "name": "Pushup to Ankle Tap",
+                "id": "Am1d7oKlgf8"
+            },
+            "7": {
+                "name": "Seated In and Outs",
+                "id": "r9oNkbfnnkI"
+            },
+            "8": {
+                "name": "Double Pump Squat",
+                "id": "KXf3MurGj8U"
+            },
+            "9": {
+                "name": "Body Drop",
+                "id": "708Qeh9vIDE"
+            },
+            "10": {
+                "name": "Russian Twists",
+                "id": "vxEJn2g9oJg"
+            }
+        }
+    },
+    "16": {
+        "daily": "GdMrKMfzGGM",
+        "glossary": {
+            "1": {
+                "name": "Straddles",
+                "id": "vUnWqXTaaoA"
+            },
+            "2": {
+                "name": "Explodes",
+                "id": "5Vl52bsF03E"
+            },
+            "3": {
+                "name": "Pike Pushups",
+                "id": "bN8PB8Rk6ug"
+            },
+            "4": {
+                "name": "Standing Calf Raises",
+                "id": "d9e8OkqdGhw"
+            },
+            "5": {
+                "name": "Jumping Lunges",
+                "id": "te3BKU1Hz3w"
+            },
+            "6": {
+                "name": "Pushup Jacks",
+                "id": "tatnA9CRyPY"
+            },
+            "7": {
+                "name": "Plank with Oblique Crunches",
+                "id": "usENPYgc81I"
+            },
+            "8": {
+                "name": "90 Degree Hold",
+                "id": "iXnfdsE2Zrw"
+            },
+            "9": {
+                "name": "Power Skip",
+                "id": "_XQ3X75ORvk"
+            },
+            "10": {
+                "name": "Flutter Kicks",
+                "id": "yEP0BbmZQcw"
+            }
+        }
+    },
+    "17": {
+        "daily": "tbp8YxNF7oA",
+        "glossary": {
+            "1": {
+                "name": "Sumo Double Split Step",
+                "id": "oLPA4w35F5c"
+            },
+            "2": {
+                "name": "High Knees",
+                "id": "53tQiYAGVAk"
+            },
+            "3": {
+                "name": "Forearm Plank",
+                "id": "8dH7J2f_wpM"
+            },
+            "4": {
+                "name": "Double Pump Squat",
+                "id": "KXf3MurGj8U"
+            },
+            "5": {
+                "name": "Predator Jacks",
+                "id": "EkgJ0BADdlA"
+            },
+            "6": {
+                "name": "Alternate Plyometric Pushup",
+                "id": "ff75jKJTHL0"
+            },
+            "7": {
+                "name": "Mountain Climbers (slow)",
+                "id": "hCmWgdsGH8U"
+            },
+            "8": {
+                "name": "Curtsy Alternating Squats",
+                "id": "ppx4_GbImUA"
+            },
+            "9": {
+                "name": "Pogo Jump",
+                "id": "l3i9zDaCbCg"
+            },
+            "10": {
+                "name": "Flutter Kicks",
+                "id": "yEP0BbmZQcw"
+            }
+        }
+    },
+    "18": {
+        "daily": "eCVxKNgO93M",
+        "glossary": {
+            "1": {
+                "name": "Side Straddles",
+                "id": "bsF88H-_AIY"
+            },
+            "2": {
+                "name": "Skater Lateral Lunges",
+                "id": "o_kumkygC3Y"
+            },
+            "3": {
+                "name": "Pushups to Knee Tap",
+                "id": "tnvDtJ5-FbU"
+            },
+            "4": {
+                "name": "Alternating Stance Squat",
+                "id": "lB8FQYtqfzw"
+            },
+            "5": {
+                "name": "Boxing Straight Punches",
+                "id": "1SoRLvyTMKU"
+            },
+            "6": {
+                "name": "Cobra Pushups",
+                "id": "es24tSsjK0E"
+            },
+            "7": {
+                "name": "Twisting Plank",
+                "id": "zu8AYgLXfAQ"
+            },
+            "8": {
+                "name": "Frogs",
+                "id": "AL3HJEH-_ao"
+            },
+            "9": {
+                "name": "Jumping Jacks",
+                "id": "k9_NF0dGVn4"
+            },
+            "10": {
+                "name": "Russian Twists",
+                "id": "vxEJn2g9oJg"
+            }
+        }
+    },
+    "19": {
+        "daily": "Vwz3IVS0lCw",
+        "glossary": {
+            "1": {
+                "name": "Inch Worms",
+                "id": "DZPOV1wde9A"
+            },
+            "2": {
+                "name": "Skater Lateral Lunges",
+                "id": "o_kumkygC3Y"
+            },
+            "3": {
+                "name": "Pushup Jacks",
+                "id": "tatnA9CRyPY"
+            },
+            "4": {
+                "name": "Double Pump Squat",
+                "id": "KXf3MurGj8U"
+            },
+            "5": {
+                "name": "Half Burpee",
+                "id": "Li7aHkdsIE8"
+            },
+            "6": {
+                "name": "Commando",
+                "id": "oFI6tMk6yNU"
+            },
+            "7": {
+                "name": "Plank Knee Taps",
+                "id": "I-JdrVQRdcg"
+            },
+            "8": {
+                "name": "90 Degree Hold",
+                "id": "iXnfdsE2Zrw"
+            },
+            "9": {
+                "name": "Butt Kicks",
+                "id": "oRenpMZ8MT4"
+            },
+            "10": {
+                "name": "Plank Jacks",
+                "id": "-BQFW5hXTjk"
+            }
+        }
+    },
+    "20": {
+        "daily": "th3HESIBO30",
+        "glossary": {
+            "1": {
+                "name": "Frogs",
+                "id": "AL3HJEH-_ao"
+            },
+            "2": {
+                "name": "Body Drop",
+                "id": "708Qeh9vIDE"
+            },
+            "3": {
+                "name": "Pike Pushups",
+                "id": "bN8PB8Rk6ug"
+            },
+            "4": {
+                "name": "Standing Calf Raises",
+                "id": "d9e8OkqdGhw"
+            },
+            "5": {
+                "name": "Predator Jacks",
+                "id": "EkgJ0BADdlA"
+            },
+            "6": {
+                "name": "Alternate Plyometric Pushup",
+                "id": "ff75jKJTHL0"
+            },
+            "7": {
+                "name": "Plank with Oblique Crunches",
+                "id": "usENPYgc81I"
+            },
+            "8": {
+                "name": "Alternating Stance Squat",
+                "id": "lB8FQYtqfzw"
+            },
+            "9": {
+                "name": "Power Skip",
+                "id": "_XQ3X75ORvk"
+            },
+            "10": {
+                "name": "Bicycle Crunches",
+                "id": "EFcmLz0p-Fs"
+            }
+        }
+    }
+}

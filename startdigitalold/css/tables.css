@@ -1,0 +1,142 @@
+.tablepress.tablepress-id-1 {
+
+    br {
+        @apply hidden;
+    }
+
+    a.button {
+		@apply !w-full justify-center py-3 !px-2;
+
+		&:after {
+			@apply hidden;
+		}
+	}
+
+	/* TABLE HEAD */
+	thead {
+		tr {
+			th {
+				@apply !border-x-[2px] !border-solid !border-b !border-t-0 !border-pureWhite !bg-transparent;
+
+				&:first-child, &:nth-child(2) {
+					@apply !bg-transparent;
+				}
+
+				.price-container {
+					@apply flex flex-col overflow-hidden;
+				}
+
+				.price-level {
+					@apply bg-brandRed text-center max-md:!text-base text-xl text-white py-2 px-3 md:py-3 md:px-6;
+				}
+
+				.price {
+					@apply bg-white max-md:text-2xl text-4xl text-brandBlack flex flex-col items-center justify-center py-2 px-6 text-center;
+
+					span {
+						@apply max-md:text-xs text-sm font-bold;
+					}
+				}
+
+				&.column-4 {
+					.price-level {
+						@apply bg-brandPink text-brandBlack;
+					}
+				}
+			}
+		}
+
+		tr.row-1 {
+			> th {
+				@apply !p-0;
+
+                &:not(:first-child) {
+                    @apply rounded-t-[20px] md:rounded-t-[40px];
+                    @apply overflow-hidden;
+                }
+			}
+        }
+	}
+
+    /* TABLE BODY */
+	tbody {
+		tr {
+			td {
+				@apply text-sm font-semibold !bg-white !border-[2px] !border-pureWhite;
+
+				&:not(.column-1){
+					@apply !p-3;
+				}
+
+				.icon-wrapper {
+					@apply w-[30px] h-[30px] p-[5px] border bg-brandCream border-brandBlack rounded-full flex items-center justify-center;
+
+					&.dark {
+						@apply !bg-[#647761];
+					}
+
+					svg {
+						@apply h-full w-full;
+					}
+				}
+			}
+
+			td.column-1 {
+				@apply block !px-0 max-md:!mr-2 max-lg:ml-2;
+			}
+
+			td.column-2 {
+				@apply !bg-lightPink max-sm:!text-xs !text-sm;
+			}
+
+			td:not(.column-1, .column-2) {
+				@apply text-center !border-solid !border-x-[4px] !border-pureWhite text-brandRed;
+			}
+
+			td {
+				svg {
+					@apply m-auto;
+				}
+			}
+		}
+
+		tr.row-16 td {
+			@apply font-bold !bg-white;
+		}
+
+		tr:last-of-type td.column-2 {
+			@apply rounded-bl-3xl;
+		}
+
+		tr:last-of-type td.column-4 {
+			@apply rounded-br-3xl;
+		}
+
+		tr.row-17 > .column-2,
+		tr.row-18 > .column-2,
+		tr.row-19 > .column-2,
+		tr.row-20 > .column-2 {
+			@apply !bg-[#647761] !text-pureWhite;
+		}
+
+        tr > td.column-1 {
+            @apply !bg-transparent;
+        }
+	}
+
+	tfoot {
+		> tr th {
+			@apply !bg-pureWhite !border-0 pt-5;
+
+			a {
+				@apply max-md:!text-sm
+			}
+
+			&.column-4 {
+				a {
+					@apply !bg-brandPink !text-brandBlack;
+				}
+			}
+		}
+	}
+}

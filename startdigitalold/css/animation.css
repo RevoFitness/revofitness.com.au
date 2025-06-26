@@ -1,0 +1,71 @@
+.rotate {
+	animation: rotate 7s linear infinite;
+}
+
+@keyframes rotate {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(359deg);
+	}
+}
+
+.filter-modal {
+	animation: slide-in-bottom-modal 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+		0.2s both;
+}
+
+.animate-shake {
+	animation: shake-bottom 2.5s ease-in-out infinite;
+}
+
+@keyframes shake-bottom {
+    0% {
+        transform: rotate(-5deg);
+    }
+    50% {
+        transform: rotate(5deg);
+    }
+    100% {
+        transform: rotate(-5deg);
+    }
+}
+
+
+@keyframes slide-in-bottom-modal {
+	0% {
+		transform: translate(-50%, 300px);
+		opacity: 0;
+	}
+	100% {
+		transform: translate(-50%, 0px);
+		opacity: 1;
+	}
+}
+
+@keyframes infiniteScroll {
+	from {
+		transform: translateX(0%);
+	}
+	to {
+		transform: translateX(-100%);
+	}
+}
+@keyframes infiniteScroll2 {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0%);
+	}
+}
+
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}

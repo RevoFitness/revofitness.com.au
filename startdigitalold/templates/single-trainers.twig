@@ -1,0 +1,93 @@
+{% extends "page.twig" %}
+{% set currentGym = post.meta('gym') %}
+{% set gymNames = [] %}
+{% for item in get_posts(post.meta('gyms')) %}
+	{% set gymNames = gymNames|merge([item.title]) %}
+{% endfor %}
+
+
+{% block hero %}
+	{% include "partial/trainers-banner.twig" %}
+{% endblock %}
+
+{% block content %}
+	<section data-trains-at="{{ gymNames|join(',') }}" class="bg-white bg-opacity-60 remove-py">
+		<div class="rounded-top bg-pureWhite inner-py">
+			<div class="container flex max-md:flex-col gap-10 lg:gap-20">
+				<div class="w-full block-content">
+					<span class="supertitle">Game On,
+						{{ fields.gyms[0].post_title }}</span>
+					{% if fields.content.introduction %}
+						{{ fields.content.introduction }}
+					{% else %}
+						<p class="is-h3 text-brandBlack">No introduction available.</p>
+					{% endif %}
+				</div>
+				<div class="grid gap-7 w-full md:w-4/5 md:gap-8">
+					{% if fields.content.q_and_a %}
+						<div class="block-content text-white px-4 py-6 md:p-8 w-full bg-brandRed rounded-3xl">
+							<h4 class="text-2xl font-bold">Get to know
+								{{ post.title|split(' ')[0] }}</h4>
+							{{ fields.content.q_and_a }}
+						</div>
+					{% endif %}
+					{% if fields.content.certifications %}
+						<div class="block-content px-4 py-6 md:p-8 w-full bg-white rounded-3xl border-[3px] border-brandBlack">
+							<h4 class="text-2xl font-bold text-brandRed">Certifications</h4>
+							{{ fields.content.certifications }}
+						</div>
+					{% endif %}
+				</div>
+			</div>
+			<div class="bg-pureWhite">
+				{% include "icons/curved-top.twig" %}
+				<div class="bg-brandRed rounded-bottom pb-8 md:pb-24 pt-6 md:pt-12 flex flex-col gap-20">
+					{% if not post.meta('not_taking_clients') %}
+						<div class="container">
+							<div class="form-container flex flex-col gap-10 bg-lightPink rounded-[35px] px-6 py-10 md:px-20 md:py-16 -mt-[250px] 2xl:-mt-[500px] relative">
+								<div class="block-content">
+									<h2 class="mx-auto text-brandRed text-center">Contact
+										{{ post.title|split(' ')[0] }}</h2>
+									<p class="mx-auto text-center">Fill out the form below to train with
+										{{ post.title|split(' ')[0] }}.</p>
+								</div>
+
+								{% set gym = fn('getGymByName', post.meta('gyms')[0].post_title) %}
+								{{ function('do_shortcode', '[gravityform id="1" title="false" description="false" field_values="sendTo='~ gym.meta('email') ~ '"]') }}
+							</div>
+						</div>
+					{% endif %}
+
+					<div class="related-trainers container flex flex-col gap-10">
+						<div class="trainers-slider">
+							<div class="flex justify-between items-end mb-8">
+								<div class="block-content">
+									<span class="supertitle !text-white">
+										Ready to workout?
+									</span>
+									<h3 class="text-white">Find a trainer from
+										{{ fields.gyms[0].post_title }}</h3>
+								</div>
+								<div class="max-lg:hidden flex items-center gap-10">
+									<div class="swiper-button-prev !relative"></div>
+									<div class="swiper-button-next !relative"></div>
+								</div>
+							</div>
+							<div data-animate-left class="swiper-wrapper">
+								{% if related_trainers %}
+									{% for item in related_trainers %}
+										{% include "tease-trainer.twig" %}
+									{% endfor %}
+								{% else %}
+									<h4 class="opacity-60 text-white">No trainers found.</h4>
+								{% endif %}
+							</div>
+							<div class="swiper-scrollbar !relative mt-6 md:mt-12"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{% include "blocks/download_app.twig" with { class: "single-trainer-download-app" } %}
+{% endblock %}

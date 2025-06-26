@@ -62,7 +62,7 @@ class FormSubmission
             }
 
             // Create the user
-            $user = User::create($data, $paymentIdOne);
+            $user = User::create($data, $paymentIdOne, $paymentIdTwo);
             if (!$user) {
                 write_log('Can\'t create user. Aborting');
                 $this->errors['user'] = 'Cannot create user. Please try again later.';

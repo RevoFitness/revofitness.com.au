@@ -34,6 +34,7 @@ class GymManager
         register_post_type('gyms', array(
             'label'  => 'Gyms',
             'public' => true,
+            'show_in_rest' => true,
             'has_archive' => false,
             'menu_icon' => 'dashicons-admin-multisite',
             'supports' => array('title', 'thumbnail', 'custom-fields')

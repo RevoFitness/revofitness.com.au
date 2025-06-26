@@ -1,7 +1,7 @@
 # The StartDigital Starter Theme
 
 This theme makes use of Advanced Custom Fields Pro to create a block-based page-builder experience.
-All styling is done using TailwindCSS.
+All styling is done using TailwindCSS..
 
 ## Getting started
 
