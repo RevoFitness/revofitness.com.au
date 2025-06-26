@@ -694,7 +694,7 @@ function checkEmail() {
 			}
 
 			if(result.data.all)
-			// if result data all has more then one entry store all other entries into a hidden field so we can rename them in PG
+			// if result data all has more then one entry store all other entries into a hidden field so we can rename them in PG	
 			populateOldMemberEmails(result.data.all);
 			const members = result.data.members || [];
 			const statuses = members

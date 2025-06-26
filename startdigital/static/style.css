@@ -451,7 +451,7 @@ video {
 		transition-duration: 200ms;
 	}form#sign-up-form[data-guest-sign-up] #customer-details h3.button-outline::after,form#sign-up-form[data-guest-sign-up] #customer-details h3
 	.is-button-outline::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -459,10 +459,13 @@ video {
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.button-outline::after,form[data-guest-sign-up] #customer-details h3
 	.is-button-outline::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -588,7 +591,7 @@ video {
 		color: rgb(51 49 50 / var(--tw-text-opacity));
 		transition-duration: 200ms;
 	}form#sign-up-form[data-guest-sign-up] #customer-details h3.button-outline-large::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -596,9 +599,12 @@ video {
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.button-outline-large::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -1636,7 +1642,7 @@ h6{
   background-color: rgb(232 232 232 / var(--tw-bg-opacity)) !important}/* Datepicker for signup form */.qs-overlay .qs-overlay-year{
   --tw-text-opacity: 1;
   color: rgb(51 49 50 / var(--tw-text-opacity))}form#sign-up-form[data-guest-sign-up] #customer-details h3.qs-overlay .qs-overlay-year::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -1644,9 +1650,12 @@ h6{
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.qs-overlay .qs-overlay-year::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -1683,7 +1692,7 @@ select{
   color: rgb(51 49 50 / var(--tw-text-opacity))}form#sign-up-form[data-guest-sign-up] #customer-details h3input:not([hidden]):not([type='reset']):not(.customRadio):not(.paymentRadio):not(.checkbox):not([type='submit'])::after,form#sign-up-form[data-guest-sign-up] #customer-details h3
 textarea::after,form#sign-up-form[data-guest-sign-up] #customer-details h3
 select::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -1691,11 +1700,14 @@ select::after {
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3input:not([hidden]):not([type='reset']):not(.customRadio):not(.paymentRadio):not(.checkbox):not([type='submit'])::after,form[data-guest-sign-up] #customer-details h3
 textarea::after,form[data-guest-sign-up] #customer-details h3
 select::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -2275,7 +2287,7 @@ footer .menu-item,
   line-height: 2.5rem;
   --tw-text-opacity: 1;
   color: rgb(51 49 50 / var(--tw-text-opacity))}form#sign-up-form[data-guest-sign-up] #customer-details h3.tablepress.tablepress-id-1 thead tr th .price::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -2283,9 +2295,12 @@ footer .menu-item,
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.tablepress.tablepress-id-1 thead tr th .price::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -2324,7 +2339,7 @@ footer .menu-item,
   background-color: rgb(243 146 189 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
   color: rgb(51 49 50 / var(--tw-text-opacity))}form#sign-up-form[data-guest-sign-up] #customer-details h3.tablepress.tablepress-id-1 thead tr th.column-4 .price-level::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -2332,9 +2347,12 @@ footer .menu-item,
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.tablepress.tablepress-id-1 thead tr th.column-4 .price-level::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -3017,7 +3035,7 @@ footer .menu-item,
     padding: 15px;
     padding-right: 25px;
 }form#sign-up-form[data-guest-sign-up] #customer-details h3.text-brandBlack::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -3025,9 +3043,12 @@ footer .menu-item,
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.text-brandBlack::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -3328,7 +3349,7 @@ body{
   background-color: rgb(243 146 189 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
   color: rgb(51 49 50 / var(--tw-text-opacity))}form#sign-up-form[data-guest-sign-up] #customer-details h3.membership-card:not(:first-of-type) .membership-price::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -3336,9 +3357,12 @@ body{
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.membership-card:not(:first-of-type) .membership-price::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -3477,7 +3501,7 @@ body{
 		color: rgb(51 49 50 / var(--tw-text-opacity));
 		transition-duration: 200ms;
 	}form#sign-up-form[data-guest-sign-up] #customer-details h3.page-congratulations .call-to-action-content a::after {
-    content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+    content: "Please use an email address that isn't already a registered member of Revo Fitness";
     font-size: 12px;
     margin-left: 15px;
     background: rgb(139 198 193 / var(--tw-bg-opacity));
@@ -3485,9 +3509,12 @@ body{
     color: #333;
     position: relative;
     top: -6px;
+	box-shadow:0 0 4px rgba(0,0,0,.16),0 3px 0 1px #333;
+    border-radius:15px;
+
 }@media(max-width:769px) {
     form[data-guest-sign-up] #customer-details h3.page-congratulations .call-to-action-content a::after {
-      content: 'Please use an email address that isn’t already registered with Revo Fitness.';
+      content: "Please use an email address that isn't already a registered member of Revo Fitness";
       font-size: 12px;
       margin-left: 15px;
       background: rgb(139 198 193 / var(--tw-bg-opacity));

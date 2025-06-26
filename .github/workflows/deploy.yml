@@ -1,9 +1,11 @@
-name: build-and-deploy
+name: Build & Deploy Based on Branch
 
 on:
   push:
     branches:
       - develop
+      - staging
+      - main
 
 jobs:
   build-and-deploy:
@@ -29,22 +31,31 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa_dev_3
-          chmod 600 ~/.ssh/id_rsa_dev_3
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p 2222 43.250.141.151 >> ~/.ssh/known_hosts
 
       - name: Clean unnecessary files
         run: rm -rf startdigital/node_modules
 
-      - name: Sync theme to development (developmentrevof)
+      - name: Deploy to environment
         run: |
-          scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
-          startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
+          BRANCH="${GITHUB_REF##*/}"
+          if [[ "$BRANCH" == "develop" ]]; then
+            echo "📦 Deploying to development server..."
+            scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+              startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
 
-      - name: Sync theme to staging (revostaging)
-        run: |
-          scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
-          startdigital revostaging@43.250.141.151:/home/revostaging/public_html/wp-content/themes/
+          elif [[ "$BRANCH" == "staging" ]]; then
+            echo "🚀 Deploying to staging server..."
+            scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+              startdigital revostaging@43.250.141.151:/home/revostaging/public_html/wp-content/themes/
 
-      - name: Done
-        run: echo "✅ Deployment to development and staging complete."
+          elif [[ "$BRANCH" == "main" ]]; then
+            echo "🎯 Deploying to production server..."
+            scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+              startdigital revofitness@43.250.141.151:/home/revofitness/public_html/wp-content/themes/
+          fi
+
+      - name: ✅ Done
+        run: echo "🎉 Deployment complete."
