@@ -821,3 +821,20 @@ if (!document.querySelector('#email-spinner-style')) {
 
 console.log('📌 DOM ready — initializing membership check logic');
 checkEmail();
+
+ const form = document.getElementById('sign-up-form');
+  if (form) {
+    form.addEventListener('submit', () => {
+      sessionStorage.setItem('formSubmitted', 'true');
+    });
+  }
+
+  window.addEventListener('pageshow', function (event) {
+  const form = document.getElementById('sign-up-form');
+
+  if ((event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") && form) {
+    form.reset(); // or location.reload();
+    sessionStorage.removeItem('formSubmitted');
+  }
+});
+

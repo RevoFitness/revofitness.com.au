@@ -13,14 +13,14 @@
   function prefillSearchQuery() {
     const params = new URL(document.location).searchParams;
     const query = params.get("search");
-    const form = document.querySelector("[data-search-articles]");
-    const search = form.querySelector("input[name='search']");
+    const form2 = document.querySelector("[data-search-articles]");
+    const search = form2.querySelector("input[name='search']");
     if (!query) {
       return;
     }
     search.value = query;
     searchArticles({ preventDefault: () => {
-    }, target: form });
+    }, target: form2 });
   }
   function searchArticles(e) {
     e.preventDefault();
@@ -45,7 +45,7 @@
     }
   }
   function resetSearchForm(e) {
-    const form = e.target.closest("form");
+    const form2 = e.target.closest("form");
     const params = new URLSearchParams(window.location.search);
     const query = params.get("search");
     if (query) {
@@ -54,7 +54,7 @@
     const newUrl = `${window.location.pathname}${window.location.hash}`;
     window.history.replaceState({}, "", newUrl);
     getArticles({ preventDefault: () => {
-    }, target: form });
+    }, target: form2 });
   }
   async function filterCategories(category) {
     const articles = document.querySelectorAll("[data-zendesk-article]");
@@ -16828,7 +16828,7 @@
   function checkEmail() {
     const emailInput = document.getElementById("email");
     const phoneInput = document.getElementById("phoneNumber");
-    const form = document.getElementById("sign-up-form");
+    const form2 = document.getElementById("sign-up-form");
     if (!emailInput || !phoneInput)
       return;
     document.querySelector("form")?.addEventListener("submit", (e) => {
@@ -17069,6 +17069,19 @@
   }
   console.log("\u{1F4CC} DOM ready \u2014 initializing membership check logic");
   checkEmail();
+  var form = document.getElementById("sign-up-form");
+  if (form) {
+    form.addEventListener("submit", () => {
+      sessionStorage.setItem("formSubmitted", "true");
+    });
+  }
+  window.addEventListener("pageshow", function(event2) {
+    const form2 = document.getElementById("sign-up-form");
+    if ((event2.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") && form2) {
+      form2.reset();
+      sessionStorage.removeItem("formSubmitted");
+    }
+  });
 })();
 /*! Bundled license information:
 

@@ -1859,6 +1859,7 @@ select::placeholder{
 	    left: 0;
 	    right: 0;
 	    top: calc(0% - -79px) !important;
+		width:100% !important;
 	}
 }[data-topbar] .menu-item > a,
 footer .menu-item,
