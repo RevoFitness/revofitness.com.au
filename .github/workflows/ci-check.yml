@@ -1,11 +1,6 @@
 name: CI - Test & Validate
 
 on:
-  push:
-    branches:
-      - develop
-      - staging
-      - main
   pull_request:
     branches:
       - develop
