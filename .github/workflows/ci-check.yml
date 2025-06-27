@@ -1,11 +1,20 @@
 name: CI - Test & Validate
 
 on:
+  push:
+    branches:
+      - develop
+      - staging
+      - main
   pull_request:
     branches:
       - develop
       - staging
       - main
+
+concurrency:
+  group: ci-check-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   run-tests:
@@ -25,7 +34,6 @@ jobs:
       - name: ✅ Run Lint & Tests
         run: |
           echo "🔍 Running tests and lint checks..."
-          # Example: Replace with your actual test/lint commands
           npm run lint
           npm run test
         working-directory: startdigital
