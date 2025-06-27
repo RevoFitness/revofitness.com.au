@@ -43,12 +43,12 @@ jobs:
           BRANCH="${GITHUB_REF##*/}"
           if [[ "$BRANCH" == "develop" ]]; then
             echo "📦 Deploying to development server..."
-            scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
+            scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
               startdigital developmentrevof@43.250.141.151:/home/developmentrevof/public_html/wp-content/themes/
 
           elif [[ "$BRANCH" == "staging" ]]; then
             echo "🚀 Deploying to staging server..."
-            scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_dev_3 \
+            scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
               startdigital revostaging@43.250.141.151:/home/revostaging/public_html/wp-content/themes/
 
           elif [[ "$BRANCH" == "main" ]]; then
