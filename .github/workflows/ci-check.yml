@@ -7,6 +7,10 @@ on:
       - staging
       - main
 
+concurrency:
+  group: ci-check-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -22,10 +26,10 @@ jobs:
         run: npm install
         working-directory: startdigital
 
+      # 🔁 Force hash change - lint & test step comment updated
       - name: ✅ Run Lint & Tests
         run: |
-          echo "🔍 Running tests and lint checks..."
-          # Example: Replace with your actual test/lint commands
+          echo "🔍 Running tests and lint checks (updated comment)..."
           npm run lint
           npm run test
         working-directory: startdigital
