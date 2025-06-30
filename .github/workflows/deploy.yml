@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - develop
+      - main
+  pull_request:
+    branches:
       - staging
       - main
 
@@ -14,6 +17,12 @@ jobs:
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v3
+
+      - name: Set environment BRANCH variable
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "Branch: $BRANCH"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
       - name: Install Composer dependencies (project root)
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
@@ -40,7 +49,6 @@ jobs:
 
       - name: Deploy to environment
         run: |
-          BRANCH="${GITHUB_REF##*/}"
           if [[ "$BRANCH" == "develop" ]]; then
             echo "📦 Deploying to development server..."
             scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
@@ -55,6 +63,8 @@ jobs:
             echo "🎯 Deploying to production server..."
             scp -P 2222 -r -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
               startdigital revofitness@43.250.141.151:/home/revofitness/public_html/wp-content/themes/
+          else
+            echo "⚠️ No deployment target for branch: $BRANCH"
           fi
 
       - name: ✅ Done
